@@ -14,12 +14,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AuthGuard } from "@/components/AuthGuard";
 import { TabWarning } from "@/components/TabWarning";
-import { CodeRunner } from "@/components/CodeRunner/CodeRunner";
-import { BrainstormSection } from "@/components/brainstorm/BrainstormSection";
-import { useApp } from "@/contexts/AppContext";
-import { ProOverlay } from "@/components/ProOverlay";
+import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Submission } from "@/types/userAlgorithmData";
+
+const CodeRunner = dynamic(() => import("@/components/CodeRunner/CodeRunner").then(mod => mod.CodeRunner), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center h-full">
+      <Skeleton className="h-[80%] w-[90%]" />
+    </div>
+  )
+});
 
 interface CodeWorkspacePanelProps {
   algorithm: any;
@@ -40,6 +46,10 @@ interface CodeWorkspacePanelProps {
   onRunnerStateChange?: (state: any) => void;
   isLoading?: boolean;
   isPlatformPreview?: boolean;
+  hasPremiumAccess?: boolean;
+  handleRandomProblem?: () => void;
+  handleNextProblem?: () => void;
+  handlePreviousProblem?: () => void;
 }
 
 export const CodeWorkspacePanel = React.memo(({
@@ -61,9 +71,12 @@ export const CodeWorkspacePanel = React.memo(({
   onRunnerStateChange,
   isLoading = false,
   isPlatformPreview = false,
+  hasPremiumAccess = false,
+  handleRandomProblem,
+  handleNextProblem,
+  handlePreviousProblem
 }: CodeWorkspacePanelProps) => {
   const posthog = usePostHog();
-  const { hasPremiumAccess } = useApp();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isCompact, setIsCompact] = useState(false);
 
@@ -84,7 +97,7 @@ export const CodeWorkspacePanel = React.memo(({
   }, []);
 
   return (
-    <div ref={containerRef} className={`h-full flex flex-col bg-card/30 backdrop-blur-sm ${className || ''}`}>
+    <div ref={containerRef} className={`h-full flex flex-col ${className || ''}`}>
       <div className="flex-1 overflow-hidden p-0">
         {(algorithm?.controls?.tabs?.code === false || algorithm?.controls?.code_runner === false || !isCodeRunnerGlobalEnabled) ? (
           <TabWarning message={!isCodeRunnerGlobalEnabled ? "Code Runner is currently disabled globally." : "Code Runner is not available for this problem."} />
@@ -123,6 +136,10 @@ export const CodeWorkspacePanel = React.memo(({
                   algorithmTitle: algorithm?.title || algorithm?.name || "",
                   controls: algorithm?.controls?.brainstorm
                 } : undefined}
+                hasPremiumAccess={hasPremiumAccess}
+                handleRandomProblem={handleRandomProblem}
+                handleNextProblem={handleNextProblem}
+                handlePreviousProblem={handlePreviousProblem}
               />
             ) : (
               <div className="flex-1 flex items-center justify-center">

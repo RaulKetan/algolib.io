@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Crown, CheckCircle2, Lock, ArrowRight } from 'lucide-react';
+import { Crown, CheckCircle2, Lock, ArrowRight, Info } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
-import { DodoPayments } from 'dodopayments-checkout';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePostHog } from '@posthog/react';
@@ -12,7 +11,7 @@ interface PaywallProps {
 }
 
 export const Paywall: React.FC<PaywallProps> = ({ onUpgrade }) => {
-  const { user } = useApp();
+  const { user, profile } = useApp();
   const posthog = usePostHog();
   const [isUpgrading, setIsUpgrading] = React.useState(false);
 
@@ -26,20 +25,23 @@ export const Paywall: React.FC<PaywallProps> = ({ onUpgrade }) => {
       setIsUpgrading(true);
       console.log('Starting upgrade for user:', user?.id, user?.email);
 
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+      const { data, error } = await supabase.functions.invoke('lemon-create-checkout', {
         body: {
           email: user?.email,
           userId: user?.id,
+          customerName: profile?.full_name,
           returnUrl: window.location.href,
+          isLocal: window.location.hostname === 'localhost',
         }
       });
 
       if (error) throw error;
 
       if (data?.checkout_url) {
-        DodoPayments.Checkout.open({
-          checkoutUrl: data.checkout_url,
-        });
+        // Using direct redirect instead of SDK overlay (iframe) to avoid browser security restrictions
+        // like "Permissions policy violation" (accelerometer, bluetooth) which often block the form in iframes.
+        console.log('Using direct redirect for maximum compatibility');
+        window.location.href = data.checkout_url;
         if (onUpgrade) onUpgrade();
       } else {
         throw new Error('No checkout URL returned');
@@ -104,8 +106,19 @@ export const Paywall: React.FC<PaywallProps> = ({ onUpgrade }) => {
               {isUpgrading ? "Loading..." : "Upgrade Now"}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
+
+            {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
+              <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-600 text-left space-y-1">
+                <p className="font-bold flex items-center gap-1">
+                  <Info className="w-3 h-3" /> Test Mode (Lemon Squeezy):
+                </p>
+                <p>Card: <code className="bg-amber-500/10 px-1 rounded font-mono">4242 4242 4242 4242</code></p>
+                <p>Expiry / CVC: <code className="bg-amber-500/10 px-1 rounded font-mono">12/30 / 123</code></p>
+              </div>
+            )}
+
             <p className="text-[10px] text-muted-foreground">
-              Secure payment powered by Dodo Payments. Cancel anytime.
+              Secure payment powered by Lemon Squeezy. Cancel anytime.
             </p>
           </div>
 

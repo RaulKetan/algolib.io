@@ -27,8 +27,7 @@ import { FeatureGuard } from "./FeatureGuard";
 const UserMenu = () => {
     const router = useRouter();
     const { user, profile } = useApp();
-    const adminId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
-    const isAdmin = user && adminId && user.id === adminId;
+    const isAdmin = profile?.role === 'admin';
 
     const handleSignOut = async () => {
         if (!supabase) {
@@ -86,9 +85,12 @@ const UserMenu = () => {
 
                     <FeatureGuard flag="profiles">
                         <DropdownMenuItem asChild className="cursor-pointer">
-                            <Link href="/dashboard" className="w-full flex items-center">
+                            <Link
+                                href={profile?.username ? `/profile/${profile.username}` : "/profile"}
+                                className="w-full flex items-center"
+                            >
                                 <User className="mr-2 h-4 w-4" />
-                                <span>Dashboard</span>
+                                <span>My Profile</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild className="cursor-pointer">
@@ -118,7 +120,7 @@ const UserMenu = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={handleSignOut}
-                        className="text-destructive focus:text-destructive cursor-pointer"
+                        className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/30 cursor-pointer"
                     >
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Sign out</span>

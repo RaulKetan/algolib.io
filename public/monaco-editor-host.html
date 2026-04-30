@@ -57,6 +57,7 @@
     <script>
       let editor;
       let decorations = [];
+      let ignoreChange = false;
 
       require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs' } });
       
@@ -141,7 +142,26 @@
           }
 
           editor.onDidChangeModelContent(() => {
+            if (ignoreChange) return;
             window.parent.postMessage({ type: 'CODE_CHANGED', data: { code: editor.getValue() } }, '*');
+          });
+
+          // Register keyboard shortcuts
+          // 2 is KeyMod.CtrlCmd, 3 is KeyMod.Shift, 4 is KeyMod.Alt, 1 is KeyMod.WinCtrl
+          // KeyCode for ' is 102 (US_QUOTE)
+          // KeyCode for Enter is 3 (Enter)
+          
+          const KeyMod = window.monaco.KeyMod;
+          const KeyCode = window.monaco.KeyCode;
+
+          // Ctrl/Cmd + ' (Quote)
+          editor.addCommand(KeyMod.CtrlCmd | KeyCode.Quote, () => {
+             window.parent.postMessage({ type: 'KEYBOARD_SHORTCUT', data: { key: "'" } }, '*');
+          });
+
+          // Ctrl/Cmd + Enter
+          editor.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, () => {
+             window.parent.postMessage({ type: 'KEYBOARD_SHORTCUT', data: { key: "Enter" } }, '*');
           });
 
           document.getElementById('editor-container').classList.add('ready');
@@ -152,8 +172,18 @@
 
         // Other messages
         if (type === 'UPDATE_CODE') {
-          if (editor.getValue() !== data.code) {
-            editor.setValue(data.code);
+          const currentVal = editor.getValue().replace(/\r\n/g, '\n');
+          const newVal = (data.code || '').replace(/\r\n/g, '\n');
+          
+          if (currentVal !== newVal) {
+            console.log('[MonacoHost] Content mismatch, updating value. Local length:', currentVal.length, 'Remote length:', newVal.length);
+            ignoreChange = true;
+            const viewState = editor.saveViewState();
+            editor.setValue(newVal);
+            editor.restoreViewState(viewState);
+            ignoreChange = false;
+          } else {
+            // console.log('[MonacoHost] Content matches, skipping update');
           }
         } else if (type === 'UPDATE_LANGUAGE') {
           window.monaco.editor.setModelLanguage(editor.getModel(), data.language);

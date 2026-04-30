@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Code2, Github, Heart, Users, ExternalLink, Layers, BarChart, Database } from "lucide-react";
 import { Footer } from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
+import Head from "next/head";
 import { motion } from "framer-motion";
 import Script from "next/script";
 
@@ -25,22 +25,22 @@ const item = {
 export default function About() {
   return (
     <>
-      <Helmet>
-        <title>About RulCode - Free Open Source Algorithm Learning Platform</title>
+      <Head>
+        <title>About RulCode - Freemium Open Source Algorithm Learning Platform</title>
         <meta
           name="description"
           content="Learn about RulCode's mission to make algorithm learning accessible through interactive visualizations. 100% free, open-source, and community-driven platform for developers and competitive programmers."
         />
         <meta
           name="keywords"
-          content="about rulcode, algorithm learning platform, open source algorithms, free coding education, interactive algorithm visualizations, hotjar, google analytics"
+          content="about rulcode, algorithm learning platform, open source algorithms, freemium coding education, interactive algorithm visualizations, hotjar, google analytics"
         />
         <link rel="canonical" href="https://rulcode.com/about" />
 
-        <meta property="og:title" content="About RulCode - Free Algorithm Learning Platform" />
-        <meta property="og:description" content="100% free and open-source platform for learning algorithms with interactive visualizations" />
+        <meta property="og:title" content="About RulCode - freemium Algorithm Learning Platform" />
+        <meta property="og:description" content="100% Open-source platform for learning algorithms with interactive visualizations" />
         <meta property="og:url" content="https://rulcode.com/about" />
-      </Helmet>
+      </Head>
 
       <Script
         id="about-json-ld"
@@ -55,7 +55,7 @@ export default function About() {
             "mainEntity": {
               "@type": "EducationalOrganization",
               "name": "RulCode",
-              "description": "Free and open-source algorithm library for competitive programming and coding interviews",
+              "description": "Open-source algorithm library for competitive programming and coding interviews",
               "url": "https://rulcode.com"
             }
           })
@@ -117,7 +117,7 @@ export default function About() {
                       <div className="p-2 rounded-lg bg-red-500/10 text-red-500">
                         <Heart className="w-6 h-6" />
                       </div>
-                      100% Free & Open Source
+                      100%  Open Source
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -169,7 +169,7 @@ export default function About() {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {["React 18", "TypeScript", "Vite", "Tailwind CSS", "Shadcn/UI", "Framer Motion"].map((tech) => (
+                      {["React 18", "TypeScript", "Next.js", "Tailwind CSS", "Shadcn/UI", "Framer Motion"].map((tech) => (
                         <li key={tech} className="flex items-center gap-2 text-muted-foreground">
                           <div className="w-1.5 h-1.5 rounded-full bg-blue-400/50" />
                           {tech}

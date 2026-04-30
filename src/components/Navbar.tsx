@@ -16,7 +16,6 @@ import {
   User,
   ChevronDown,
   ChevronRight,
-  Trophy,
   Languages,
   PenTool,
   CreditCard,
@@ -32,7 +31,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { useAppSelector } from "@/store/hooks";
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
@@ -46,7 +46,7 @@ import UserMenu from "./UserMenu";
 
 const Navbar = () => {
   const [mounted, setMounted] = useState(false);
-  const { profile, user } = useApp();
+  const { profile, user, hasPremiumAccess } = useApp();
   const { setOpenMobile, toggleSidebar, state } = useSidebar();
   const pathname = usePathname();
 
@@ -63,8 +63,27 @@ const Navbar = () => {
 
   const isAuthPage = pathname === "/login";
 
-  // Hide Navbar on DSA and Problem pages as they have their own implementation
-  if (pathname?.startsWith('/dsa/') || pathname?.startsWith('/problem/')) {
+  const algorithms = useAppSelector(state => state.algorithms.items);
+
+  const isDsaProblemPage = useMemo(() => {
+    if (!pathname) return false;
+    
+    // Exact match for known paths that have their own header
+    const knownPaths = ['/dsa/problems', '/dsa/get-started', '/dsa/core', '/dsa/blind-75'];
+    if (knownPaths.includes(pathname)) return true;
+    
+    // Match for /problem/[slug]
+    if (pathname.startsWith('/problem/')) {
+      const slug = pathname.replace('/problem/', '');
+      // Only hide if it's a VALID algorithm slug
+      return algorithms.some(algo => algo.slug === slug || algo.id === slug);
+    }
+    
+    return false;
+  }, [pathname, algorithms]);
+
+  // Hide Navbar on valid DSA and Problem pages as they have their own implementation
+  if (isDsaProblemPage) {
     return null;
   }
 
@@ -181,7 +200,7 @@ const Navbar = () => {
             <div className="h-4 w-[1px] bg-border/60 mx-1"></div>
 
             <Link
-              href="/dashboard"
+              href={profile?.username ? `/profile/${profile.username}` : "/profile"}
               className="font-normal hover:text-primary transition-colors shutter-click"
               onClick={closeMenus}
             >
@@ -361,7 +380,7 @@ const Navbar = () => {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
-            {(!user || profile?.subscription_status !== 'active') && !isAuthPage && (
+            {(!user || !hasPremiumAccess) && !isAuthPage && (
               <Link href="/pricing" className="text-sm font-normal hover:text-primary transition-colors hidden md:block mr-2">
                 Pricing
               </Link>

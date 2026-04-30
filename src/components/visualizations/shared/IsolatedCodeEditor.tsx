@@ -14,6 +14,7 @@ interface IsolatedCodeEditorProps {
   options?: Record<string, any>;
   className?: string;
   primaryColor?: string;
+  onShortcut?: (key: string) => void;
 }
 
 export const IsolatedCodeEditor = React.forwardRef<any, IsolatedCodeEditorProps>(({
@@ -29,7 +30,8 @@ export const IsolatedCodeEditor = React.forwardRef<any, IsolatedCodeEditorProps>
   onReady,
   options = {},
   className = '',
-  primaryColor = '#3e72ff'
+  primaryColor = '#3e72ff',
+  onShortcut
 }, ref) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isInternalReady, setIsInternalReady] = useState(false);
@@ -51,6 +53,8 @@ export const IsolatedCodeEditor = React.forwardRef<any, IsolatedCodeEditorProps>
       }
     }
   }));
+  const lastEmittedCodeRef = useRef(code);
+
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'MONACO_LOADED') {
@@ -74,16 +78,27 @@ export const IsolatedCodeEditor = React.forwardRef<any, IsolatedCodeEditorProps>
         setIsInternalReady(true);
         onReady?.();
       } else if (event.data.type === 'CODE_CHANGED') {
-        onChange?.(event.data.data.code);
+        const newCode = event.data.data.code;
+        lastEmittedCodeRef.current = newCode;
+        onChange?.(newCode);
+      } else if (event.data.type === 'KEYBOARD_SHORTCUT') {
+        onShortcut?.(event.data.data.key);
       }
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [code, language, theme, readOnly, fontSize, highlightedLines, options, primaryColor, onChange, onReady]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, theme, readOnly, fontSize, highlightedLines, options, primaryColor, onReady]);
 
   useEffect(() => {
     if (isInternalReady && iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage({ type: 'UPDATE_CODE', data: { code } }, '*');
+      const currentVal = code.replace(/\r\n/g, '\n');
+      const lastEmitted = (lastEmittedCodeRef.current || '').replace(/\r\n/g, '\n');
+
+      if (currentVal !== lastEmitted) {
+        console.log('[IsolatedCodeEditor] Content mismatch, sending UPDATE_CODE. Prop length:', currentVal.length, 'Last emitted length:', lastEmitted.length);
+        iframeRef.current.contentWindow.postMessage({ type: 'UPDATE_CODE', data: { code } }, '*');
+      }
     }
   }, [code, isInternalReady]);
 

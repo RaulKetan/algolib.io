@@ -20,34 +20,24 @@ const staticRoutes = [
   '/terms',
   '/content-rights',
   '/feedback',
-  '/games',
-  '/games/leaderboard',
   '/blind75',
   '/blog',
 ];
 
-// Game routes
-const gameRoutes = [
-  '/games/sort-hero',
-  '/games/graph-explorer',
-  '/games/stack-master',
-  '/games/dp-puzzle',
-  '/games/sliding-window',
-  '/games/two-pointer',
-];
+
 
 const blogRoutes = blogPosts.map((post) => `/blog/${post.slug}`);
 
 async function generateSitemap() {
   console.log('Fetching algorithms from Supabase...');
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   console.log('Environment Debug:', {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseKey,
-    allKeys: Object.keys(process.env).filter(k => k.startsWith('VITE_') || k.startsWith('NEXT_PUBLIC_'))
+    allKeys: Object.keys(process.env).filter(k => k.startsWith('NEXT_PUBLIC_'))
   });
 
   if (!supabaseUrl || !supabaseKey) {
@@ -72,7 +62,7 @@ async function generateSitemap() {
   // All algorithms now use unified /problem/ route
   const problemRoutes = algorithms.map((algo) => `/problem/${algo.id}`);
 
-  const allRoutes = [...staticRoutes, ...problemRoutes, ...blogRoutes, ...gameRoutes];
+  const allRoutes = [...staticRoutes, ...problemRoutes, ...blogRoutes];
 
   // Generate sitemap XML
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -83,14 +73,12 @@ ${allRoutes.map(route => `  <url>
     <changefreq>${route === '/' ? 'daily' :
       route.startsWith('/problem/') ? 'weekly' :
         route.startsWith('/blog/') ? 'weekly' :
-          route.startsWith('/games/') ? 'weekly' :
-            'monthly'
+          'monthly'
     }</changefreq>
     <priority>${route === '/' ? '1.0' :
       route.startsWith('/problem/') ? '0.8' :
         route.startsWith('/blog/') ? '0.7' :
-          route.startsWith('/games/') ? '0.6' :
-            '0.5'
+          '0.5'
     }</priority>
   </url>`).join('\n')}
 </urlset>`;
