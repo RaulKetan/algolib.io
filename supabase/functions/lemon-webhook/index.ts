@@ -2,12 +2,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.1'
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+const serviceRoleKey = Deno.env.get('SUPABASE_SECRET_KEY')!
 const sendEmailHookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET')
 const webhookSecret = Deno.env.get('LS_WEBHOOK_SECRET')?.trim()
 
 if (!serviceRoleKey) {
-    console.warn('CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing.')
+    console.warn('CRITICAL: SUPABASE_SECRET_KEY is missing.')
 }
 
 const supabase = createClient(supabaseUrl, serviceRoleKey)

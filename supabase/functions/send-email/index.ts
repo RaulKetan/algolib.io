@@ -16,7 +16,7 @@ import { OnboardingWelcomeEmail } from './_templates/onboarding-welcome.tsx'
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+const supabaseAnonKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ?? ''
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,7 +26,7 @@ const corsHeaders = {
 // Initialize Supabase client with Service Role Key for background tasks
 const supabaseAdmin = createClient(
   supabaseUrl,
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+  Deno.env.get('SUPABASE_SECRET_KEY') ?? '',
   { auth: { persistSession: false } }
 )
 
@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders })
   }
 
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  const serviceRoleKey = Deno.env.get('SUPABASE_SECRET_KEY')
   const authHeader = req.headers.get('Authorization')
   const hookSecretHeader = req.headers.get('x-hook-secret')
   const isServiceRole = serviceRoleKey && authHeader?.includes(serviceRoleKey)

@@ -3,10 +3,10 @@ import { createBrowserClient } from '@supabase/ssr';
 import type { Database } from './types';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 // Check if Supabase credentials are available
-const hasSupabaseCredentials = SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY;
+const hasSupabaseCredentials = SUPABASE_URL && SUPABASE_ANON_KEY;
 
 if (!hasSupabaseCredentials) {
   console.warn('⚠️ Supabase credentials not found. Some features will be disabled.');
@@ -14,7 +14,7 @@ if (!hasSupabaseCredentials) {
 
 // Create a browser client that automatically handles cookies
 export const supabase = hasSupabaseCredentials
-  ? createBrowserClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+  ? createBrowserClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
 
 

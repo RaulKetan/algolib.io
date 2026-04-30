@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
 
     try {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-        const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
+        const supabaseAnonKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY')!
 
         const body = await req.json().catch(() => ({}))
         const isLocal = body.isLocal || false

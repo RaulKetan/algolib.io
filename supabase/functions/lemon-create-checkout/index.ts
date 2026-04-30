@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
         let finalEmail = email
 
         const supabaseUrl = Deno.env.get('SUPABASE_URL')
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SECRET_KEY')
         const supabase = (supabaseUrl && supabaseServiceKey)
             ? createClient(supabaseUrl, supabaseServiceKey)
             : null
