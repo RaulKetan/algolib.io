@@ -15,7 +15,7 @@ export const SOCIAL_LINKS = {
   x: 'https://x.com/rulcode',
   linkedin: 'https://www.linkedin.com/company/rulcode',
   github: 'https://github.com/rulcode',
-  youtube: 'https://youtube.com/@rulcode'
+  youtube: 'https://www.youtube.com/channel/UCRAuKkNkcmVDxmaQIBHYSUg'
 }
 
 export const SOCIAL_ICONS = {

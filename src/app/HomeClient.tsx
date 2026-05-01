@@ -89,10 +89,10 @@ export default function HomeClient({ type = 'all' }: HomeClientProps) {
               <TabsContent value="interviews" className="mt-0 focus-visible:ring-0">
                 <div className="max-w-[1400px] mx-auto">
                   <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-4 text-gray-900 dark:text-white">
+                    <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-4 text-gray-900 dark:text-white">
                       DSA
                     </h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto font-medium">
+                    <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto font-medium">
                       Master Data Structures & Algorithms with our curated learning paths designed for modern technical interviews.
                     </p>
                   </div>

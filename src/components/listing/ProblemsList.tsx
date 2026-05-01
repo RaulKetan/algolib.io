@@ -45,7 +45,7 @@ export const ProblemsList = ({
   initialSelectedTopics = EMPTY_ARRAY,
   initialSelectedCompanies = EMPTY_ARRAY
 }: ProblemsListProps) => {
-  const { activeListType, setActiveListType, progressMap } = useApp();
+  const { activeListType, setActiveListType, progressMap, hasPremiumAccess } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('serial-asc');
@@ -167,6 +167,7 @@ export const ProblemsList = ({
   };
 
   const handleCompanyToggle = (company: string) => {
+    if (!hasPremiumAccess) return;
     if (company === 'CLEAR_ALL') {
       setSelectedCompanies([]);
       return;
@@ -237,13 +238,13 @@ export const ProblemsList = ({
       {headerSlot}
 
       {isLoading ? (
-        <div className="p-8 space-y-4 max-w-[1000px] mx-auto">
+        <div className="p-8 space-y-4 max-w-[820px] mx-auto">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="h-32 bg-muted/20 animate-pulse rounded-xl" />
           ))}
         </div>
       ) : !isCategoryWise ? (
-        <div className="w-full max-w-[1000px] mx-auto">
+        <div className="w-full max-w-[820px] mx-auto">
           {filteredAndSortedAlgorithms.map((algo, index) => (
             <PremiumProblemCard
               key={algo.id}
@@ -262,7 +263,7 @@ export const ProblemsList = ({
           )}
         </div>
       ) : (
-        <div className="w-full max-w-[1000px] mx-auto">
+        <div className="w-full max-w-[820px] mx-auto">
           {currentGroupedAlgos.length > 0 ? (
             <Accordion 
               type="multiple" 
@@ -277,30 +278,30 @@ export const ProblemsList = ({
                     index === currentGroupedAlgos.length - 1 && "border-b-0"
                   )}
                 >
-                  <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-muted/5 group data-[state=open]:bg-muted/20 data-[state=open]:border-b border-border/10">
-                    <div className="flex items-center justify-between w-full pr-4 gap-6">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0">
-                          {listType === 'core' ? <Target className="w-5 h-5 text-primary/60" /> : <Brain className="w-5 h-5 text-primary/60" />}
+                  <AccordionTrigger className="px-3 sm:px-6 py-4 sm:py-5 hover:no-underline hover:bg-accent hover:text-accent-foreground transition-all duration-300 group data-[state=open]:bg-muted/20 data-[state=open]:border-b border-border/10">
+                    <div className="flex items-center justify-between w-full pr-1 sm:pr-4 gap-2 sm:gap-6 min-w-0">
+                      <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0">
+                          {listType === 'core' ? <Target className="w-4 h-4 sm:w-5 sm:h-5 text-primary/60" /> : <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-primary/60" />}
                         </div>
-                        <div className="text-left">
-                          <h3 className="font-medium text-[16px] leading-tight mb-1">
+                        <div className="text-left min-w-0">
+                          <h3 className="font-medium text-[14px] sm:text-[16px] leading-tight mb-1 break-words">
                             {category}
                           </h3>
-                          <p className="text-[11px] text-muted-foreground font-normal">
+                          <p className="text-[10px] sm:text-[11px] text-muted-foreground font-normal line-clamp-1">
                             {algos.length} essential problems
                           </p>
                         </div>
                       </div>
                       
-                      <div className="flex flex-col items-end gap-2 shrink-0">
-                        <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">
+                      <div className="flex flex-col items-end gap-1.5 sm:gap-2 shrink-0">
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">
                           <span className="text-foreground/90">{statsByCategory[category].solved}</span>
                           <span className="text-muted-foreground/30">/</span>
                           <span>{statsByCategory[category].total}</span>
-                          <span className="ml-1 text-[9px] opacity-70">Solved</span>
+                          <span className="ml-0.5 sm:ml-1 text-[9px] opacity-70 hidden min-[400px]:inline">Solved</span>
                         </div>
-                        <div className="h-1.5 w-24 sm:w-32 bg-muted/40 rounded-full overflow-hidden border border-border/10 shadow-inner">
+                        <div className="h-1.5 w-16 xs:w-20 sm:w-32 bg-muted/40 rounded-full overflow-hidden border border-border/10 shadow-inner">
                           <div 
                             className={cn(
                               "h-full rounded-full transition-all duration-1000",

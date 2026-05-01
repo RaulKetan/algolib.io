@@ -13,12 +13,12 @@ export function CommunitySection() {
     return (
         <section className="py-24 bg-white dark:bg-black">
             <div className="w-full max-w-[1600px] mx-auto px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-32">
                     <div>
-                        <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.1]">
+                        <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.1]">
                             Join our growing community
                         </h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-xl font-medium leading-relaxed">
+                        <p className="text-gray-500 dark:text-gray-400 text-lg md:text-xl font-medium leading-relaxed">
                             Have questions or feedback? We&apos;re building RulCode for you. Join our social platforms and help us shape the future of tech prep.
                         </p>
                     </div>
@@ -30,7 +30,7 @@ export function CommunitySection() {
                                     <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-zinc-900 flex items-center justify-center border border-gray-100 dark:border-zinc-800 group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
                                         <item.icon className="w-6 h-6 text-gray-400 group-hover:text-primary transition-colors" />
                                     </div>
-                                    <span className="text-xl font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors tracking-tight">{item.name}</span>
+                                    <span className="text-lg md:text-xl font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors tracking-tight">{item.name}</span>
                                 </div>
                                 <ArrowRight className="w-6 h-6 text-gray-300 group-hover:text-primary transition-all group-hover:translate-x-2" />
                             </a>

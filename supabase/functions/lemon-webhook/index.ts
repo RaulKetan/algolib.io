@@ -1,8 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.1'
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
 
-const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-const serviceRoleKey = Deno.env.get('SUPABASE_SECRET_KEY')!
+const supabaseUrl = Deno.env.get('RULCODE_SUPABASE_URL') ?? Deno.env.get('SUPABASE_URL')!
+const serviceRoleKey = Deno.env.get('RULCODE_SUPABASE_SECRET_KEY') ?? Deno.env.get('SUPABASE_SECRET_KEY')!
 const sendEmailHookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET')
 const webhookSecret = Deno.env.get('LS_WEBHOOK_SECRET')?.trim()
 

@@ -51,8 +51,8 @@ Deno.serve(async (req) => {
         let finalUserId = userId
         let finalEmail = email
 
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SECRET_KEY')
+        const supabaseUrl = Deno.env.get('RULCODE_SUPABASE_URL') ?? Deno.env.get('SUPABASE_URL')
+        const supabaseServiceKey = Deno.env.get('RULCODE_SUPABASE_SECRET_KEY') ?? Deno.env.get('SUPABASE_SECRET_KEY')
         const supabase = (supabaseUrl && supabaseServiceKey)
             ? createClient(supabaseUrl, supabaseServiceKey)
             : null

@@ -130,17 +130,17 @@ const ProblemsClient = ({
           <Button
             variant={listMode === 'core' ? 'default' : 'outline'}
             onClick={() => updateParams({ mode: 'core' })}
-            className="rounded-xl h-10 font-medium transition-all"
+            className="rounded-xl h-10 font-medium transition-all w-fit px-5"
           >
-            <Target className="w-4 h-4 mr-2" />
+            <Target className="w-4 h-4" />
             Core
           </Button>
           <Button
             variant={listMode === 'blind' ? 'default' : 'outline'}
             onClick={() => updateParams({ mode: 'blind' })}
-            className="rounded-xl h-10 font-medium transition-all"
+            className="rounded-xl h-10 font-medium transition-all w-fit px-5"
           >
-            <Brain className="w-4 h-4 mr-2" />
+            <Brain className="w-4 h-4" />
             Blind
           </Button>
         </div>

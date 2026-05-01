@@ -32,14 +32,14 @@ export default function PlatformPreview() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full md:max-w-[80%] mx-auto px-4 sm:px-6 lg:px-8"
+            className="w-full md:max-w-[80%] mx-auto px-4 sm:px-6 lg:px-8 max-w-[100vw]"
         >
-            <div className="relative group">
+            <div className="relative group w-full max-w-full">
                 {/* Glow effect background */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-[#EAFF96]/20 to-[#EAFF96]/10 rounded-2xl blur-xl opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
 
-                <div className="relative bg-white dark:bg-zinc-950 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-[#EAFF96]/5 overflow-hidden">
-                    <div className="h-[700px] md:h-[850px] overflow-hidden">
+                <div className="relative bg-white dark:bg-zinc-950 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-[#EAFF96]/5 overflow-hidden w-full">
+                    <div className="h-[800px] md:h-[850px] w-full">
                         <AlgorithmPreview algorithm={platformPreviewData} initialCode={INITIAL_CODE} isPlatformPreview={true} />
                     </div>
                 </div>
@@ -50,14 +50,14 @@ export default function PlatformPreview() {
             <div className="mt-8 flex justify-center">
                 <Link
                     href="/problem/two-sum"
-                    className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-3 rounded-full shadow-xl border border-zinc-800 dark:border-zinc-200 flex items-center gap-3 whitespace-nowrap hover:bg-zinc-700 dark:hover:bg-zinc-100 transition-colors duration-200 group/btn"
+                    className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-3 rounded-full shadow-xl border border-zinc-800 dark:border-zinc-200 flex items-center gap-3 whitespace-normal sm:whitespace-nowrap hover:bg-zinc-700 dark:hover:bg-zinc-100 transition-colors duration-200 group/btn text-center justify-center"
                 >
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-primary animate-pulse"></span>
                         <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-primary animate-pulse [animation-delay:200ms]"></span>
                         <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-primary animate-pulse [animation-delay:400ms]"></span>
                     </div>
-                    <p className="text-sm font-medium tracking-tight">Interactive Playground — Try editing the code</p>
+                    <p className="text-sm font-medium tracking-tight">Interactive Playground <span className="hidden sm:inline">— Try editing the code</span></p>
                     <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
                 </Link>
             </div>

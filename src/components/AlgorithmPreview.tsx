@@ -30,6 +30,14 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
   const [isBrainstormMaximized, setIsBrainstormMaximized] = useState(false);
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
 
+  const [isMobile, setIsMobile] = useState(false);
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Mock Handlers
   const toggleLeftPanel = () => setIsLeftCollapsed(!isLeftCollapsed);
   const toggleRightPanel = () => setIsRightCollapsed(!isRightCollapsed);
@@ -132,9 +140,9 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
               <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600" />
             </div>
             <div className="flex-1 flex justify-center">
-              <div className="flex items-center gap-2 px-32 py-1.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                <Lock className="w-3 h-3" />
-                rulcode.com
+              <div className="flex w-full max-w-[140px] sm:max-w-[200px] md:max-w-[300px] items-center justify-center gap-2 py-1.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-md text-[10px] sm:text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                <Lock className="w-3 h-3 shrink-0" />
+                <span className="truncate">rulcode.com</span>
               </div>
             </div>
             <Button variant="ghost" size="sm" onClick={() => setIsPreviewExpanded(false)} className="h-8 gap-2 hover:bg-destructive/10 hover:text-destructive">
@@ -149,7 +157,7 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
               <AlgorithmHeader
                 user={{ email: 'preview@example.com' } as any}
                 algorithm={previewAlgorithm}
-                isMobile={false}
+                isMobile={isMobile}
                 windowWidth={1200}
                 isInterviewMode={false}
                 toggleInterviewMode={() => { }}
@@ -164,10 +172,12 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
                 handleShare={() => { }}
                 handleSignOut={() => { }}
                 hideUserMenu={true}
+                hideFeedback={true}
+                hideShare={true}
               />
             </div>
             <div className="flex-1 overflow-hidden relative">
-              <ResizablePanelGroup direction="horizontal" className="h-full">
+              <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="h-full">
                 {/* Left Panel */}
                 <ResizablePanel
                   defaultSize={40}
@@ -181,7 +191,7 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
                     algorithm={previewAlgorithm}
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
-                    isMobile={false}
+                    isMobile={isMobile}
                     toggleLeftPanel={toggleLeftPanel}
                     // Mock interactions
                     isCompleted={false}
@@ -212,7 +222,7 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
                   <CodeWorkspacePanel
                     algorithm={previewAlgorithm}
                     algorithmId="preview-mode"
-                    isMobile={false}
+                    isMobile={isMobile}
                     toggleRightPanel={toggleRightPanel}
                     savedCode={initialCode}
                     handleCodeChange={() => { }}
@@ -243,9 +253,9 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
             <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600" />
           </div>
           <div className="flex-1 flex justify-center">
-            <div className="flex items-center gap-2 px-32 py-1.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400">
-              <Lock className="w-3 h-3" />
-              rulcode.com
+            <div className="flex w-full max-w-[140px] sm:max-w-[200px] md:max-w-[300px] items-center justify-center gap-2 py-1.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-md text-[10px] sm:text-xs font-medium text-zinc-600 dark:text-zinc-400">
+              <Lock className="w-3 h-3 shrink-0" />
+              <span className="truncate">rulcode.com</span>
             </div>
           </div>
           <div className="w-[52px]" />
@@ -257,7 +267,7 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
             <AlgorithmHeader
               user={{ email: 'preview@example.com' } as any}
               algorithm={previewAlgorithm}
-              isMobile={false}
+              isMobile={isMobile}
               windowWidth={1200}
               isInterviewMode={false}
               toggleInterviewMode={() => { }}
@@ -272,11 +282,13 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
               handleShare={() => { }}
               handleSignOut={() => { }}
               hideUserMenu={true}
+              hideFeedback={true}
+              hideShare={true}
             />
           </div>
 
           <div className="flex-1 overflow-hidden relative">
-            <ResizablePanelGroup direction="horizontal" className="h-full">
+            <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="h-full">
               {/* Left Panel */}
               <ResizablePanel
                 defaultSize={40}
@@ -290,7 +302,7 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
                   algorithm={previewAlgorithm}
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
-                  isMobile={false}
+                  isMobile={isMobile}
                   toggleLeftPanel={toggleLeftPanel}
                   // Mock interactions
                   isCompleted={false}
@@ -321,7 +333,7 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
                 <CodeWorkspacePanel
                   algorithm={previewAlgorithm}
                   algorithmId="preview-mode"
-                  isMobile={false}
+                  isMobile={isMobile}
                   toggleRightPanel={toggleRightPanel}
                   savedCode=""
                   handleCodeChange={() => { }}

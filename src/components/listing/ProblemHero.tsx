@@ -62,7 +62,7 @@ export const ProblemHero = ({
                 })}
             </div>
 
-            <div className="space-y-3 md:space-y-4 text-md text-muted-foreground/90 leading-relaxed">
+            <div className="space-y-3 md:space-y-4 text-md text-muted-foreground/90 leading-relaxed max-w-[820px]">
                 <p>
                     Master the foundational and advanced data structures and algorithms. Practice 150+ curated questions, each with high quality visualizations, multiple language solutions, and optimized complexity analysis.
                 </p>

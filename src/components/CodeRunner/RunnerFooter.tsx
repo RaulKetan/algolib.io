@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronUp, ChevronDown, Shuffle, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CodeExecutionButtonGroup } from "./CodeExecutionButtonGroup";
 import {
@@ -44,12 +45,12 @@ export const RunnerFooter: React.FC<RunnerFooterProps> = ({
     handlePreviousProblem,
 }) => {
     return (
-        <div className="flex items-center px-4 bg-background border-t border-border shrink-0 z-20 h-10 relative">
+        <div className="flex items-center pl-0 pr-1 bg-background border-t-0 border-border shrink-0 z-20 h-10 relative">
             {/* Left: Console Toggle */}
             <div className="flex-1 flex justify-start">
                 <button
                     onClick={onToggleExpand}
-                    className="flex items-center gap-2 text-xs font-semibold py-1.5 px-3 rounded-md hover:bg-muted transition-colors text-foreground/80 hover:text-foreground group"
+                    className="flex items-center gap-2 text-xs font-semibold py-1.5 pl-4  pr-3 rounded-md hover:bg-muted transition-colors text-foreground/80 hover:text-foreground group h-[40px]"
                 >
                     <span>Console</span>
                     {isExpanded ? (
@@ -77,19 +78,21 @@ export const RunnerFooter: React.FC<RunnerFooterProps> = ({
 
             {/* Right: Problem Navigation */}
             <div className="flex-1 flex justify-end">
-                <div className="flex items-center shadow-sm rounded-md overflow-hidden border border-border bg-secondary/30 h-7">
+                <div className="flex items-center shadow-sm rounded-lg overflow-hidden border border-border bg-secondary/80 dark:bg-secondary/50 h-9">
                     <TooltipProvider>
                         {handlePreviousProblem && (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={handlePreviousProblem}
-                                        className="h-7 w-7 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted border-r border-border transition-colors px-0"
-                                    >
-                                        <ChevronLeft className="h-3.5 w-3.5" />
-                                    </Button>
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={handlePreviousProblem}
+                                            className="h-9 w-9 rounded-none text-black dark:text-white hover:text-primary hover:bg-muted border-r border-border transition-colors px-0"
+                                        >
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Button>
+                                    </motion.div>
                                 </TooltipTrigger>
                                 <TooltipContent side="top">Previous Problem</TooltipContent>
                             </Tooltip>
@@ -97,14 +100,16 @@ export const RunnerFooter: React.FC<RunnerFooterProps> = ({
                         {handleRandomProblem && (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={handleRandomProblem}
-                                        className="h-7 w-7 rounded-none hover:bg-muted border-r border-border transition-colors px-0"
-                                    >
-                                        <Shuffle className="h-3 w-3" />
-                                    </Button>
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={handleRandomProblem}
+                                            className="h-9 w-9 rounded-none text-black dark:text-white hover:text-primary hover:bg-muted border-r border-border transition-colors px-0"
+                                        >
+                                            <Shuffle className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </motion.div>
                                 </TooltipTrigger>
                                 <TooltipContent side="top">Random Problem</TooltipContent>
                             </Tooltip>
@@ -112,14 +117,16 @@ export const RunnerFooter: React.FC<RunnerFooterProps> = ({
                         {handleNextProblem && (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={handleNextProblem}
-                                        className="h-7 w-7 rounded-none hover:bg-muted transition-colors px-0"
-                                    >
-                                        <ChevronRight className="h-3.5 w-3.5" />
-                                    </Button>
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={handleNextProblem}
+                                            className="h-9 w-9 rounded-none text-black dark:text-white hover:text-primary hover:bg-muted transition-colors px-0"
+                                        >
+                                            <ChevronRight className="h-4 w-4" />
+                                        </Button>
+                                    </motion.div>
                                 </TooltipTrigger>
                                 <TooltipContent side="top">Next Problem</TooltipContent>
                             </Tooltip>
