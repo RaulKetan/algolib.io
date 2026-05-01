@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Providers } from "./providers";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
+import { FeedbackButton } from "@/components/FeedbackButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,6 +47,7 @@ export default function RootLayout({
             <Navbar />
             {children}
           </SidebarInset>
+          <FeedbackButton />
         </Providers>
       </body>
     </html>

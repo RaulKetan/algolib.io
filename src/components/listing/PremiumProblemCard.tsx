@@ -48,8 +48,8 @@ export const PremiumProblemCard = ({ algorithm, status, isPremium: isPremiumProp
             className="group block relative w-full break-words"
         >
             <div className={cn(
-                "flex items-center gap-3 sm:gap-6 p-4 sm:p-6 transition-all duration-300",
-                "bg-card hover:bg-muted/15",
+                "flex items-center gap-3 sm:gap-6 p-4 sm:p-6 transition-all duration-500 ease-out",
+                "bg-card hover:bg-accent/40 dark:hover:bg-accent/20",
                 "border-x border-t border-border/40",
                 !disableRounding && isFirst && "rounded-t-xl",
                 !disableRounding && isLast && "rounded-b-xl border-b",
@@ -65,7 +65,7 @@ export const PremiumProblemCard = ({ algorithm, status, isPremium: isPremiumProp
                 {/* Content */}
                 <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
-                        <h3 className="text-[15px] sm:text-[17px] font-normal text-foreground transition-colors truncate">
+                        <h3 className="text-[15px] sm:text-[17px] font-normal text-foreground group-hover:text-black dark:group-hover:text-primary transition-colors duration-300 truncate">
                             {algorithm.serial_no || index + 1}. {algorithm.title || algorithm.name}
                         </h3>
                         <div className="flex flex-wrap gap-2">

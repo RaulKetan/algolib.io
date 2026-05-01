@@ -50,7 +50,7 @@ export const useAlgorithmLayout = (): UseAlgorithmLayoutReturn => {
         const handleResize = () => {
             const width = window.innerWidth;
             setWindowWidth(width);
-            setIsMobile(width < 480);
+            setIsMobile(width < 768);
         };
 
         handleResize();

@@ -246,9 +246,9 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
   }
 
   // Determine layout mode
-  const isTablet = layout.windowWidth >= 480 && layout.windowWidth < 778;
-  const showHorizontalScroll = isTablet;
-  const isMobileView = layout.windowWidth < 480;
+  const isTablet = false; // layout.windowWidth >= 768 && layout.windowWidth < 1024;
+  const showHorizontalScroll = false;
+  const isMobileView = layout.windowWidth < 768;
 
   return (
     <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>

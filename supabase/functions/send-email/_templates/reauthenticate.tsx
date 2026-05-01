@@ -28,6 +28,7 @@ import {
   LOGO_URL,
   HERO_IMAGE_URL,
   SOCIAL_ICONS,
+  SOCIAL_LINKS,
   BACKGROUND_COLOR,
   AntiClip,
   forceDarkWrapper} from './shared.tsx'
@@ -149,16 +150,16 @@ export const ReauthenticateEmail = ({
                 <Section style={{ marginTop: '32px', width: '152px' }}>
                   <Row>
                     <Column style={{ width: '20px', paddingRight: '24px' }}>
-                      <Link href="https://x.com/rulcode"><Img src={SOCIAL_ICONS.x} width="20" height="20" alt="X" /></Link>
+                      <Link href={SOCIAL_LINKS.x}><Img src={SOCIAL_ICONS.x} width="20" height="20" alt="X" /></Link>
                     </Column>
                     <Column style={{ width: '20px', paddingRight: '24px' }}>
-                      <Link href="https://linkedin.com/company/rulcode"><Img src={SOCIAL_ICONS.linkedin} width="20" height="20" alt="LinkedIn" /></Link>
+                      <Link href={SOCIAL_LINKS.linkedin}><Img src={SOCIAL_ICONS.linkedin} width="20" height="20" alt="LinkedIn" /></Link>
                     </Column>
                     <Column style={{ width: '20px', paddingRight: '24px' }}>
-                      <Link href="https://youtube.com/@rulcode"><Img src={SOCIAL_ICONS.youtube} width="20" height="20" alt="YouTube" /></Link>
+                      <Link href={SOCIAL_LINKS.youtube}><Img src={SOCIAL_ICONS.youtube} width="20" height="20" alt="YouTube" /></Link>
                     </Column>
                     <Column style={{ width: '20px' }}>
-                      <Link href="https://github.com/rulcode"><Img src={SOCIAL_ICONS.github} width="20" height="20" alt="GitHub" /></Link>
+                      <Link href={SOCIAL_LINKS.github}><Img src={SOCIAL_ICONS.github} width="20" height="20" alt="GitHub" /></Link>
                     </Column>
                   </Row>
                 </Section>

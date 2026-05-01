@@ -55,7 +55,7 @@ const FilterSection = ({ title, items, selectedItems, onToggle, columns = 2, has
                         <Checkbox
                             id={item}
                             checked={selectedItems.includes(item)}
-                            onCheckedChange={() => onToggle(item)}
+                            onCheckedChange={() => !isLocked && onToggle(item)}
                             className="w-3.5 h-3.5 rounded-none border-foreground/30 border bg-background shadow-none data-[state=checked]:bg-[#dfff5e] data-[state=checked]:border-[#dfff5e] data-[state=checked]:text-black"
                         />
                         <div className="flex items-center gap-2.5 flex-1 cursor-pointer">

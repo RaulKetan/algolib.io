@@ -74,13 +74,17 @@ const Navbar = () => {
     
     // Match for /problem/[slug]
     if (pathname.startsWith('/problem/')) {
+      // During SSR and first client render, always hide for /problem/ paths
+      // to avoid hydration mismatch, as algorithms list is empty on server.
+      if (!mounted) return true;
+
       const slug = pathname.replace('/problem/', '');
       // Only hide if it's a VALID algorithm slug
       return algorithms.some(algo => algo.slug === slug || algo.id === slug);
     }
     
     return false;
-  }, [pathname, algorithms]);
+  }, [pathname, algorithms, mounted]);
 
   // Hide Navbar on valid DSA and Problem pages as they have their own implementation
   if (isDsaProblemPage) {

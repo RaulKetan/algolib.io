@@ -5,12 +5,12 @@ export function ScratchpadSection() {
     return (
         <section className="py-32 bg-[#FAFAFA] dark:bg-[#050505] border-t border-gray-100 dark:border-zinc-900">
             <div className="w-full max-w-[1600px] mx-auto px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
                     <div className="order-2 lg:order-1">
-                        <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.1]">
+                        <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.1]">
                             Stuck in thinking? Try our scratchpad
                         </h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-10 leading-relaxed font-medium">
+                        <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg mb-10 leading-relaxed font-medium">
                             Sometimes code isn&apos;t enough. Our built-in scratchpad lets you draw, sketch, and map out complex algorithms before you start typing. It&apos;s the perfect tool for when you need to visualize logic that&apos;s hard to hold in your head.
                         </p>
                         <div className="space-y-4">
@@ -24,7 +24,7 @@ export function ScratchpadSection() {
                                     <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
                                         <PenTool className="w-3.5 h-3.5 text-primary" />
                                     </div>
-                                    <span className="font-medium text-lg tracking-tight">{item}</span>
+                                    <span className="font-medium text-base md:text-lg tracking-tight">{item}</span>
                                 </div>
                             ))}
                         </div>
@@ -46,7 +46,7 @@ export function ScratchpadSection() {
                                 Scratchpad Mode
                             </div>
                         </div>
-                        <div className="flex-1 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl relative overflow-hidden p-12 border border-gray-100 dark:border-zinc-800/50">
+                        <div className="flex-1 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl relative overflow-hidden p-6 sm:p-12 border border-gray-100 dark:border-zinc-800/50">
                             <svg className="w-full h-full text-primary/20 dark:text-primary/10" viewBox="0 0 200 200">
                                 <circle cx="100" cy="40" r="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeDasharray="4 2" />
                                 <line x1="88" y1="55" x2="60" y2="85" stroke="currentColor" strokeWidth="2.5" />

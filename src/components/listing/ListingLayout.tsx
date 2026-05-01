@@ -105,9 +105,9 @@ export const ListingLayout = ({
         <SidebarLayout>
             <div className="min-h-screen bg-background flex flex-col min-w-0">
                 <main className="flex-1 w-full max-w-[1600px] mx-auto px-2 sm:px-4 py-8 md:py-12">
-                    <div className="flex flex-col xl-listing:flex-row gap-8 xl-listing:gap-12">
+                    <div className="flex flex-col xl-listing:flex-row gap-8 xl-listing:gap-12 justify-center">
                         {/* Main Content */}
-                        <div className="flex-1 min-w-0">
+                        <div className="w-full min-w-0 max-w-[820px] mx-auto xl-listing:mx-0">
                             <ProblemHero
                                 title={title}
                                 description={description}

@@ -143,9 +143,9 @@ export const OutputPanel = React.memo(({
   return (
     <div className="h-full flex flex-col border-t overflow-hidden">
       {/* Top Bar / Tabs */}
-      <div className="flex items-center justify-between border-b shrink-0 h-[46px]">
+      <div className="flex items-center justify-between border-b shrink-0 h-[42px]">
         {/* Scrollable Tabs Area */}
-        <div className="flex-1 flex items-center pr-1 pl-0 overflow-x-auto overflow-y-hidden scrollbar-thin mask-image-linear-gradient-to-r h-[46px] pb-1.5">
+        <div className="flex-1 flex items-center pr-1 pl-0 overflow-x-auto overflow-y-hidden scrollbar-thin mask-image-linear-gradient-to-r h-[42px] ">
           <Button
             variant="ghost"
             size="sm"
@@ -197,13 +197,13 @@ export const OutputPanel = React.memo(({
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
         {/* TESTCASE TAB */}
         {activeTab === "testcase" && (
-          <div className="h-full flex flex-col min-h-0">
+          <div className="h-full flex flex-col min-h-0 ">
             <Tabs
               value={activeTestCaseTab}
               onValueChange={setActiveTestCaseTab}
               className="flex-1 flex flex-col min-h-0"
             >
-              <div className="flex items-center justify-between bg-background/50 shrink-0 h-[46px]">
+              <div className="flex items-center justify-between bg-background/50 shrink-0 h-[40px]">
                 {/* Scrollable Tabs List */}
                 <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-thin mask-image-linear-gradient-to-r h-[46px] pb-1.5">
                   <TabsList className="h-10 bg-transparent p-0 flex-nowrap w-max justify-start rounded-none">

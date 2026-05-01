@@ -12,8 +12,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
+    const supabaseUrl = Deno.env.get("RULCODE_SUPABASE_URL") ?? Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("RULCODE_SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
     // Parse query parameters

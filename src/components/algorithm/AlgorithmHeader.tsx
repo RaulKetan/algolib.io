@@ -86,6 +86,8 @@ interface AlgorithmHeaderProps {
 
   // Preview Mode
   hideUserMenu?: boolean;
+  hideFeedback?: boolean;
+  hideShare?: boolean;
   onThinkpad?: () => void;
   hasPremiumAccess?: boolean;
   profile?: any;
@@ -116,6 +118,8 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
   activeListType,
   onToggleSidebar,
   hideUserMenu = false,
+  hideFeedback = false,
+  hideShare = false,
   onThinkpad,
   hasPremiumAccess = false,
   profile,
@@ -140,10 +144,10 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
         <div className="flex items-center shadow-sm rounded-md overflow-hidden border border-border bg-secondary/50">
           <button
             onClick={onToggleSidebar}
-            className={`flex items-center h-8 gap-2.5 px-3 hover:bg-muted transition-colors group ${!showCondensedMenu ? 'border-r border-border' : ''}`}
+            className={`flex items-center h-8 gap-1.5 sm:gap-2.5 px-2 sm:px-3 hover:bg-muted transition-colors group ${!showCondensedMenu ? 'border-r border-border' : ''}`}
           >
-            <ChevronsUpDown className="w-4 h-4 " />
-            <span className="text-[13px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors tracking-tight">
+            <ChevronsUpDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 " />
+            <span className="text-[11px] sm:text-[13px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors tracking-tight">
               {listLabel.charAt(0).toUpperCase() + listLabel.slice(1).toLowerCase()}
             </span>
           </button>
@@ -152,16 +156,21 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
       </div>
 
       {/* Middle: Feedback Button */}
-      {!showCondensedMenu && (
+      {!hideFeedback && !showCondensedMenu && (
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => window.open("/feedback", "_blank")}
-            className="gap-2 h-8 px-4 transition-all shadow-sm"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span className="text-xs font-bold tracking-tight">Feedback</span>
+
+
+          <Button variant="outline" size="sm" asChild>
+            <a
+              href="https://github.com/rkmahale17/algolib.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+              onClick={() => window.open("/feedback", "_blank")}
+            >
+              <MessageSquare className="w-4 h-4" />
+              Feedback
+            </a>
           </Button>
         </div>
       )}
@@ -182,10 +191,12 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
               <DropdownMenuSeparator />
 
 
-              <DropdownMenuItem onClick={handleShare}>
-                <Share2 className="mr-2 h-4 w-4" />
-                <span>Share</span>
-              </DropdownMenuItem>
+              {!hideShare && (
+                <DropdownMenuItem onClick={handleShare}>
+                  <Share2 className="mr-2 h-4 w-4" />
+                  <span>Share</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link href={profile?.username ? `/profile/${profile.username}` : "/profile"}>
                   <User className="mr-2 h-4 w-4" />
@@ -221,7 +232,7 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
         )}
 
         {/* Desktop Actions - Show only if NOT condensed menu */}
-        {!showCondensedMenu && (!algorithm?.controls || algorithm.controls?.social?.share !== false) && (
+        {!hideShare && !showCondensedMenu && (!algorithm?.controls || algorithm.controls?.social?.share !== false) && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

@@ -164,7 +164,7 @@
   }
 
   .hero-title {
-    font-size: 3rem;
+    @apply text-4xl md:text-[3rem];
     line-height: 1.05;
     letter-spacing: -0.025em;
     color: rgb(26 26 26);

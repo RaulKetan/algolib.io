@@ -22,7 +22,7 @@ const getCachedAlgorithms = (): AlgorithmListItem[] => {
 };
 
 const initialState: AlgorithmsState = {
-  items: getCachedAlgorithms(),
+  items: [],
   isLoading: false,
   error: null,
   lastFetched: null,

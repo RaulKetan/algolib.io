@@ -7,12 +7,12 @@ export function FeedbackSection() {
     return (
         <section className="py-24 bg-[#FAFAFA] dark:bg-[#050505] border-y border-gray-100 dark:border-zinc-900">
             <div className="w-full max-w-[1600px] mx-auto px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                     <div>
-                        <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white">
+                        <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white">
                             Instant Feedback & Complexity Analysis
                         </h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-10 leading-relaxed font-medium">
+                        <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg mb-10 leading-relaxed font-medium">
                             Go beyond simple correctness. RulCode analyzes your implementation in real-time, helping you optimize for both time and space complexity.
                         </p>
                         <div className="space-y-4">
@@ -26,7 +26,7 @@ export function FeedbackSection() {
                                     <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
                                         <Check className="w-3.5 h-3.5 text-primary" />
                                     </div>
-                                    <span className="font-medium text-lg tracking-tight">{item}</span>
+                                    <span className="font-medium text-base md:text-lg tracking-tight">{item}</span>
                                 </div>
                             ))}
                         </div>
