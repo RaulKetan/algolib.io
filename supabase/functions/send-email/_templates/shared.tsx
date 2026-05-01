@@ -12,9 +12,9 @@ export const LOGO_URL = 'https://dkebbjneobjtmuzzrsdo.supabase.co/storage/v1/obj
 export const HERO_IMAGE_URL = 'https://dkebbjneobjtmuzzrsdo.supabase.co/storage/v1/object/public/asset/hero.webp'
 
 export const SOCIAL_LINKS = {
-  x: 'https://x.com/rulcode',
+  x: 'https://x.com/YutiloInc',
   linkedin: 'https://www.linkedin.com/company/rulcode',
-  github: 'https://github.com/rulcode',
+  github: 'https://github.com/rkmahale17/algolib.io',
   youtube: 'https://www.youtube.com/channel/UCRAuKkNkcmVDxmaQIBHYSUg'
 }
 
