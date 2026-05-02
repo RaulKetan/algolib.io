@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/integrations/supabase/client';
 import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -20,6 +21,14 @@ const LoginClient = () => {
   const posthog = usePostHog();
 
   const initialMode = searchParams.get('mode');
+
+  // Track page view on mount
+  useEffect(() => {
+    trackEvent(posthog, 'login_page_viewed', {
+      method: initialMode === 'signup' ? undefined : 'email',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(initialMode === 'signup');
@@ -71,6 +80,7 @@ const LoginClient = () => {
     }
 
     setIsLoading(true);
+    trackEvent(posthog, 'login_attempted', { method: 'email' });
 
     try {
       if (isSignUp) {
@@ -87,8 +97,7 @@ const LoginClient = () => {
 
         if (error) throw error;
 
-        posthog?.identify(email, { email, name: fullName });
-        posthog?.capture('user_signed_up', { method: 'email' });
+        trackEvent(posthog, 'login_success', { method: 'email' });
         setShowVerificationMessage(true);
         toast.success('Account created! Please check your email.');
       } else {
@@ -98,9 +107,8 @@ const LoginClient = () => {
         });
 
         if (error) throw error;
-        posthog?.identify(email, { email });
-        posthog?.capture('user_logged_in', { method: 'email' });
-        
+        trackEvent(posthog, 'login_success', { method: 'email' });
+
         toast.success('Welcome back!');
         
         const next = searchParams.get('next') || '/';
@@ -108,6 +116,7 @@ const LoginClient = () => {
         router.refresh();
       }
     } catch (error: any) {
+      trackEvent(posthog, 'login_failed', { method: 'email', error: error.message });
       if (error.message.includes('Email not confirmed')) {
         toast.error('Please verify your email address.');
       } else {
@@ -163,8 +172,9 @@ const LoginClient = () => {
       });
 
       if (error) throw error;
-      posthog?.capture('user_logged_in_google');
+      trackEvent(posthog, 'login_attempted', { method: 'google' });
     } catch (error: any) {
+      trackEvent(posthog, 'login_failed', { method: 'google', error: (error as any).message });
       toast.error(error.message || 'Google sign in failed');
       setIsLoading(false);
     }

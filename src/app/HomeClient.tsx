@@ -50,6 +50,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useApp } from "@/contexts/AppContext";
+import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
 
 const PlatformPreview = dynamic(() => import("@/components/Home/PlatformPreview"), { ssr: false });
 
@@ -59,6 +61,11 @@ interface HomeClientProps {
 
 export default function HomeClient({ type = 'all' }: HomeClientProps) {
   const { user } = useApp();
+  const posthog = usePostHog();
+
+  const handleCtaClick = (label: string, destination: string, section?: string) => {
+    trackEvent(posthog, 'home_cta_clicked', { cta_label: label, destination, section });
+  };
 
   return (
     <>
@@ -98,7 +105,7 @@ export default function HomeClient({ type = 'all' }: HomeClientProps) {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    <Link href="/dsa/core" className="group">
+                    <Link href="/dsa/core" className="group" onClick={() => handleCtaClick('Core Problems', '/dsa/core', 'dsa_grid')}>
                       <Card className="h-full bg-white dark:bg-zinc-900/50 border-gray-100 dark:border-zinc-800 hover:border-primary/30 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-primary/5 group-hover:-translate-y-1 overflow-hidden">
                         <CardHeader className="pb-4">
                           <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center mb-4 border border-orange-500/20 group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
@@ -114,7 +121,7 @@ export default function HomeClient({ type = 'all' }: HomeClientProps) {
                       </Card>
                     </Link>
 
-                    <Link href="/dsa/blind-75" className="group">
+                    <Link href="/dsa/blind-75" className="group" onClick={() => handleCtaClick('Blind 75', '/dsa/blind-75', 'dsa_grid')}>
                       <Card className="h-full bg-white dark:bg-zinc-900/50 border-gray-100 dark:border-zinc-800 hover:border-primary/30 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-primary/5 group-hover:-translate-y-1 overflow-hidden">
                         <CardHeader className="pb-4">
                           <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 border border-blue-500/20 group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300">
@@ -130,7 +137,7 @@ export default function HomeClient({ type = 'all' }: HomeClientProps) {
                       </Card>
                     </Link>
 
-                    <Link href="/dsa/problems" className="group">
+                    <Link href="/dsa/problems" className="group" onClick={() => handleCtaClick('All Problems', '/dsa/problems', 'dsa_grid')}>
                       <Card className="h-full bg-white dark:bg-zinc-900/50 border-gray-100 dark:border-zinc-800 hover:border-primary/30 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-primary/5 group-hover:-translate-y-1 overflow-hidden">
                         <CardHeader className="pb-4">
                           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 border border-primary/20 group-hover:bg-primary group-hover:text-black transition-colors duration-300">
@@ -149,7 +156,7 @@ export default function HomeClient({ type = 'all' }: HomeClientProps) {
 
                   <div className="flex justify-center">
                     <Button size="lg" className="rounded-full px-8 py-6 text-base bg-primary hover:bg-primary/90 text-black transition-all hover:scale-105 active:scale-95 shadow-xl shadow-primary/20" asChild>
-                      <Link href="/dsa/get-started">
+                      <Link href="/dsa/get-started" onClick={() => handleCtaClick('Get Started', '/dsa/get-started', 'hero_cta')}>
                         Get Started <ArrowRight className="ml-2 w-5 h-5" />
                       </Link>
                     </Button>
