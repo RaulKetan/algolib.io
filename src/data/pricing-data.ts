@@ -70,8 +70,8 @@ export const pricingData = {
             originalPrice: undefined,
             discountText: undefined,
             features: [
-                "Full uninterrupted access",
-                "Cheapest per month $2.50/mo",
+                "Full year uninterrupted access",
+                "Cheapest at $2.50/month",
             ],
         }
     ],
