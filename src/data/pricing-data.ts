@@ -35,9 +35,9 @@ export const pricingData = {
             originalPrice: undefined,
             discountText: undefined,
             features: [
-                "Unlock all premium interview content",
-                "Access to updates while subscription is active",
-                "Join our exclusive private Discord channel"
+                "Full access to all premium problems",
+                "Ideal for short-term prep (placements / interviews)",
+                "$3.33/month"
             ]
         },
         {
@@ -52,9 +52,9 @@ export const pricingData = {
             originalPrice: undefined,
             discountText: undefined,
             features: [
-                "Unlock all premium interview content",
-                "Access to updates while subscription is active",
-                "Join our exclusive private Discord channel"
+                "Everything in Pro",
+                "Enough time to build strong problem-solving skills",
+                "$3.33/month"
             ]
         },
         {
@@ -70,9 +70,8 @@ export const pricingData = {
             originalPrice: undefined,
             discountText: undefined,
             features: [
-                "Unlock all premium interview content",
-                "Access to updates while subscription is active",
-                "Join our exclusive private Discord channel"
+                "Full year uninterrupted access",
+                "Cheapest at $2.50/month",
             ],
         }
     ],
