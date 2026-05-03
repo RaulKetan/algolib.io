@@ -83,7 +83,10 @@ const sidebarConfig = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname()
     const router = useRouter()
-    const { toggleSidebar, state, isMobile, setOpen } = useSidebar()
+    const { toggleSidebar, state, isMobile, setOpen, setOpenMobile } = useSidebar()
+
+    // Close the mobile sheet when a nav link is tapped
+    const closeMobileNav = () => { if (isMobile) setOpenMobile(false); };
     const { theme, setTheme } = useTheme()
 
     const sidebarRoutes = ['/dsa/problems', '/problems', '/dsa/get-started', '/dsa/blind-75', '/dsa/core'];
@@ -154,7 +157,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                             tooltip={item.title}
                                             className="h-8 justify-between hover:bg-muted/50 text-[#666] data-[active=true]:text-foreground data-[active=true]:font-medium"
                                         >
-                                            <Link href={item.url} className="w-full flex items-center justify-between">
+                                            <Link href={item.url} onClick={closeMobileNav} className="w-full flex items-center justify-between">
                                                 <div className="flex items-center gap-2.5">
                                                     {item.icon && <item.icon className="w-4 h-4 opacity-70" />}
                                                     <span className="text-[13px] group-data-[collapsible=icon]:hidden">{item.title}</span>
@@ -207,6 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                                         <Link
                                                             key={subItem.title}
                                                             href={subItem.url}
+                                                            onClick={closeMobileNav}
                                                             className={`flex items-center gap-2 text-[13px] py-1.5 px-2 rounded-md transition-colors ${pathname === subItem.url
                                                                 ? "text-foreground font-medium bg-muted/50"
                                                                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
