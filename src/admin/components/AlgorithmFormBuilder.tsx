@@ -34,7 +34,7 @@ const MetadataEditor = dynamic(() => import("./MetadataEditor").then(mod => mod.
 const ProblemsEditor = dynamic(() => import("./ProblemsEditor").then(mod => mod.ProblemsEditor), { ssr: false });
 const AlgorithmPreview = dynamic(() => import("@/components/AlgorithmPreview").then(mod => mod.AlgorithmPreview), { ssr: false });
 const TutorialsEditor = dynamic(() => import("./TutorialsEditor").then(mod => mod.TutorialsEditor), { ssr: false });
-const ControlsEditor = dynamic(() => import("./ControlsEditor").then(mod => mod.ControlsEditor).then(mod => ({ default: mod.ControlsEditor })), { ssr: false });
+const ControlsEditor = dynamic(() => import("./ControlsEditor").then(mod => mod.ControlsEditor), { ssr: false });
 // Special handling for named export and the constant
 import { DEFAULT_CONTROLS } from "./ControlsEditor";
 
