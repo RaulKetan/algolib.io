@@ -27,7 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
     if (isProduction && !posthog.has_opted_out_capturing()) {
       console.log("Posthog init")
-      posthog.init(process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_TOKEN || '', {
+      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_TOKEN || '', {
         api_host: `${window.location.origin}/ingest`,
         person_profiles: 'identified_only',
         ui_host: 'https://app.posthog.com',
