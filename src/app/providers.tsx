@@ -15,17 +15,19 @@ import { queryClient } from "@/lib/queryClient";
 import { AppProvider } from "@/contexts/AppContext";
 import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import PostHogIdentify from "./PostHogIdentify";
 
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Initialize PostHog in useEffect to ensure it only runs on the client
+    // Initialize PostHog only on the client and only in production
     const isProduction =
       window.location.hostname === "rulcode.com" ||
       window.location.hostname === "www.rulcode.com";
 
     if (isProduction && !posthog.has_opted_out_capturing()) {
-      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_TOKEN || '', {
+      console.log("Posthog init")
+      posthog.init(process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_TOKEN || '', {
         api_host: `${window.location.origin}/ingest`,
         person_profiles: 'identified_only',
         ui_host: 'https://app.posthog.com',
@@ -48,6 +50,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     enableSystem
                     disableTransitionOnChange
                   >
+                    {/* Reactively identifies the user in PostHog using Redux auth state.
+                        No extra Supabase calls — avoids lock contention. */}
+                    <PostHogIdentify />
                     {children}
                     <Toaster />
                     <Sonner />
@@ -59,7 +64,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </QueryClientProvider>
       </Provider>
     </PostHogProvider>
-
-
   );
 }

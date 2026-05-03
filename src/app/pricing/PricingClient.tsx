@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from 'next/navigation';
 import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
 
 const PricingClient = () => {
   const { profile, user } = useApp();
@@ -35,6 +36,24 @@ const PricingClient = () => {
   }, []);
   const { refreshProfile } = useApp();
 
+  // Track pricing page view
+  React.useEffect(() => {
+    if (!mounted) return;
+    const trialEnd = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
+    const trialDaysLeft = trialEnd
+      ? Math.ceil((trialEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      : null;
+    trackEvent(posthog, 'pricing_page_viewed', {
+      is_premium: !!isPremium,
+      subscription_status: profile?.subscription_status ?? undefined,
+      trial_days_left: trialDaysLeft,
+      is_trial: !!(profile?.subscription_status === 'on_trial' || profile?.subscription_status === 'trialing'),
+      is_past_due: profile?.subscription_status === 'past_due',
+      is_cancelled: profile?.cancel_at_period_end === true || profile?.subscription_status === 'canceled',
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted]);
+
   React.useEffect(() => {
     if (mounted && typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -47,15 +66,13 @@ const PricingClient = () => {
 
         if (orderId || status === 'succeeded') {
           toast.success('Payment successful! Syncing your account...');
+          trackEvent(posthog, 'checkout_completed', { status: 'completed', order_id: orderId });
 
           // Poll for status update (up to 5 times, every 3 seconds)
           let attempts = 0;
           const pollInterval = setInterval(async () => {
             attempts++;
             await refreshProfile();
-
-            // Stop polling if we reach max attempts or if status changed from trialing
-            // (We keep polling even if it's still trialing in case the user was already trialing)
             if (attempts >= 5) {
               clearInterval(pollInterval);
             }
@@ -64,8 +81,10 @@ const PricingClient = () => {
           return () => clearInterval(pollInterval);
         } else if (status === 'failed') {
           toast.error('Payment failed. Please try again or contact support.');
+          trackEvent(posthog, 'checkout_failed', { status: 'failed', order_id: orderId });
         } else if (status === 'cancelled') {
           toast.info('Payment was cancelled.');
+          trackEvent(posthog, 'checkout_cancelled', { status: 'cancelled', order_id: orderId });
         }
       }
     }
@@ -78,7 +97,13 @@ const PricingClient = () => {
       return;
     }
 
-    posthog?.capture('checkout_initiated', { plan_type: planType });
+    // Find plan metadata for richer tracking
+    const planMeta = pricingData.subscriptionPlans.find(p => p.productId === planType);
+    trackEvent(posthog, 'checkout_initiated', {
+      plan_type: planType,
+      plan_title: planMeta?.title,
+      plan_price: String(planMeta?.price ?? ''),
+    });
     try {
       setIsUpgrading(true);
       setActivePlanId(planType);
@@ -124,7 +149,7 @@ const PricingClient = () => {
   const isTrialEndingSoon = isTrial && trialDaysLeft !== null && trialDaysLeft >= 0 && trialDaysLeft <= 2;
 
   const handleCancel = async () => {
-    posthog?.capture('subscription_cancelled');
+    trackEvent(posthog, 'subscription_cancelled', { confirmed: true });
     try {
       setIsUpgrading(true);
       const { error } = await supabase.functions.invoke('lemon-cancel-subscription', {
@@ -199,7 +224,10 @@ const PricingClient = () => {
                 variant="outline"
                 size="sm"
                 className="border-red-500/20 text-red-500 hover:bg-red-500/10 hover:border-red-500 rounded-full h-9 px-6"
-                onClick={() => setShowCancelConfirm(true)}
+                onClick={() => {
+                  trackEvent(posthog, 'subscription_cancel_dialog_opened', {});
+                  setShowCancelConfirm(true);
+                }}
                 disabled={isUpgrading}
               >
                 {isUpgrading ? 'Processing...' : 'Unsubscribe'}

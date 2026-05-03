@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Search, TrendingUp, BookOpen, Check, Circle, MoreVertical, Timer, Database, ExternalLink, Lock, LayoutGrid, List } from 'lucide-react';
 
@@ -13,6 +13,8 @@ import { useApp } from '@/contexts/AppContext';
 import { useFeatureFlag } from '@/contexts/FeatureFlagContext';
 import { cn } from '@/lib/utils';
 import { AlgorithmCard } from './AlgorithmCard';
+import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
 
 interface ProblemListProps {
   algorithms: AlgorithmListItem[];
@@ -73,6 +75,8 @@ export const ProblemList = ({
   });
   const { hasPremiumAccess, activeListType, setActiveListType, progressMap, user } = useApp();
   const isPaywallEnabled = useFeatureFlag('paywall_enabled');
+  const posthog = usePostHog();
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // userId state and effect no longer needed, using user.id from AppContext
   const userId = user?.id;
@@ -80,6 +84,7 @@ export const ProblemList = ({
   // Persist view mode to localStorage
   useEffect(() => {
     localStorage.setItem('problem-list-view-mode', viewMode);
+    trackEvent(posthog, 'problem_view_mode_changed', { mode: viewMode });
   }, [viewMode]);
 
   // Sync global list context when this component is the primary list for a page
@@ -150,6 +155,64 @@ export const ProblemList = ({
     return result;
   }, [algorithms, searchQuery, selectedCategory, selectedDifficulty, selectedListType, sortBy]);
 
+  // Debounced search tracking
+  const trackSearch = useCallback((query: string, resultCount: number) => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      if (query.trim().length > 1) {
+        trackEvent(posthog, 'problem_list_searched', {
+          query: query.trim(),
+          result_count: resultCount,
+          category_filter: selectedCategory,
+          difficulty_filter: selectedDifficulty,
+          list_type_filter: selectedListType,
+        });
+      }
+    }, 600);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posthog, selectedCategory, selectedDifficulty, selectedListType]);
+
+  useEffect(() => {
+    trackSearch(searchQuery, filteredAndSortedAlgorithms.length);
+  }, [searchQuery, filteredAndSortedAlgorithms.length, trackSearch]);
+
+  // Filter tracking
+  const handleCategoryChange = useCallback((val: string | null) => {
+    setSelectedCategory(val);
+    trackEvent(posthog, 'problem_filter_applied', {
+      filter_type: 'category',
+      filter_value: val ?? 'all',
+      result_count: filteredAndSortedAlgorithms.length,
+    });
+  }, [posthog, filteredAndSortedAlgorithms.length]);
+
+  const handleDifficultyChange = useCallback((val: string | null) => {
+    setSelectedDifficulty(val);
+    trackEvent(posthog, 'problem_filter_applied', {
+      filter_type: 'difficulty',
+      filter_value: val ?? 'all',
+      result_count: filteredAndSortedAlgorithms.length,
+    });
+  }, [posthog, filteredAndSortedAlgorithms.length]);
+
+  const handleListTypeChange = useCallback((val: string | null) => {
+    setSelectedListType(val);
+    trackEvent(posthog, 'problem_filter_applied', {
+      filter_type: 'list_type',
+      filter_value: val ?? 'all',
+      result_count: filteredAndSortedAlgorithms.length,
+    });
+  }, [posthog, filteredAndSortedAlgorithms.length]);
+
+  const handleSortChange = useCallback((val: string) => {
+    setSortBy(val);
+    trackEvent(posthog, 'problem_filter_applied', {
+      filter_type: 'sort',
+      filter_value: val,
+      result_count: filteredAndSortedAlgorithms.length,
+    });
+  }, [posthog, filteredAndSortedAlgorithms.length]);
+
   const isSidebar = variant === 'sidebar';
 
   return (
@@ -180,7 +243,7 @@ export const ProblemList = ({
 
                 <div className={cn("flex flex-wrap gap-2", isSidebar ? "w-full" : "")}>
                   {!hideListSelection && (
-                    <Select value={selectedListType || "all"} onValueChange={(val) => setSelectedListType(val === "all" ? null : val)}>
+                    <Select value={selectedListType || "all"} onValueChange={(val) => handleListTypeChange(val === "all" ? null : val)}>
                       <SelectTrigger className={cn("h-10 rounded-lg bg-background/50 border-border/50", isSidebar ? "flex-1" : "w-[140px]")}>
                         <SelectValue placeholder="List Type" />
                       </SelectTrigger>
@@ -193,7 +256,7 @@ export const ProblemList = ({
                     </Select>
                   )}
 
-                  <Select value={selectedDifficulty || "all"} onValueChange={(val) => setSelectedDifficulty(val === "all" ? null : val)}>
+                  <Select value={selectedDifficulty || "all"} onValueChange={(val) => handleDifficultyChange(val === "all" ? null : val)}>
                     <SelectTrigger className={cn("h-10 rounded-lg bg-background/50 border-border/50", isSidebar ? "flex-1" : "w-[130px]")}>
                       <SelectValue placeholder="Difficulty" />
                     </SelectTrigger>
@@ -205,7 +268,7 @@ export const ProblemList = ({
                     </SelectContent>
                   </Select>
 
-                  <Select value={sortBy} onValueChange={setSortBy}>
+                  <Select value={sortBy} onValueChange={handleSortChange}>
                     <SelectTrigger className={cn("h-10 rounded-lg bg-background/50 border-border/50", isSidebar ? "flex-1" : "w-[130px]")}>
                       <SelectValue placeholder="Sort" />
                     </SelectTrigger>
@@ -257,7 +320,7 @@ export const ProblemList = ({
                   {categories.map((category) => (
                     <button
                       key={category}
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => handleCategoryChange(category)}
                       className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all ${selectedCategory === category
                         ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                         : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'

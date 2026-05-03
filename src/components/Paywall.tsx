@@ -5,22 +5,33 @@ import { useApp } from '@/contexts/AppContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
 
 interface PaywallProps {
   onUpgrade?: () => void;
+  source?: string; // which page/feature triggered this paywall
 }
 
-export const Paywall: React.FC<PaywallProps> = ({ onUpgrade }) => {
+export const Paywall: React.FC<PaywallProps> = ({ onUpgrade, source }) => {
   const { user, profile } = useApp();
   const posthog = usePostHog();
   const [isUpgrading, setIsUpgrading] = React.useState(false);
 
   React.useEffect(() => {
-    posthog?.capture('paywall_viewed');
-  }, [posthog]);
+    trackEvent(posthog, 'paywall_viewed', { source });
+
+    // Track dismissal if user unmounts without upgrading
+    let upgraded = false;
+    return () => {
+      if (!upgraded) {
+        trackEvent(posthog, 'paywall_dismissed', { source });
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleUpgrade = async () => {
-    posthog?.capture('paywall_upgrade_clicked');
+    trackEvent(posthog, 'paywall_upgrade_clicked', { source });
     try {
       setIsUpgrading(true);
       console.log('Starting upgrade for user:', user?.id, user?.email);

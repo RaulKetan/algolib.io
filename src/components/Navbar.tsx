@@ -41,14 +41,16 @@ import logo from "@/assets/logo.svg";
 import { useApp } from "@/contexts/AppContext";
 import { Badge } from "./ui/badge";
 import { useSidebar } from "@/components/ui/sidebar";
-
 import UserMenu from "./UserMenu";
+import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
 
 const Navbar = () => {
   const [mounted, setMounted] = useState(false);
   const { profile, user, hasPremiumAccess } = useApp();
   const { setOpenMobile, toggleSidebar, state } = useSidebar();
   const pathname = usePathname();
+  const posthog = usePostHog();
 
   useEffect(() => {
     setMounted(true);
@@ -385,7 +387,16 @@ const Navbar = () => {
           {/* Right side actions */}
           <div className="flex items-center gap-2">
             {(!user || !hasPremiumAccess) && !isAuthPage && (
-              <Link href="/pricing" className="text-sm font-normal hover:text-primary transition-colors hidden md:block mr-2">
+              <Link
+                href="/pricing"
+                className="text-sm font-normal hover:text-primary transition-colors hidden md:block mr-2"
+                onClick={() =>
+                  trackEvent(posthog, 'navbar_cta_clicked', {
+                    cta_label: 'Pricing',
+                    destination: '/pricing',
+                  })
+                }
+              >
                 Pricing
               </Link>
             )}

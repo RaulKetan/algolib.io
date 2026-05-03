@@ -6,6 +6,8 @@ import { updateProgress, updateSocial, updateCode } from '@/utils/userAlgorithmD
 import { useFeatureFlag } from '@/contexts/FeatureFlagContext';
 import confetti from 'canvas-confetti';
 import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
+import { useApp } from '@/contexts/AppContext';
 
 interface UseAlgorithmInteractionsProps {
     user: any;
@@ -26,6 +28,7 @@ export const useAlgorithmInteractions = ({
 }: UseAlgorithmInteractionsProps) => {
     const router = useRouter();
     const posthog = usePostHog();
+    const { hasPremiumAccess, profile } = useApp();
     const [isCompleted, setIsCompleted] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [likes, setLikes] = useState(0);
@@ -51,6 +54,23 @@ export const useAlgorithmInteractions = ({
     }, [savedCode]);
 
     const isNaughtyCloud = useFeatureFlag("naugty_cloud");
+
+    // Track problem_opened once per algorithm
+    const trackedAlgoRef = useRef<string | undefined>(undefined);
+    useEffect(() => {
+        if (!algorithmId || trackedAlgoRef.current === algorithmId) return;
+        trackedAlgoRef.current = algorithmId;
+        const isPremiumProblem = algorithm?.is_premium || algorithm?.is_pro || (algorithm?.metadata as any)?.is_pro;
+        trackEvent(posthog, 'problem_opened', {
+            algorithm_id: algorithmId,
+            algorithm_title: algorithm?.title || algorithm?.name,
+            difficulty: algorithm?.difficulty,
+            category: algorithm?.category,
+            is_premium: !!isPremiumProblem,
+            list_type: algorithm?.listType,
+            user_plan: profile?.subscription_tier ?? 'free',
+        });
+    }, [algorithmId, algorithm, posthog, profile]);
 
     const lastSyncedCodeRef = useRef<string>("");
     const hasInitializedCodeRef = useRef<Record<string, boolean>>({});
@@ -200,7 +220,7 @@ export const useAlgorithmInteractions = ({
 
                 if (success) {
                     setIsCompleted(true);
-                    posthog?.capture('problem_completed', {
+                    trackEvent(posthog, 'problem_completed', {
                         algorithm_id: algorithmId,
                         algorithm_name: algorithm?.title,
                         language: selectedLanguage,
@@ -232,7 +252,7 @@ export const useAlgorithmInteractions = ({
 
             if (!success) throw new Error('Failed to update');
             setIsFavorite(newStatus);
-            posthog?.capture('problem_favorited', {
+            trackEvent(posthog, 'problem_favorited', {
                 algorithm_id: algorithmId,
                 algorithm_name: algorithm?.title,
                 favorited: newStatus,
@@ -418,7 +438,7 @@ export const useAlgorithmInteractions = ({
         try {
             const url = window.location.href;
             await navigator.clipboard.writeText(url);
-            posthog?.capture('problem_shared', {
+            trackEvent(posthog, 'problem_shared', {
                 algorithm_id: algorithmId,
                 algorithm_name: algorithm?.title,
             });
@@ -437,6 +457,7 @@ export const useAlgorithmInteractions = ({
         savedCode,
         selectedLanguage,
         setSelectedLanguage: (lang: string) => {
+            const prevLang = selectedLanguage;
             setSelectedLanguage(lang);
             localStorage.setItem('preferredLanguage', lang);
             // Sync savedCode immediately to avoid one-render lag for CodeRunner
@@ -444,6 +465,11 @@ export const useAlgorithmInteractions = ({
             setSavedCode(codeForLanguage);
             setIsUserModified(false);
             currentLanguageRef.current = lang;
+            trackEvent(posthog, 'language_changed', {
+                algorithm_id: algorithmId,
+                from_language: prevLang,
+                to_language: lang,
+            });
         },
         isUserModified,
 
