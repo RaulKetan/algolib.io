@@ -211,7 +211,11 @@ Deno.serve(async (req) => {
         const endsAt: string | null = attributes.ends_at || null
         const trialEndsAt: string | null = attributes.trial_ends_at || null
         const isCancelled: boolean = attributes.cancelled === true
-        const customerPortalUrl: string | null = attributes.urls?.update_payment_method || attributes.urls?.customer_portal || null
+        // customer_portal_url is intentionally NOT stored here.
+        // The pre-signed URLs from LS expire within hours, causing "Invalid signature" errors.
+        // Instead, the UI calls lemon-get-portal-url to fetch a fresh URL on demand
+        // using the subscription_id already stored in the profile.
+
         const actualSubscriptionId = eventName === 'subscription_payment_success'
             ? (attributes.subscription_id ? String(attributes.subscription_id) : resourceId)
             : resourceId
@@ -234,7 +238,7 @@ Deno.serve(async (req) => {
                     subscription_plan_id: attributes.variant_id ? String(attributes.variant_id) : undefined,
                     cancel_at_period_end: isCancelled,
                 }
-                if (customerPortalUrl) update.customer_portal_url = customerPortalUrl
+                // customer_portal_url intentionally omitted — fetched fresh on demand via lemon-get-portal-url
                 if (trialEndsAt) update.trial_end_date = trialEndsAt
                 if (currentPeriodEnd) update.current_period_end = currentPeriodEnd
                 if (actualSubscriptionId) update.subscription_id = actualSubscriptionId

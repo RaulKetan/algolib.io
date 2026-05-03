@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ChevronUp, User, X } from "lucide-react";
+import { ChevronUp, User, X, Send, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -132,11 +132,16 @@ export const FeedbackDetailModal = ({
                                         </div>
                                         <Button
                                             size="sm"
-                                            className="bg-green-500/50 hover:bg-green-500 text-white"
+                                            className="bg-green-500/50 hover:bg-green-500 text-white gap-2"
                                             disabled={isSubmittingComment || !newComment.trim()}
                                             onClick={handleSubmitComment}
                                         >
-                                            Post Comment
+                                            {isSubmittingComment ? (
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            ) : (
+                                                <Send className="w-3.5 h-3.5" />
+                                            )}
+                                            <span>Post Comment</span>
                                         </Button>
                                     </div>
                                 </div>

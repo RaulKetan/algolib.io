@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Zap, Bug } from "lucide-react";
+import { Zap, Bug, Send, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -102,9 +102,19 @@ export const FeedbackSubmissionSidebar = ({
                 <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font- h-11"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-medium h-11 gap-2"
                 >
-                    {isSubmitting ? "Submitting..." : `Suggest ${type === 'suggestion' ? 'feature' : 'bug'}`}
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Submitting...</span>
+                        </>
+                    ) : (
+                        <>
+                            <Send className="w-4 h-4" />
+                            <span>Suggest {type === 'suggestion' ? 'feature' : 'bug'}</span>
+                        </>
+                    )}
                 </Button>
 
                 <p className="text-[10px] text-center text-muted-foreground">

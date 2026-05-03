@@ -30,6 +30,7 @@ const PricingClient = () => {
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isLoadingPortal, setIsLoadingPortal] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -167,6 +168,21 @@ const PricingClient = () => {
     }
   };
 
+  // Fetches a fresh LS-signed magic link — users don't have a LemonSqueezy account/login,
+  // so we can't send them to /my-orders. The signed URL lets them update payment directly.
+  const handleUpdatePayment = async () => {
+    try {
+      setIsLoadingPortal(true);
+      const { data, error } = await supabase.functions.invoke('lemon-get-portal-url');
+      if (error || !data?.url) throw new Error(error?.message || 'Could not open billing portal');
+      window.open(data.url, '_blank', 'noopener,noreferrer');
+    } catch (err: any) {
+      toast.error(err.message || 'Could not open billing portal. Try again.');
+    } finally {
+      setIsLoadingPortal(false);
+    }
+  };
+
   const formatPeriodEnd = (dateStr: string | null) => {
     if (!dateStr) return 'N/A';
     const date = new Date(dateStr);
@@ -208,7 +224,16 @@ const PricingClient = () => {
                   {isCancelled ? (
                     <>Your subscription has been cancelled. You will continue to have access until <span className="text-foreground font-medium">{formatPeriodEnd(profile?.current_period_end || null)}</span></>
                   ) : isPastDue ? (
-                    <>We couldn't process your payment. We are retrying, but please <a href={profile?.customer_portal_url || "https://app.lemonsqueezy.com/my-orders"} target="_blank" rel="noopener noreferrer" className="text-foreground font-medium underline cursor-pointer">update your payment method</a> to avoid interruption.</>
+                    <>We couldn't process your payment. We are retrying, but please{' '}
+                      <button
+                        onClick={handleUpdatePayment}
+                        disabled={isLoadingPortal}
+                        className="text-foreground font-medium underline cursor-pointer disabled:opacity-50"
+                      >
+                        {isLoadingPortal ? 'Opening...' : 'update your payment method'}
+                      </button>
+                      {' '}to avoid interruption.
+                    </>
                   ) : isTrialEndingSoon ? (
                     <>Your trial ends in {trialDaysLeft} days. <span className="text-foreground font-medium underline cursor-pointer">Upgrade now</span> to continue uninterrupted access.</>
                   ) : isTrial ? (

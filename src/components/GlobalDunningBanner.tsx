@@ -1,12 +1,30 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { AlertCircle, ExternalLink, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const GlobalDunningBanner: React.FC = () => {
     const { profile } = useApp();
+    const [isLoadingPortal, setIsLoadingPortal] = useState(false);
     if (!profile) return null;
+
+    // Users don't have a LemonSqueezy account/login — the signed magic link lets them
+    // update payment directly without any LS credentials.
+    const handleUpdatePayment = async () => {
+        try {
+            setIsLoadingPortal(true);
+            const { data, error } = await supabase.functions.invoke('lemon-get-portal-url');
+            if (error || !data?.url) throw new Error(error?.message || 'Could not open billing portal');
+            window.open(data.url, '_blank', 'noopener,noreferrer');
+        } catch (err: any) {
+            toast.error(err.message || 'Could not open billing portal. Try again.');
+        } finally {
+            setIsLoadingPortal(false);
+        }
+    };
 
     const isPastDue = profile.subscription_status === 'past_due';
 
@@ -33,15 +51,17 @@ export const GlobalDunningBanner: React.FC = () => {
                 <>
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>Payment failed. Update your billing details to maintain Pro access.</span>
-                    <a
-                        href={profile.customer_portal_url || "https://app.lemonsqueezy.com/my-orders"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 underline underline-offset-2 ml-1 hover:opacity-80 transition-opacity"
+                    <button
+                        onClick={handleUpdatePayment}
+                        disabled={isLoadingPortal}
+                        className={cn(
+                            "flex items-center gap-1 underline underline-offset-2 ml-1 hover:opacity-80 transition-opacity",
+                            isLoadingPortal && "opacity-50 cursor-not-allowed"
+                        )}
                     >
-                        Update Now
+                        {isLoadingPortal ? 'Opening...' : 'Update Now'}
                         <ExternalLink className="w-3 h-3" />
-                    </a>
+                    </button>
                 </>
             ) : (
                 <>

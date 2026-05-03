@@ -49,13 +49,13 @@ export const CodeExecutionButtonGroup: React.FC<CodeExecutionButtonGroupProps> =
                 disabled={isLoading || isSubmitting}
                 size="sm"
                 variant="secondary"
-                className="h-9 px-4 text-xs rounded-l-lg rounded-r-none border border-r-0 border-border font-semibold transition-all hover:bg-secondary/90 hover:text-black relative overflow-hidden group shrink-0 shadow-sm"
+                className="h-9 px-4 text-xs rounded-l-lg rounded-r-none border border-r-0 border-border font-semibold transition-all hover:bg-secondary dark:hover:text-white relative overflow-hidden group shrink-0 shadow-sm"
             >
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-foreground/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 {isLoading ? (
                     <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
                 ) : (
-                    <Play className="w-3.5 h-3.5 mr-2 fill-current text-primary group-hover:scale-110 transition-transform" />
+                    <Play className="w-3.5 h-3.5 mr-2 fill-current text-primary dark:group-hover:text-white group-hover:scale-110 transition-all" />
                 )}
                 <span className="relative z-10">Run</span>
             </Button>
@@ -106,11 +106,7 @@ export const CodeExecutionButtonGroup: React.FC<CodeExecutionButtonGroupProps> =
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
                         <>
-                            {lastRunSuccess && !isUnlockRequired ? (
-                                <Sparkles className="w-3.5 h-3.5" />
-                            ) : (
-                                <Send className="w-3.5 h-3.5" />
-                            )}
+                            <Send className="w-3.5 h-3.5" />
                             <span>Submit</span>
                         </>
                     )}

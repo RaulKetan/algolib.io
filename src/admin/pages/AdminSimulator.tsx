@@ -35,10 +35,33 @@ const mapStatusStringToId = (status: string): { id: number; description: string 
 
 const waitForSubmissionResult = (submissionId: string): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
+    let isResolved = false;
+
+    const cleanup = () => {
+      isResolved = true;
+      clearTimeout(timeoutId);
       supabase?.removeChannel(channel);
-      reject(new Error("Execution timeout. Please try again or check submissions history."));
-    }, 30000); // 30 seconds timeout
+    };
+
+    const handleResult = (data: any) => {
+      if (isResolved) return;
+      const { status } = data;
+      if (status && status !== 'pending' && status !== 'executing') {
+        cleanup();
+        const result = {
+          ...data,
+          status: mapStatusStringToId(status)
+        };
+        resolve(result);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      if (!isResolved) {
+        cleanup();
+        reject(new Error("Execution timeout. Please try again or check submissions history."));
+      }
+    }, 12000); // 12 seconds timeout
 
     const channel = supabase!
       .channel(`submission-${submissionId}`)
@@ -52,23 +75,21 @@ const waitForSubmissionResult = (submissionId: string): Promise<any> => {
         },
         (payload) => {
           console.log('Submission Updated Realtime (Admin):', payload.new);
-          const { status } = payload.new;
-          if (status && status !== 'pending' && status !== 'executing') {
-            clearTimeout(timeout);
-            supabase?.removeChannel(channel);
-
-            // Map record to match the expected format
-            const result = {
-              ...payload.new,
-              status: mapStatusStringToId(payload.new.status)
-            };
-            resolve(result);
-          }
+          handleResult(payload.new);
         }
       )
-      .subscribe((status) => {
+      .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
           console.log(`Subscribed to submission-${submissionId}`);
+          const { data, error } = await supabase
+            .from('submissions')
+            .select('*')
+            .eq('id', submissionId)
+            .maybeSingle();
+          
+          if (data && !error) {
+            handleResult(data);
+          }
         }
       });
   });
