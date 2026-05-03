@@ -75,6 +75,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
   isLoading: isLoadingProp,
   onToggleRightPanel,
   brainstormProps,
+  hasPremiumAccess = false,
   handleRandomProblem,
   handleNextProblem,
   handlePreviousProblem
@@ -122,17 +123,24 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
       if (entry && entry.contentRect.height > 0) {
         const minPercent = (82 / entry.contentRect.height) * 100;
         setMinPanelSize(minPercent);
+
+        // If the panel was initialSet but now the layout is collapsed or invalid due to resize,
+        // we could potentially force a re-layout here, but for now we just update the minSize.
       }
     });
 
+    // We still use a small delay to set the initial layout correctly once the container has height
     const timer = setInterval(() => {
-      if (!initialSet && panelGroupRef.current && !isMobile && containerRef.current?.clientHeight) {
+      if (panelGroupRef.current && !isMobile && containerRef.current?.clientHeight) {
         const minPercent = (82 / containerRef.current.clientHeight) * 100;
-        panelGroupRef.current.setLayout([100 - minPercent, minPercent]);
-        initialSet = true;
-        clearInterval(timer);
+        // Only set layout if it hasn't been set or if we're forced to (e.g. initial mount)
+        if (!initialSet) {
+          panelGroupRef.current.setLayout([100 - minPercent, minPercent]);
+          initialSet = true;
+          clearInterval(timer);
+        }
       }
-    }, 50);
+    }, 100);
 
     setTimeout(() => clearInterval(timer), 3000);
 
@@ -380,6 +388,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
         isSubmitting={isSubmitting}
         lastRunSuccess={lastRunSuccess}
         algorithm={algorithmData}
+        hasPremiumAccess={hasPremiumAccess}
         handleRandomProblem={handleRandomProblem}
         handleNextProblem={handleNextProblem}
         handlePreviousProblem={handlePreviousProblem}
@@ -438,7 +447,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
 
   const content = (
     <div ref={containerRef} className={`w-full bg-background shadow-sm flex flex-col ${isFullscreen
-      ? 'fixed inset-0 z-50 h-screen w-screen rounded-none border-0'
+      ? 'fixed inset-0 z-40 h-screen w-screen rounded-none border-0'
       : `border rounded-lg overflow-hidden ${className || 'h-[calc(100vh-100px)]'}`
       }`}>
       {isMobile ? (

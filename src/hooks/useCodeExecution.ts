@@ -97,10 +97,33 @@ export const useCodeExecution = ({
 
     const waitForSubmissionResult = (submissionId: string): Promise<any> => {
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
+            let isResolved = false;
+
+            const cleanup = () => {
+                isResolved = true;
+                clearTimeout(timeoutId);
                 supabase?.removeChannel(channel);
-                reject(new Error("Execution timeout. Please try again or check submissions history."));
-            }, 30000); // 30 seconds timeout
+            };
+
+            const handleResult = (data: any) => {
+                if (isResolved) return;
+                const { status } = data;
+                if (status && status !== 'pending' && status !== 'executing') {
+                    cleanup();
+                    const result = {
+                        ...data,
+                        status: mapStatusStringToId(status)
+                    };
+                    resolve(result);
+                }
+            };
+
+            const timeoutId = setTimeout(() => {
+                if (!isResolved) {
+                    cleanup();
+                    reject(new Error("Execution timeout. Please try again or check submissions history."));
+                }
+            }, 12000); // 12 seconds timeout
 
             const channel = supabase!
                 .channel(`submission-${submissionId}`)
@@ -113,20 +136,22 @@ export const useCodeExecution = ({
                         filter: `id=eq.${submissionId}`,
                     },
                     (payload) => {
-                        const { status } = payload.new as any;
-                        if (status && status !== 'pending' && status !== 'executing') {
-                            clearTimeout(timeout);
-                            supabase?.removeChannel(channel);
-
-                            const result = {
-                                ...payload.new as any,
-                                status: mapStatusStringToId(status)
-                            };
-                            resolve(result);
-                        }
+                        handleResult(payload.new);
                     }
                 )
-                .subscribe();
+                .subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED') {
+                        const { data, error } = await supabase
+                            .from('submissions')
+                            .select('*')
+                            .eq('id', submissionId)
+                            .maybeSingle();
+                        
+                        if (data && !error) {
+                            handleResult(data);
+                        }
+                    }
+                });
         });
     };
 
