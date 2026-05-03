@@ -164,7 +164,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         </SidebarMenuButton>
                                     ) : (
                                         <div className="flex flex-col mb-2 mt-2 group relative">
-                                            {isCollapsed ? (
+                                            {/* On mobile, always show inline list. On desktop collapsed, show HoverCard popup. */}
+                                            {isCollapsed && !isMobile ? (
                                                 <HoverCard openDelay={100} closeDelay={100}>
                                                     <HoverCardTrigger asChild>
                                                         <SidebarMenuButton className="flex w-full items-center justify-center h-8 text-[#666] hover:bg-muted/50 rounded-md transition-colors px-2 cursor-pointer">
@@ -199,7 +200,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                                 </SidebarMenuButton>
                                             )}
 
-                                            {!isCollapsed && item.items && (
+                                            {/* Always show sub-items on mobile; on desktop only when not collapsed */}
+                                            {(isMobile || !isCollapsed) && item.items && (
                                                 <div className="flex flex-col gap-1 mt-1 pl-9">
                                                     {item.items.map((subItem) => (
                                                         <Link

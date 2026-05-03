@@ -26,6 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       window.location.hostname === "www.rulcode.com";
 
     if (isProduction && !posthog.has_opted_out_capturing()) {
+      console.log("Posthog init")
       posthog.init(process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_TOKEN || '', {
         api_host: `${window.location.origin}/ingest`,
         person_profiles: 'identified_only',
