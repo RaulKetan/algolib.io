@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Copy, Check, Maximize } from 'lucide-react';
 import { toast } from 'sonner';
 import { RichText } from '@/components/RichText';
-import { IsolatedSolutionEditor } from "./algorithm/IsolatedSolutionEditor";
+import { IsolatedCodeEditor } from "./visualizations/shared/IsolatedCodeEditor";
 import { VideoTutorialCard } from "./algorithm/VideoTutorialCard";
 const LANGUAGE_ORDER = ['python', 'cpp', 'java', 'typescript'];
 
@@ -398,10 +398,11 @@ const SolutionApproach: React.FC<{
               {sortedImplementations.map(langImpl => (
                 langImpl.lang === activeLang && (
                   <TabsContent key={langImpl.lang} value={langImpl.lang} className="absolute inset-0 mt-0">
-                    <IsolatedSolutionEditor
+                    <IsolatedCodeEditor
                       code={langImpl.code}
                       language={getLanguageForMonaco(langImpl.lang)}
                       theme={editorTheme as any}
+                      readOnly={true}
                     />
                   </TabsContent>
                 )
