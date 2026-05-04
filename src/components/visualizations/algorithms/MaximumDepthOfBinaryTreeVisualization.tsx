@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SkipBack, SkipForward, RotateCcw } from 'lucide-react';
-import Editor from '@monaco-editor/react';
 import { motion } from 'framer-motion';
 import { VariablePanel } from '../shared/VariablePanel';
-import type { editor as MonacoEditor } from 'monaco-editor';
+import { IsolatedCodeEditor } from '../shared/IsolatedCodeEditor';
 
 interface TreeNode {
   val: number;
@@ -241,21 +240,7 @@ export const MaximumDepthOfBinaryTreeVisualization = () => {
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const currentStep = steps[Math.min(currentStepIndex, steps.length - 1)];
-  const editorRef = useRef<MonacoEditor.IStandaloneCodeEditor | null>(null);
-  const monacoRef = useRef<typeof import('monaco-editor') | null>(null);
-
-  useEffect(() => {
-    if (editorRef.current && monacoRef.current) {
-      const decorations = currentStep.highlightedLines.map(line => ({
-        range: new monacoRef.current!.Range(line, 1, line, 1),
-        options: {
-          isWholeLine: true,
-          className: 'highlighted-line',
-        }
-      }));
-      editorRef.current.createDecorationsCollection(decorations);
-    }
-  }, [currentStepIndex, currentStep.highlightedLines]);
+  // Decorations are now handled via props in IsolatedCodeEditor
 
   const renderTree = () => {
     return (
@@ -417,30 +402,13 @@ export const MaximumDepthOfBinaryTreeVisualization = () => {
 
         <Card className="p-4 overflow-hidden">
           <div className="h-[700px]">
-            <Editor
-              height="100%"
-              defaultLanguage="typescript"
-              value={code}
+            <IsolatedCodeEditor
+              code={code}
+              language="typescript"
               theme="vs-dark"
-              options={{
-                readOnly: true,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                fontSize: 13,
-                lineNumbers: 'on',
-              }}
-              onMount={(editor, monaco) => {
-                editorRef.current = editor;
-                monacoRef.current = monaco;
-                const decorations = currentStep.highlightedLines.map(line => ({
-                  range: new monaco.Range(line, 1, line, 1),
-                  options: {
-                    isWholeLine: true,
-                    className: 'highlighted-line',
-                  }
-                }));
-                editor.createDecorationsCollection(decorations);
-              }}
+              highlightedLines={currentStep.highlightedLines}
+              readOnly={true}
+              fontSize={13}
             />
           </div>
         </Card>
