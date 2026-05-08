@@ -25,6 +25,7 @@ interface ProblemsListProps {
   icon?: any;
   initialSelectedTopics?: string[];
   initialSelectedCompanies?: string[];
+  initialExpandAll?: boolean;
 }
 
 const EMPTY_ARRAY: string[] = [];
@@ -43,15 +44,18 @@ export const ProblemsList = ({
   isLoading = false,
   icon,
   initialSelectedTopics = EMPTY_ARRAY,
-  initialSelectedCompanies = EMPTY_ARRAY
+  initialSelectedCompanies = EMPTY_ARRAY,
+  initialExpandAll = false
 }: ProblemsListProps) => {
   const { activeListType, setActiveListType, progressMap, hasPremiumAccess } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('serial-asc');
-  const [selectedTopics, setSelectedTopics] = useState<string[]>(initialSelectedTopics);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>(initialSelectedTopics.map(normalizeCategory));
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>(initialSelectedCompanies);
   const [isCategoryWise, setIsCategoryWise] = useState(initialCategoryWise);
+  const [openCategories, setOpenCategories] = useState<string[]>([]);
+  const [hasInitializedExpand, setHasInitializedExpand] = useState(false);
 
   // Sync global list context if listType is provided
   useEffect(() => {
@@ -62,12 +66,15 @@ export const ProblemsList = ({
 
   // Sync internal filter state with URL-driven props
   useEffect(() => {
-    setSelectedTopics(initialSelectedTopics);
+    if (initialSelectedTopics && initialSelectedTopics.length > 0) {
+      setSelectedTopics(initialSelectedTopics.map(normalizeCategory));
+    }
   }, [initialSelectedTopics]);
 
   useEffect(() => {
     setSelectedCompanies(initialSelectedCompanies);
   }, [initialSelectedCompanies]);
+
 
   const filteredAndSortedAlgorithms = useMemo(() => {
     let result = algorithms.map(algo => ({
@@ -110,6 +117,21 @@ export const ProblemsList = ({
     if (!isCategoryWise) return [];
     return getGroupedByCategory(filteredAndSortedAlgorithms, searchQuery);
   }, [filteredAndSortedAlgorithms, searchQuery, isCategoryWise]);
+
+  // Auto-expand all categories when searching or filtering
+  useEffect(() => {
+    if (searchQuery || selectedTopics.length > 0 || selectedCompanies.length > 0) {
+      setOpenCategories(currentGroupedAlgos.map(([cat]) => cat));
+    }
+  }, [searchQuery, selectedTopics, selectedCompanies, currentGroupedAlgos]);
+
+  // Handle initial expansion for specific pages like /dsa/query
+  useEffect(() => {
+    if (initialExpandAll && !hasInitializedExpand && currentGroupedAlgos.length > 0) {
+      setOpenCategories(currentGroupedAlgos.map(([cat]) => cat));
+      setHasInitializedExpand(true);
+    }
+  }, [initialExpandAll, currentGroupedAlgos, hasInitializedExpand]);
 
   const statsByCategory = useMemo(() => {
     const stats: Record<string, { solved: number, total: number }> = {};
@@ -267,6 +289,8 @@ export const ProblemsList = ({
           {currentGroupedAlgos.length > 0 ? (
             <Accordion 
               type="multiple" 
+              value={openCategories}
+              onValueChange={setOpenCategories}
               className="border border-border/40 rounded-xl bg-card overflow-hidden shadow-sm" 
             >
               {currentGroupedAlgos.map(([category, algos], index) => (

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Terminal, FlaskConical, Clock, Plus, Check, CheckCircle2, XCircle, AlertTriangle, History, Code, ChevronUp, ChevronDown, Minimize2, Minimize, Maximize } from "lucide-react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Loader2, Terminal, FlaskConical, Clock, Plus, Check, CheckCircle2, XCircle, X, AlertTriangle, History, Code, ChevronUp, ChevronDown, Minimize2, Minimize, Maximize } from "lucide-react";
 import { Algorithm } from '@/types/algorithm';
 import { Button } from "@/components/ui/button";
 import { FeatureGuard } from "@/components/FeatureGuard";
@@ -14,7 +14,7 @@ import { isTreeType, parseTreeValue } from '@/utils/treeUtils';
 import { GraphDiagram } from '../visualizations/GraphDiagram';
 import { isGraphType, parseGraphValue } from '@/utils/graphUtils';
 import { isListType, parseListValue } from '@/utils/listUtils';
-import { getStatusColor, getStatusText, formatDate } from './outputHelpers';
+import { getStatusColor, getStatusText, formatDate, formatMemory } from './outputHelpers';
 
 const DiffView = ({ expected, actual }: { expected: any, actual: any }) => {
   const expectedStr = (typeof expected === 'string' ? expected : JSON.stringify(expected, null, 2)) || "";
@@ -51,6 +51,7 @@ interface OutputPanelProps {
   onStdinChange: (value: string) => void;
   testCases?: Array<{ input: any[]; output: any }>;
   executionTime?: number | null;
+  memoryUsage?: number | null;
   algorithmMeta?: Algorithm | null;
 
   // LeetCode Style Props
@@ -91,6 +92,7 @@ export const OutputPanel = React.memo(({
   onStdinChange,
   testCases,
   executionTime,
+  memoryUsage,
   algorithmMeta,
   activeTab,
   onTabChange,
@@ -166,16 +168,6 @@ export const OutputPanel = React.memo(({
             <Terminal className="w-3.5 h-3.5" />
             Test Result
           </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onTabChange("submissions")}
-            className={`h-10 text-xs gap-2 shrink-0 rounded-none transition-all ${activeTab === "submissions" ? "text-foreground bg-muted/50 border-b-2 border-primary" : "text-muted-foreground border-b-2 border-transparent"}`}
-          >
-            <History className="w-3.5 h-3.5" />
-            Submissions
-          </Button>
         </div>
 
         {/* Fixed Right Actions */}
@@ -203,33 +195,35 @@ export const OutputPanel = React.memo(({
               onValueChange={setActiveTestCaseTab}
               className="flex-1 flex flex-col min-h-0"
             >
-              <div className="flex items-center justify-between bg-background/50 shrink-0 h-[40px]">
+              <div className="flex items-start justify-between bg-background/50 shrink-0 py-2 px-2 min-h-[52px]">
                 {/* Scrollable Tabs List */}
-                <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-thin mask-image-linear-gradient-to-r h-[46px] pb-1.5">
-                  <TabsList className="h-10 bg-transparent p-0 flex-nowrap w-max justify-start rounded-none">
-                    {allTestCases.filter(tc => !tc.isSubmission).map((tc, index) => (
-                      <TabsTrigger
-                        key={tc.id}
-                        value={`case-${tc.id}`}
-                        className="text-xs px-3 h-10 rounded-none whitespace-nowrap data-[state=active]:bg-primary/10 data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-black dark:data-[state=active]:text-white relative group shrink-0"
-                      >
-                        {tc.isCustom ? `Case ${index + 1}` : `Case ${index + 1}`}
-                        {/* Delete button for all cases */}
-                        <div
-                          className="ml-2 hover:bg-destructive/20 rounded-full p-0.5 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteTestCase(tc.id);
-                          }}
+                <ScrollArea className="flex-1 w-full whitespace-nowrap">
+                  <div className="flex items-center w-max p-1">
+                    <TabsList className="h-10 bg-transparent p-0 flex-nowrap justify-start gap-1 border-none shadow-none">
+                      {allTestCases.filter(tc => !tc.isSubmission).map((tc, index) => (
+                        <TabsTrigger
+                          key={tc.id}
+                          value={`case-${tc.id}`}
+                          className="text-[13px] px-4 h-8 rounded-full whitespace-nowrap bg-muted/30 border border-black/20 dark:border-white/30 text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white data-[state=active]:bg-primary/15 data-[state=active]:border-primary/20 data-[state=active]:shadow-none data-[state=active]:text-black dark:data-[state=active]:text-white relative group shrink-0 transition-all font-medium"
                         >
-                          <XCircle className="w-3.5 h-3.5 text-muted-foreground hover:text-red-500" />
-                        </div>
-                      </TabsTrigger>
-                    ))}
-
+                          {tc.isCustom ? `Case ${index + 1}` : `Case ${index + 1}`}
+                          {/* Delete button for all cases */}
+                          <div
+                            className="ml-2 -mr-1.5 hover:bg-primary/20 rounded-full p-1 cursor-pointer opacity-60 hover:opacity-100 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteTestCase(tc.id);
+                            }}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </div>
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    
                     <FeatureGuard flag="custom_test_case_addtion">
                       {controls?.add_test_case !== false && (
-                        <div className="sticky right-0 top-0 z-10 flex items-center pl-1 bg-background/80 backdrop-blur-sm h-full shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">
+                        <div className="flex items-center pl-2 shrink-0">
                           <TooltipProvider delayDuration={0}>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -237,7 +231,7 @@ export const OutputPanel = React.memo(({
                                   variant="ghost"
                                   size="icon"
                                   onClick={onAddTestCase}
-                                  className="h-6 w-6 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 shadow-sm"
+                                  className="h-8 w-8 rounded-full bg-muted/30 border border-black/20 dark:border-white/30 hover:bg-muted text-foreground/70 hover:text-foreground transition-colors ml-1"
                                   disabled={loading}
                                 >
                                   <Plus className="w-4 h-4" />
@@ -251,8 +245,9 @@ export const OutputPanel = React.memo(({
                         </div>
                       )}
                     </FeatureGuard>
-                  </TabsList>
-                </div>
+                  </div>
+                  <ScrollBar orientation="horizontal" className="h-1.5" />
+                </ScrollArea>
               </div>
 
               <div className="flex-1 min-h-0">
@@ -316,6 +311,13 @@ export const OutputPanel = React.memo(({
                         {executionTime} ms
                       </span>
                     )}
+
+                    {memoryUsage !== null && (
+                      <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-1 rounded-full flex items-center gap-1">
+                        <Terminal className="w-3 h-3" />
+                        {formatMemory(memoryUsage)}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -338,24 +340,24 @@ export const OutputPanel = React.memo(({
               {output.testResults && (
                 <div className="h-full flex flex-col min-h-0">
                   <Tabs value={activeResultTab} onValueChange={setActiveResultTab} className="flex-1 flex flex-col min-h-0">
-                    <div className="flex border-b bg-background/50 shrink-0 sticky top-0 z-10 overflow-y-hidden h-[46px]">
-                      <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-thin mask-image-linear-gradient-to-r h-[46px] pb-1.5">
-                        <TabsList className="h-10 bg-transparent p-0 flex-nowrap w-max justify-start rounded-none">
-                          {output.testResults.map((result: any, index: number) => (
-                            <TabsTrigger
-                              key={index}
-                              value={`result-${index}`}
-                              className={`text-xs px-3 h-10 rounded-none whitespace-nowrap gap-2 shadow-none transition-all border-b-2 ${result.status === 'pass'
-                                ? 'bg-green-500/10 text-green-700 dark:text-green-500 border-transparent hover:bg-green-500/20 data-[state=active]:bg-green-500/20 data-[state=active]:border-green-500 data-[state=active]:text-green-800 dark:data-[state=active]:text-green-400 data-[state=active]:shadow-none font-medium'
-                                : 'bg-red-500/10 text-red-700 dark:text-red-500 border-transparent hover:bg-red-500/20 data-[state=active]:bg-red-500/20 data-[state=active]:border-red-500 data-[state=active]:text-red-800 dark:data-[state=active]:text-red-400 data-[state=active]:shadow-none font-medium'
-                                }`}
-                            >
+                    <div className="flex border-b bg-background/50 shrink-0 sticky top-0 z-10 py-2 px-2 items-start w-full min-h-[52px]">
+                      <ScrollArea className="flex-1 w-full whitespace-nowrap">
+                        <div className="flex w-max p-1">
+                          <TabsList className="h-10 bg-transparent p-0 flex-nowrap justify-start gap-1 border-none shadow-none">
+                            {output.testResults.map((result: any, index: number) => (
+                              <TabsTrigger
+                                key={index}
+                                value={`result-${index}`}
+                                className={`text-[13px] px-4 h-8 rounded-full whitespace-nowrap gap-1.5 shadow-none transition-all font-medium bg-muted/30 border border-black/20 dark:border-white/30 text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white data-[state=active]:bg-primary/15 data-[state=active]:text-black dark:data-[state=active]:text-white data-[state=active]:shadow-none data-[state=active]:border-primary/20`}
+                              >
                               {result.status === 'pass' ? (
-                                <div className="bg-primary rounded-full p-0.5 flex items-center justify-center text-primary-foreground shrink-0 border border-primary/20">
-                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                </div>
-                              ) : <XCircle className="w-3.5 h-3.5" />}
-                              Case {index + 1}
+                                <CheckCircle2 className="w-3.5 h-3.5 text-green-600 dark:text-green-500" />
+                              ) : (
+                                <XCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-500" />
+                              )}
+                              <span>
+                                Case {index + 1}
+                              </span>
                               {/* Show tooltip or small indicator if description exists */}
                               {(() => {
                                 // Resolve test case from executed list if available, else allTestCases (fallback/legacy)
@@ -367,16 +369,12 @@ export const OutputPanel = React.memo(({
                                   </span>
                                 );
                               })()}
-
-                              {/* Hide details for submission cases in tabs? Or show them but mask content? 
-                                User Requirement: "test cases which mark as a submission also visiable here" -> imply they see them but shouldn't?
-                                Or "should at test visible" -> "should NOT be visible"?
-                                Let's show them in RESULTS but mark as hidden.
-                            */}
                             </TabsTrigger>
                           ))}
                         </TabsList>
-                      </div>
+                        </div>
+                        <ScrollBar orientation="horizontal" className="h-1.5" />
+                      </ScrollArea>
                     </div>
                     <ScrollArea className="h-full" type="always">
                       <div className="p-4">
@@ -611,68 +609,7 @@ export const OutputPanel = React.memo(({
           </div>
         )}
 
-        {/* SUBMISSIONS TAB */}
-        {activeTab === "submissions" && (
-          <div className="h-full flex flex-col min-h-0 bg-background/50">
-            {submissions.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
-                <History className="w-12 h-12 mb-4 opacity-20" />
-                <p>No submissions yet</p>
-                <p className="text-xs mt-1">Submit your code to see history here</p>
-              </div>
-            ) : (
-              <ScrollArea className="h-full">
-                <div className="p-4 space-y-3">
-                  {/* Header */}
-                  <div className="grid grid-cols-12 gap-2 text-xs font-medium text-muted-foreground px-3 mb-2">
-                    <div className="col-span-4">Status</div>
-                    <div className="col-span-2">Lang</div>
-                  </div>
 
-                  {/* List */}
-                  <div className="space-y-2">
-                    {[...submissions].reverse().map((sub) => (
-                      <div
-                        key={sub.id}
-                        className="grid grid-cols-12 gap-2 p-3 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-colors items-center text-sm shadow-sm"
-                        onClick={() => onSelectSubmission?.(sub)}
-                      >
-                        <div className="col-span-4 flex items-center gap-2">
-                          {sub.status === 'passed' ? (
-                            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground shrink-0 shadow-sm border border-primary/20">
-                              <Check className="w-3.5 h-3.5 stroke-[3]" />
-                            </div>
-                          ) : sub.status === 'error' ? (
-                            <AlertTriangle className="w-6 h-6 text-yellow-500 shrink-0" />
-                          ) : (
-                            <XCircle className="w-6 h-6 text-destructive shrink-0" />
-                          )}
-                          <div className="flex flex-col">
-                            <span className={`font-medium ${sub.status === 'passed' ? 'text-green-600' : 'text-destructive'}`}>
-                              {sub.status === 'passed' ? 'Accepted' : (sub.status === 'error' ? 'Runtime Error' : 'Wrong Answer')}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground mt-0.5">
-                              {sub.test_results?.passed ?? 0} / {sub.test_results?.total ?? 0} passed
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-span-2 text-xs capitalize text-muted-foreground">
-                          {sub.language}
-                        </div>
-                        <div className="col-span-3 text-xs text-muted-foreground font-mono">
-                          {sub.test_results?.execution_time_ms ? `${sub.test_results.execution_time_ms} ms` : '-'}
-                        </div>
-                        <div className="col-span-3 text-right text-xs text-muted-foreground">
-                          {new Date(sub.timestamp).toLocaleString()}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </ScrollArea>
-            )}
-          </div>
-        )}
 
         {/* Empty State / Loading for Result Tab */}
         {activeTab === "result" && !output && !loading && !submitting && (

@@ -138,6 +138,10 @@ const ProblemDetail: React.FC = () => {
     runnerRef.current?.submit();
   }, []);
 
+  const handleSelectSubmission = useCallback((submission: any) => {
+    runnerRef.current?.selectSubmission(submission);
+  }, []);
+
   // -- Effects --
 
   // 1. Auth Listener - Removed as it's now handled by AppContext
@@ -211,9 +215,11 @@ const ProblemDetail: React.FC = () => {
       isCodeRunnerMaximized={layout.isCodeRunnerMaximized}
       setIsCodeRunnerMaximized={layout.setIsCodeRunnerMaximized}
       submissions={submissions}
+      setSubmissions={setSubmissions}
       codeRunnerRef={runnerRef}
       onRunnerStateChange={handleRunnerStateChange}
       isLoading={loadingUserData}
+      onSubmissionComplete={refetchUserData}
     />
   ), [
     algorithm,
@@ -349,6 +355,8 @@ const ProblemDetail: React.FC = () => {
                     isVisualizationMaximized={layout.isVisualizationMaximized}
                     setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                     handleRichTextClick={handleRichTextClick}
+                    submissions={submissions}
+                    onSelectSubmission={handleSelectSubmission}
                   />
                 </div>
 
@@ -367,8 +375,10 @@ const ProblemDetail: React.FC = () => {
                     isCodeRunnerMaximized={layout.isCodeRunnerMaximized}
                     setIsCodeRunnerMaximized={layout.setIsCodeRunnerMaximized}
                     submissions={submissions}
+                    setSubmissions={setSubmissions}
                     className="h-[85vh]"
                     isInterviewMode={session.isInterviewMode}
+                    onSubmissionComplete={refetchUserData}
                   />
                 </div>
 
@@ -415,6 +425,8 @@ const ProblemDetail: React.FC = () => {
                       isVisualizationMaximized={layout.isVisualizationMaximized}
                       setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                       handleRichTextClick={handleRichTextClick}
+                      submissions={submissions}
+                      onSelectSubmission={handleSelectSubmission}
                     />
                   </ResizablePanel>
 

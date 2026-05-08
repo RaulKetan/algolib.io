@@ -89,7 +89,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const closeMobileNav = () => { if (isMobile) setOpenMobile(false); };
     const { theme, setTheme } = useTheme()
 
-    const sidebarRoutes = ['/dsa/problems', '/problems', '/dsa/get-started', '/dsa/blind-75', '/dsa/core'];
+    const sidebarRoutes = ['/dsa/problems', '/problems', '/dsa/get-started', '/dsa/blind-75', '/dsa/core', '/dsa/query'];
     const isSidebarRoute = sidebarRoutes.some(route => pathname?.startsWith(route));
     const lastPathRef = React.useRef(pathname);
 
@@ -98,7 +98,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         const wasListing = sidebarRoutes.some(route => lastPathRef.current?.startsWith(route));
 
         // If we just entered a listing route from somewhere else, or switched between listing routes
-        if (isCurrentlyListing && (!wasListing || lastPathRef.current !== pathname)) {
+        // BUT don't auto-expand for the query page specifically as per user request
+        if (isCurrentlyListing && pathname !== '/dsa/query' && (!wasListing || lastPathRef.current !== pathname)) {
             if (!isMobile && state === "collapsed") {
                 setOpen(true);
             }
@@ -135,8 +136,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
                 <div className="flex items-center gap-3 w-full">
                     <Link href="/" className="flex items-center gap-2 shrink-0 group-data-[collapsible=icon]:mx-auto">
-                        <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5 transition-all" />
-                        <span className="font-medium text-[15px] tracking-tight group-data-[collapsible=icon]:hidden">rulcode</span>
+                        <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6 transition-all" />
+                        <span className="font-semibold text-lg tracking-wider group-data-[collapsible=icon]:hidden">RulCode</span>
                     </Link>
                     <div className="h-4 w-[1px] bg-border/80 group-data-[collapsible=icon]:hidden"></div>
                     <span className="flex items-center gap-1 text-[13px] text-muted-foreground group-data-[collapsible=icon]:hidden">

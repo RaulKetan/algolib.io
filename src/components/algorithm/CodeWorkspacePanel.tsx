@@ -50,6 +50,9 @@ interface CodeWorkspacePanelProps {
   handleRandomProblem?: () => void;
   handleNextProblem?: () => void;
   handlePreviousProblem?: () => void;
+  onSubmissionComplete?: () => void;
+  onSubmissionStart?: () => void;
+  setSubmissions?: (submissions: any) => void;
 }
 
 export const CodeWorkspacePanel = React.memo(({
@@ -74,7 +77,10 @@ export const CodeWorkspacePanel = React.memo(({
   hasPremiumAccess = false,
   handleRandomProblem,
   handleNextProblem,
-  handlePreviousProblem
+  handlePreviousProblem,
+  onSubmissionComplete,
+  onSubmissionStart,
+  setSubmissions
 }: CodeWorkspacePanelProps) => {
   const posthog = usePostHog();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -140,6 +146,9 @@ export const CodeWorkspacePanel = React.memo(({
                 handleRandomProblem={handleRandomProblem}
                 handleNextProblem={handleNextProblem}
                 handlePreviousProblem={handlePreviousProblem}
+                onSubmissionComplete={onSubmissionComplete}
+                onSubmissionStart={onSubmissionStart}
+                setSubmissions={setSubmissions}
               />
             ) : (
               <div className="flex-1 flex items-center justify-center">

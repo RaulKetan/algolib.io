@@ -72,6 +72,8 @@ interface UseCodeExecutionProps {
     isLimitExceeded?: boolean;
     onRunStart?: () => void;
     onSuccess?: () => void;
+    onSubmissionComplete?: () => void;
+    onSubmissionStart?: () => void;
 }
 
 export const useCodeExecution = ({
@@ -87,12 +89,15 @@ export const useCodeExecution = ({
     posthog,
     isLimitExceeded,
     onRunStart,
-    onSuccess
+    onSuccess,
+    onSubmissionComplete,
+    onSubmissionStart
 }: UseCodeExecutionProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [output, setOutput] = useState<any | null>(null);
     const [executionTime, setExecutionTime] = useState<number | null>(null);
+    const [memoryUsage, setMemoryUsage] = useState<number | null>(null);
     const [lastRunSuccess, setLastRunSuccess] = useState(false);
 
     const waitForSubmissionResult = (submissionId: string): Promise<any> => {
@@ -166,6 +171,7 @@ export const useCodeExecution = ({
 
         setOutput(null);
         setExecutionTime(null);
+        setMemoryUsage(null);
         editorRef.current?.setErrors([]);
 
         const casesToRun = isSubmission
@@ -233,8 +239,15 @@ export const useCodeExecution = ({
             if (!submission_id) throw new Error("No submission_id received from server");
 
             const result = await waitForSubmissionResult(submission_id);
-            const execTime = Math.round(performance.now() - startTime);
+            
+            // Priority: Judge0 provided time > Frontend performance.now()
+            const judgeTimeMs = result.time ? Math.round(parseFloat(result.time) * 1000) : null;
+            const execTime = judgeTimeMs !== null ? judgeTimeMs : Math.round(performance.now() - startTime);
+            
             setExecutionTime(execTime);
+            if (result.memory) {
+                setMemoryUsage(result.memory);
+            }
 
             if (result.stdout && !result.stderr && !result.compile_output) {
                 try {
@@ -315,7 +328,7 @@ export const useCodeExecution = ({
                 });
             }
 
-            return { result, allPassed, execTime };
+            return { result, allPassed, execTime, memoryUsage: result.memory };
         } catch (err: any) {
             console.error(err);
             const errorMessage = err.response?.data?.error || err.message || "An unexpected error occurred";
@@ -336,8 +349,8 @@ export const useCodeExecution = ({
     const handleSubmit = async () => {
         if (!algorithmId) return;
 
-        onRunStart?.();
-        const { result, allPassed, execTime } = await executeCode(true);
+        onSubmissionStart?.();
+        const { result, allPassed, execTime, memoryUsage: finalMemory } = await executeCode(true);
 
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -363,13 +376,15 @@ export const useCodeExecution = ({
                 failed: failedCount,
                 total: testResults.length,
                 execution_time_ms: execTime,
+                memory_usage_kb: finalMemory || undefined,
                 errors: result?.stderr ? [result.stderr] : undefined
             }
         };
 
         await addSubmission(user.id, algorithmId, newSubmission);
         setSubmissions(prev => [...prev, newSubmission]);
-        setActiveTab("submissions");
+        onSubmissionComplete?.();
+        setActiveTab("result");
 
         if (allPassed) {
             const confetti = (await import('canvas-confetti')).default;
@@ -404,6 +419,7 @@ export const useCodeExecution = ({
         output,
         setOutput,
         executionTime,
+        memoryUsage,
         lastRunSuccess,
         setLastRunSuccess,
         handleRun,

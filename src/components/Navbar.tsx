@@ -69,11 +69,11 @@ const Navbar = () => {
 
   const isDsaProblemPage = useMemo(() => {
     if (!pathname) return false;
-    
+
     // Exact match for known paths that have their own header
     const knownPaths = ['/dsa/problems', '/dsa/get-started', '/dsa/core', '/dsa/blind-75'];
     if (knownPaths.includes(pathname)) return true;
-    
+
     // Match for /problem/[slug]
     if (pathname.startsWith('/problem/')) {
       // During SSR and first client render, always hide for /problem/ paths
@@ -84,7 +84,7 @@ const Navbar = () => {
       // Only hide if it's a VALID algorithm slug
       return algorithms.some(algo => algo.slug === slug || algo.id === slug);
     }
-    
+
     return false;
   }, [pathname, algorithms, mounted]);
 
@@ -149,7 +149,7 @@ const Navbar = () => {
               onClick={closeMenus}
             >
               <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
-              <span className="font-bold text-lg tracking-tight">rulcode</span>
+              <span className="font-semibold text-lg tracking-wider ">RulCode</span>
             </Link>
           </div>
 
