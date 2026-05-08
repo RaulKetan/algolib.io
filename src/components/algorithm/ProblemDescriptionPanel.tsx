@@ -26,6 +26,9 @@ import {
   Tag,
   Building2,
   Check,
+  History,
+  AlertTriangle,
+  XCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -59,8 +62,10 @@ import { renderVisualization as renderVizFromMapping, hasVisualization } from "@
 import { TOP_COMPANIES } from "@/constants/companies";
 import { CompanyIcon } from "@/components/CompanyIcon";
 import { DIFFICULTY_MAP } from "@/types/algorithm";
+import { formatMemory } from "../CodeRunner/outputHelpers";
 import { isTreeType } from "@/utils/treeUtils";
 import { AlgoLink } from "../AlgoLink";
+import { Submission } from "@/types/userAlgorithmData";
 
 interface ProblemDescriptionPanelProps {
   algorithm: any;
@@ -84,6 +89,8 @@ interface ProblemDescriptionPanelProps {
   handleRichTextClick: (e: React.MouseEvent<HTMLDivElement>) => void;
   isPlatformPreview?: boolean;
   hasPremiumAccess?: boolean;
+  submissions?: Submission[];
+  onSelectSubmission?: (submission: Submission) => void;
 }
 
 export const ProblemDescriptionPanel = React.memo(({
@@ -104,6 +111,8 @@ export const ProblemDescriptionPanel = React.memo(({
   handleRichTextClick,
   isPlatformPreview = false,
   hasPremiumAccess = false,
+  submissions = [],
+  onSelectSubmission,
 }: ProblemDescriptionPanelProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const topicsRef = useRef<HTMLDivElement>(null);
@@ -180,13 +189,14 @@ export const ProblemDescriptionPanel = React.memo(({
   return (
     <div ref={containerRef} className="h-full flex flex-col">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden w-full pt-0 mt-0">
-        <div className="px-0 shrink-0 flex items-stretch border-b">
-          <TabsList className="flex-1 grid grid-cols-3 p-0 bg-transparent gap-0 rounded-none">
-            <TooltipProvider>
-              <TabsTrigger
-                value="description"
-                className="data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-10 px-4"
-              >
+        <div className="px-0 shrink-0 border-b h-10 overflow-hidden bg-background/50">
+          <div className="overflow-x-auto overflow-y-hidden h-[60px] no-scrollbar">
+            <TabsList className="flex w-full min-w-max sm:min-w-full p-0 bg-transparent gap-0 rounded-none h-10">
+              <TooltipProvider>
+                <TabsTrigger
+                  value="description"
+                  className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+                >
                 {isCompact ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -204,7 +214,7 @@ export const ProblemDescriptionPanel = React.memo(({
 
               <TabsTrigger
                 value="visualizations"
-                className="data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-10 px-4"
+                className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
               >
                 {isCompact ? (
                   <Tooltip>
@@ -223,7 +233,7 @@ export const ProblemDescriptionPanel = React.memo(({
 
               <TabsTrigger
                 value="solutions"
-                className="data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-10 px-4"
+                className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
               >
                 {isCompact ? (
                   <Tooltip>
@@ -239,19 +249,28 @@ export const ProblemDescriptionPanel = React.memo(({
                   </>
                 )}
               </TabsTrigger>
+
+              <TabsTrigger
+                value="submissions"
+                className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+              >
+                {isCompact ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <History className="w-4 h-4" />
+                    </TooltipTrigger>
+                    <TooltipContent>Submissions</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <>
+                    <History className="w-4 h-4 mr-2 shrink-0" />
+                    Submissions
+                  </>
+                )}
+              </TabsTrigger>
             </TooltipProvider>
-          </TabsList>
-          {!isMobile && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLeftPanel}
-              title="Collapse Panel"
-              className="h-10 w-10 rounded-none border-r border-border/50 hover:bg-primary/10 hover:text-primary shrink-0"
-            >
-              <PanelLeftClose className="w-4 h-4" />
-            </Button>
-          )}
+            </TabsList>
+          </div>
         </div>
 
         <div className="flex-1 overflow-hidden relative">
@@ -863,6 +882,78 @@ export const ProblemDescriptionPanel = React.memo(({
                 </div>
               </ScrollArea>
             )}
+          </TabsContent>
+          <TabsContent value="submissions" className="h-full m-0 data-[state=inactive]:hidden">
+            <div className="h-full flex flex-col min-h-0 bg-background/50">
+              {submissions.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
+                  <History className="w-12 h-12 mb-4 opacity-20" />
+                  <p>No submissions yet</p>
+                  <p className="text-xs mt-1">Submit your code to see history here</p>
+                </div>
+              ) : (
+                <ScrollArea className="h-full">
+                  <div className="p-4 space-y-3">
+                    {/* Header */}
+                    <div className="grid grid-cols-12 gap-2 text-xs font-medium text-muted-foreground px-3 mb-2">
+                      <div className="col-span-3">Status</div>
+                      <div className="col-span-1">Lang</div>
+                      <div className="col-span-2">Time</div>
+                      <div className="col-span-2">Memory</div>
+                      <div className="col-span-4 text-right">Date</div>
+                    </div>
+
+                    {/* List */}
+                    <div className="space-y-2">
+                      {[...submissions].reverse().map((sub) => (
+                        <div
+                          key={sub.id}
+                          className="grid grid-cols-12 gap-2 p-3 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-colors items-center text-sm shadow-sm"
+                          onClick={() => onSelectSubmission?.(sub)}
+                        >
+                          <div className="col-span-3 flex items-center gap-2">
+                            {sub.status === 'passed' ? (
+                              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground shrink-0 shadow-sm border border-primary/20">
+                                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                              </div>
+                            ) : sub.status === 'error' ? (
+                              <AlertTriangle className="w-6 h-6 text-yellow-500 shrink-0" />
+                            ) : (
+                              <XCircle className="w-6 h-6 text-destructive shrink-0" />
+                            )}
+                            <div className="flex flex-col overflow-hidden">
+                              <span className={`font-medium truncate ${sub.status === 'passed' ? 'text-green-600' : 'text-destructive'}`}>
+                                {sub.status === 'passed' ? 'Accepted' : (sub.status === 'error' ? 'Runtime Error' : 'Wrong Answer')}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground mt-0.5">
+                                {sub.test_results?.passed ?? 0}/{sub.test_results?.total ?? 0}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="col-span-1 text-xs capitalize text-muted-foreground truncate">
+                            {sub.language}
+                          </div>
+                          <div className="col-span-2 text-xs text-muted-foreground font-mono">
+                            {sub.test_results?.execution_time_ms ? `${sub.test_results.execution_time_ms} ms` : '-'}
+                          </div>
+                          <div className="col-span-2 text-xs text-muted-foreground font-mono">
+                            {sub.test_results?.memory_usage_kb ? formatMemory(sub.test_results.memory_usage_kb) : '-'}
+                          </div>
+                          <div className="col-span-4 text-right text-[10px] text-muted-foreground leading-tight">
+                            {new Date(sub.timestamp).toLocaleString(undefined, { 
+                              month: 'short', 
+                              day: 'numeric', 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollArea>
+              )}
+            </div>
           </TabsContent>
 
           {/* Bottom Action Bar - Ultra Slim Capsule (Visible across all tabs) */}

@@ -42,6 +42,7 @@ export interface Submission {
         failed: number;
         total: number;
         execution_time_ms?: number;
+        memory_usage_kb?: number;
         errors?: string[];
     };
 }

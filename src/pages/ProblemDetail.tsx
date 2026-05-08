@@ -51,6 +51,7 @@ import {
 import { ProblemSidebar } from "@/components/ProblemSidebar";
 import { useAlgorithms } from "@/hooks/useAlgorithms";
 import { ListType, LIST_TYPE_LABELS } from "@/types/algorithm";
+import { Submission } from "@/types/userAlgorithmData";
 
 
 const ProblemDetail: React.FC = () => {
@@ -116,7 +117,13 @@ const ProblemDetail: React.FC = () => {
     filteredAlgorithms,
   });
 
-  const submissions = useMemo(() => userAlgoData?.submissions || [], [userAlgoData?.submissions]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+
+  useEffect(() => {
+    if (userAlgoData?.submissions) {
+      setSubmissions(userAlgoData.submissions);
+    }
+  }, [userAlgoData?.submissions]);
 
   // -- Code Runner Control --
   const runnerRef = React.useRef<CodeRunnerRef>(null);
@@ -136,6 +143,10 @@ const ProblemDetail: React.FC = () => {
 
   const handleSubmit = useCallback(() => {
     runnerRef.current?.submit();
+  }, []);
+
+  const handleSelectSubmission = useCallback((submission: any) => {
+    runnerRef.current?.selectSubmission(submission);
   }, []);
 
   // -- Effects --
@@ -211,9 +222,11 @@ const ProblemDetail: React.FC = () => {
       isCodeRunnerMaximized={layout.isCodeRunnerMaximized}
       setIsCodeRunnerMaximized={layout.setIsCodeRunnerMaximized}
       submissions={submissions}
+      setSubmissions={setSubmissions}
       codeRunnerRef={runnerRef}
       onRunnerStateChange={handleRunnerStateChange}
       isLoading={loadingUserData}
+      onSubmissionComplete={refetchUserData}
     />
   ), [
     algorithm,
@@ -349,6 +362,8 @@ const ProblemDetail: React.FC = () => {
                     isVisualizationMaximized={layout.isVisualizationMaximized}
                     setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                     handleRichTextClick={handleRichTextClick}
+                    submissions={submissions}
+                    onSelectSubmission={handleSelectSubmission}
                   />
                 </div>
 
@@ -367,8 +382,10 @@ const ProblemDetail: React.FC = () => {
                     isCodeRunnerMaximized={layout.isCodeRunnerMaximized}
                     setIsCodeRunnerMaximized={layout.setIsCodeRunnerMaximized}
                     submissions={submissions}
+                    setSubmissions={setSubmissions}
                     className="h-[85vh]"
                     isInterviewMode={session.isInterviewMode}
+                    onSubmissionComplete={refetchUserData}
                   />
                 </div>
 
@@ -415,6 +432,8 @@ const ProblemDetail: React.FC = () => {
                       isVisualizationMaximized={layout.isVisualizationMaximized}
                       setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                       handleRichTextClick={handleRichTextClick}
+                      submissions={submissions}
+                      onSelectSubmission={handleSelectSubmission}
                     />
                   </ResizablePanel>
 

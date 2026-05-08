@@ -18,3 +18,9 @@ export const getStatusText = (statusId?: number, description?: string, testResul
 export const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
 };
+
+export const formatMemory = (kb?: number) => {
+    if (!kb) return null;
+    if (kb < 1024) return `${kb} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
+};

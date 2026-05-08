@@ -105,11 +105,9 @@ export const CodeExecutionButtonGroup: React.FC<CodeExecutionButtonGroupProps> =
                     {isSubmitting ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
-                        <>
-                            <Send className="w-3.5 h-3.5" />
-                            <span>Submit</span>
-                        </>
+                        <Send className="w-3.5 h-3.5" />
                     )}
+                    <span>Submit</span>
                 </div>
             </Button>
         </motion.div>

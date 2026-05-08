@@ -29,9 +29,7 @@ interface UseAlgorithmLayoutReturn {
 }
 
 export const useAlgorithmLayout = (): UseAlgorithmLayoutReturn => {
-    const [windowWidth, setWindowWidth] = useState(
-        typeof window !== 'undefined' ? window.innerWidth : 1200
-    );
+    const [windowWidth, setWindowWidth] = useState(1200); // Default to desktop width for SSR
     const [isMobile, setIsMobile] = useState(false);
 
     const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);

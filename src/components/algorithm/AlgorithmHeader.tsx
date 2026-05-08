@@ -131,49 +131,52 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
     : 'All Problems';
 
   return (
-    <div className="h-12 flex items-center px-4 gap-4 shrink-0 bg-background/95 relative">
-      {/* Left Side: Logo + Navigation */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/"
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-        >
-          <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-8 h-8" />
-        </Link>
-
-        <div className="flex items-center shadow-sm rounded-md overflow-hidden border border-border bg-secondary/50">
-          <button
-            onClick={onToggleSidebar}
-            className={`flex items-center h-8 gap-1.5 sm:gap-2.5 px-2 sm:px-3 hover:bg-muted transition-colors group ${!showCondensedMenu ? 'border-r border-border' : ''}`}
-          >
-            <ChevronsUpDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 " />
-            <span className="text-[11px] sm:text-[13px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors tracking-tight">
-              {listLabel.charAt(0).toUpperCase() + listLabel.slice(1).toLowerCase()}
-            </span>
-          </button>
-
-        </div>
-      </div>
-
-      {/* Middle: Feedback Button */}
-      {!hideFeedback && !showCondensedMenu && (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
-
-
-          <Button variant="outline" size="sm" asChild>
-            <a
-              href="https://github.com/rkmahale17/algolib.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-              onClick={() => window.open("/feedback", "_blank")}
+    <nav className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md shrink-0">
+      <div className="w-full px-1.5 sm:px-2">
+        <div className="flex h-12 items-center justify-between">
+          {/* Left Side: Logo + Navigation */}
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity shutter-click"
             >
-              <MessageSquare className="w-4 h-4" />
-              Feedback
-            </a>
-          </Button>
-        </div>
-      )}
+              <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
+              <span className="hidden md:inline-block font-semibold text-lg tracking-wider">RulCode</span>
+            </Link>
+          </div>
+
+          {/* Middle: Algorithm Menus & Feedback */}
+          <div className="hidden md:flex items-center gap-4 ml-6 flex-1 text-sm font-medium">
+            <div className="flex items-center shadow-sm rounded-md overflow-hidden border border-border bg-secondary/50">
+              <button
+                onClick={onToggleSidebar}
+                className={`flex items-center h-8 gap-1.5 sm:gap-2.5 px-2 sm:px-3 hover:bg-muted transition-colors group ${!showCondensedMenu ? 'border-r border-border' : ''}`}
+              >
+                <ChevronsUpDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 " />
+                <span className="text-[11px] sm:text-[13px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors tracking-tight">
+                  {listLabel.charAt(0).toUpperCase() + listLabel.slice(1).toLowerCase()}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Center: Feedback Button */}
+          {!hideFeedback && !showCondensedMenu && (
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+              <Button variant="outline" size="sm" asChild className="h-8">
+                <a
+                  href="https://github.com/rkmahale17/algolib.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                  onClick={() => window.open("/feedback", "_blank")}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Feedback
+                </a>
+              </Button>
+            </div>
+          )}
 
       {/* Right Side: Share, Bug, Timer, Interview, Theme, Profile */}
       <div className="ml-auto flex items-center gap-2">
@@ -285,7 +288,9 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
 
         {!hideUserMenu && <UserMenu />}
       </div>
-    </div>
+        </div>
+      </div>
+    </nav>
   );
 };
 

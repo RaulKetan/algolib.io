@@ -63,18 +63,6 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     return (
         <div className="flex items-center justify-between px-0 border-b bg-muted/40 h-10 shrink-0 gap-2">
             <div className="flex items-center gap-0 overflow-x-auto no-scrollbar mask-linear-fade shrink-0 h-full">
-                {!isMobile && onToggleRightPanel && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={onToggleRightPanel}
-                        title="Collapse Panel"
-                        className="h-10 w-10 p-0 rounded-none hover:bg-primary/10 hover:text-primary shrink-0"
-                    >
-                        <PanelRightClose className="w-4 h-4" />
-                    </Button>
-                )}
-
                 {activeEditorTab === 'current' && (
                     <div className="flex items-center gap-2 mr-4">
                         <LanguageSelector

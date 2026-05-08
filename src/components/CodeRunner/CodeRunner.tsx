@@ -48,12 +48,16 @@ interface CodeRunnerProps {
   handleRandomProblem?: () => void;
   handleNextProblem?: () => void;
   handlePreviousProblem?: () => void;
+  onSubmissionComplete?: () => void;
+  onSubmissionStart?: () => void;
+  setSubmissions?: React.Dispatch<React.SetStateAction<Submission[]>>;
 }
 
 export interface CodeRunnerRef {
   run: () => void;
   submit: () => void;
   openThinkpad: () => void;
+  selectSubmission: (submission: Submission) => void;
 }
 
 export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
@@ -78,7 +82,10 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
   hasPremiumAccess = false,
   handleRandomProblem,
   handleNextProblem,
-  handlePreviousProblem
+  handlePreviousProblem,
+  onSubmissionComplete,
+  onSubmissionStart,
+  setSubmissions: setSubmissionsProp
 }, ref) => {
   const posthog = usePostHog();
   const isLimitExceeded = useFeatureFlag("todays_limit_exceed");
@@ -89,7 +96,17 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
 
   const [code, setCode] = useState<string>(initialCode || DEFAULT_CODE['typescript']);
   const [internalIsFullscreen, setInternalIsFullscreen] = useState(false);
-  const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions);
+  const [internalSubmissions, setInternalSubmissions] = useState<Submission[]>(initialSubmissions);
+
+  // Sync state or use prop
+  const submissions = initialSubmissions; // Use prop directly as it's now managed by parent
+  const setSubmissions = setSubmissionsProp || setInternalSubmissions;
+
+  useEffect(() => {
+    if (initialSubmissions.length > 0 && !setSubmissionsProp) {
+      setInternalSubmissions(initialSubmissions);
+    }
+  }, [initialSubmissions, setSubmissionsProp]);
 
   const editorRef = useRef<CodeEditorRef>(null);
   const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
@@ -280,10 +297,12 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
         setIsOutputExpanded(true);
       }
     },
-    onSuccess
+    onSuccess,
+    onSubmissionComplete,
+    onSubmissionStart
   });
 
-  const { isLoading, isSubmitting, output, executionTime, lastRunSuccess, handleRun, handleSubmit } = executionHook;
+  const { isLoading, isSubmitting, output, executionTime, memoryUsage, lastRunSuccess, handleRun, handleSubmit } = executionHook;
 
   // Expose Imperative Handle
   React.useImperativeHandle(ref, () => ({
@@ -292,6 +311,9 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
     openThinkpad: () => {
       setIsScratchpadOpen(true);
       setActiveEditorTab("scratchpad");
+    },
+    selectSubmission: (submission: Submission) => {
+      submissionViewer.handleSelectSubmission(submission);
     }
   }));
 
@@ -359,6 +381,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
             output: tc.expectedOutput
           }))}
           executionTime={executionTime}
+          memoryUsage={memoryUsage}
           algorithmMeta={algorithmData}
           activeTab={activeTab}
           onTabChange={setActiveTab as any}

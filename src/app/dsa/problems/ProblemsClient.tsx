@@ -50,13 +50,6 @@ const ProblemsClient = ({
     if (listMode === 'core') result = coreAlgorithms;
     else if (listMode === 'blind') result = blindAlgorithms;
 
-    if (topicFilter) {
-      result = result.filter(algo => {
-        const category = algo.category?.toLowerCase() || '';
-        return category.includes(topicFilter.toLowerCase());
-      });
-    }
-
     if (companyFilter) {
       result = result.filter(algo => {
         const companies = algo.metadata?.companies || [];
@@ -65,7 +58,7 @@ const ProblemsClient = ({
     }
 
     return result;
-  }, [listMode, coreAlgorithms, blindAlgorithms, allAlgorithms, topicFilter, companyFilter]);
+  }, [listMode, coreAlgorithms, blindAlgorithms, allAlgorithms, companyFilter]);
 
   const updateParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -118,6 +111,7 @@ const ProblemsClient = ({
       icon={manualIcon || Layers}
       initialSelectedTopics={initialTopics}
       initialSelectedCompanies={initialCompanies}
+      initialExpandAll={pathname === '/dsa/query'}
       headerSlot={!manualListType ? (
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <Button

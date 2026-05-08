@@ -118,7 +118,17 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
     filteredAlgorithms,
   });
 
-  const submissions = useMemo(() => userAlgoData?.submissions || [], [userAlgoData?.submissions]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+
+  useEffect(() => {
+    if (userAlgoData?.submissions) {
+      setSubmissions(userAlgoData.submissions);
+    }
+  }, [userAlgoData?.submissions]);
+
+  const handleSelectSubmission = useCallback((submission: any) => {
+    runnerRef.current?.selectSubmission(submission);
+  }, []);
 
   // -- Code Runner Control --
   const runnerRef = React.useRef<CodeRunnerRef>(null);
@@ -211,6 +221,7 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
       isCodeRunnerMaximized={layout.isCodeRunnerMaximized}
       setIsCodeRunnerMaximized={layout.setIsCodeRunnerMaximized}
       submissions={submissions}
+      setSubmissions={setSubmissions}
       codeRunnerRef={runnerRef}
       onRunnerStateChange={handleRunnerStateChange}
       isLoading={loadingUserData}
@@ -218,6 +229,10 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
       handleRandomProblem={interactions.handleRandomProblem}
       handleNextProblem={interactions.handleNextProblem}
       handlePreviousProblem={interactions.handlePreviousProblem}
+      onSubmissionComplete={() => {
+        refetchUserData();
+        layout.setActiveTab('submissions');
+      }}
     />
 
   ), [
@@ -328,6 +343,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                         isVisualizationMaximized={layout.isVisualizationMaximized}
                         setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                         handleRichTextClick={handleRichTextClick}
+                        submissions={submissions}
+                        onSelectSubmission={handleSelectSubmission}
                       />
                     </div>
                   </div>
@@ -347,12 +364,17 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                       setSelectedLanguage={interactions.setSelectedLanguage}
                       isCodeRunnerMaximized={layout.isCodeRunnerMaximized}
                       setIsCodeRunnerMaximized={layout.setIsCodeRunnerMaximized}
-                      submissions={submissions}
-                      className="h-[85vh]"
                       isInterviewMode={session.isInterviewMode}
                       handleRandomProblem={interactions.handleRandomProblem}
                       handleNextProblem={interactions.handleNextProblem}
                       handlePreviousProblem={interactions.handlePreviousProblem}
+                      submissions={submissions}
+                      setSubmissions={setSubmissions}
+                      onSubmissionComplete={() => {
+                        refetchUserData();
+                        layout.setActiveTab('submissions');
+                      }}
+                      className="h-[85vh]"
                     />
                   </div>
                 </div>
@@ -397,6 +419,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                           setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                           handleRichTextClick={handleRichTextClick}
                           hasPremiumAccess={hasPremiumAccess}
+                          submissions={submissions}
+                          onSelectSubmission={handleSelectSubmission}
                         />
                       </div>
                     </div>
