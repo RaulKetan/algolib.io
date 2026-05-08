@@ -51,6 +51,7 @@ import {
 import { ProblemSidebar } from "@/components/ProblemSidebar";
 import { useAlgorithms } from "@/hooks/useAlgorithms";
 import { ListType, LIST_TYPE_LABELS } from "@/types/algorithm";
+import { Submission } from "@/types/userAlgorithmData";
 
 
 const ProblemDetail: React.FC = () => {
@@ -116,7 +117,13 @@ const ProblemDetail: React.FC = () => {
     filteredAlgorithms,
   });
 
-  const submissions = useMemo(() => userAlgoData?.submissions || [], [userAlgoData?.submissions]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+
+  useEffect(() => {
+    if (userAlgoData?.submissions) {
+      setSubmissions(userAlgoData.submissions);
+    }
+  }, [userAlgoData?.submissions]);
 
   // -- Code Runner Control --
   const runnerRef = React.useRef<CodeRunnerRef>(null);
