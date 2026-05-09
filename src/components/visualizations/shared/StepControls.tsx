@@ -1,6 +1,13 @@
 import { Play, Pause, SkipForward, SkipBack, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { useApp } from '@/contexts/AppContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface StepControlsProps {
   isPlaying: boolean;
@@ -27,42 +34,75 @@ export const StepControls = ({
   onSpeedChange,
   currentStep,
   totalSteps,
-  disabled = false
+  disabled: propDisabled = false
 }: StepControlsProps) => {
+  const { user } = useApp();
+  const isDisabled = propDisabled || !user;
+
+  const wrapWithAuthTooltip = (children: React.ReactNode, label: string) => {
+    if (user) return children;
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="cursor-not-allowed">{children}</div>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="text-[10px]">
+            Sign in to {label}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
   return (
     <div className="flex flex-col md:flex-row md:items-center gap-4">
       <div className="flex items-center gap-2">
-        <Button
-          onClick={onStepBack}
-          disabled={disabled || currentStep === 0}
-          variant="outline"
-          size="icon"
-        >
-          <SkipBack className="h-4 w-4" />
-        </Button>
-        
-        {isPlaying ? (
-          <Button onClick={onPause} disabled={disabled} size="icon">
-            <Pause className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button onClick={onPlay} disabled={disabled || currentStep >= totalSteps} size="icon">
-            <Play className="h-4 w-4" />
-          </Button>
+        {wrapWithAuthTooltip(
+          <Button
+            onClick={onStepBack}
+            disabled={isDisabled || currentStep === 0}
+            variant="outline"
+            size="icon"
+          >
+            <SkipBack className="h-4 w-4" />
+          </Button>,
+          "step back"
         )}
         
-        <Button
-          onClick={onStepForward}
-          disabled={disabled || currentStep >= totalSteps}
-          variant="outline"
-          size="icon"
-        >
-          <SkipForward className="h-4 w-4" />
-        </Button>
+        {isPlaying ? (
+          wrapWithAuthTooltip(
+            <Button onClick={onPause} disabled={isDisabled} size="icon">
+              <Pause className="h-4 w-4" />
+            </Button>,
+            "pause"
+          )
+        ) : (
+          wrapWithAuthTooltip(
+            <Button onClick={onPlay} disabled={isDisabled || currentStep >= totalSteps} size="icon">
+              <Play className="h-4 w-4" />
+            </Button>,
+            "play"
+          )
+        )}
         
-        <Button onClick={onReset} disabled={disabled} variant="outline" size="icon">
-          <RotateCcw className="h-4 w-4" />
-        </Button>
+        {wrapWithAuthTooltip(
+          <Button
+            onClick={onStepForward}
+            disabled={isDisabled || currentStep >= totalSteps}
+            variant="outline"
+            size="icon"
+          >
+            <SkipForward className="h-4 w-4" />
+          </Button>,
+          "step forward"
+        )}
+        
+        {wrapWithAuthTooltip(
+          <Button onClick={onReset} disabled={isDisabled} variant="outline" size="icon">
+            <RotateCcw className="h-4 w-4" />
+          </Button>,
+          "reset"
+        )}
       </div>
       
       <div className="flex-1">
@@ -87,7 +127,7 @@ export const StepControls = ({
           min={0.5}
           max={3}
           step={0.5}
-          disabled={disabled}
+          disabled={isDisabled}
         />
       </div>
     </div>

@@ -24,6 +24,8 @@ import { useTestCases } from '@/hooks/useTestCases';
 import { useSubmissionViewer } from '@/hooks/useSubmissionViewer';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useApp } from '@/contexts/AppContext';
+import { AuthNudge } from '../AuthNudge';
 
 interface CodeRunnerProps {
   algorithmId?: string; // problemId in generic version
@@ -89,6 +91,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
 }, ref) => {
   const posthog = usePostHog();
   const isLimitExceeded = useFeatureFlag("todays_limit_exceed");
+  const { user } = useApp();
 
   const [internalLanguage, setInternalLanguage] = useState<Language>('typescript');
   const language = controlledLanguage || internalLanguage;
@@ -402,6 +405,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
         />
       </div>
 
+
       <RunnerFooter
         isExpanded={isOutputExpanded}
         onToggleExpand={handleToggleOutputExpand}
@@ -411,6 +415,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
         isSubmitting={isSubmitting}
         lastRunSuccess={lastRunSuccess}
         algorithm={algorithmData}
+        user={user}
         hasPremiumAccess={hasPremiumAccess}
         handleRandomProblem={handleRandomProblem}
         handleNextProblem={handleNextProblem}
@@ -465,6 +470,15 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
         brainstormProps={brainstormProps}
         onShortcut={handleShortcut}
       />
+
+      {!user && (
+        <div className="px-4 pb-2 pt-1 bg-background border-t">
+          <AuthNudge 
+            message="Sign in to execute code" 
+            description="Log in to run and test your solutions against sample test cases."
+          />
+        </div>
+      )}
     </Tabs>
   );
 

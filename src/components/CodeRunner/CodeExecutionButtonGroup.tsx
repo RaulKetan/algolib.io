@@ -1,6 +1,8 @@
 import React from "react";
 import { Play, Loader2, Send, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -19,6 +21,7 @@ interface CodeExecutionButtonGroupProps {
     isSubmitting: boolean;
     lastRunSuccess: boolean;
     algorithm?: any;
+    user?: User | null;
     hasPremiumAccess?: boolean;
     hideUserMenu?: boolean;
     className?: string;
@@ -32,6 +35,7 @@ export const CodeExecutionButtonGroup: React.FC<CodeExecutionButtonGroupProps> =
     isSubmitting,
     lastRunSuccess,
     algorithm,
+    user,
     hasPremiumAccess = false,
     hideUserMenu = false,
     className = "",
@@ -45,7 +49,15 @@ export const CodeExecutionButtonGroup: React.FC<CodeExecutionButtonGroupProps> =
             whileTap={{ scale: 0.98 }}
         >
             <Button
-                onClick={onRun}
+                onClick={() => {
+                    if (!user) {
+                        toast.error("Sign in required", {
+                            description: "Please log in to run code."
+                        });
+                        return;
+                    }
+                    onRun();
+                }}
                 disabled={isLoading || isSubmitting}
                 size="sm"
                 variant="secondary"
@@ -69,6 +81,12 @@ export const CodeExecutionButtonGroup: React.FC<CodeExecutionButtonGroupProps> =
         >
             <Button
                 onClick={() => {
+                    if (!user) {
+                        toast.error("Sign in required", {
+                            description: "Please log in to submit your solution."
+                        });
+                        return;
+                    }
                     if (!lastRunSuccess && !isLoading && !isSubmitting) {
                         toast.warning("Please run your code successfully before submitting", {
                             description: "You need to pass all sample test cases first."
