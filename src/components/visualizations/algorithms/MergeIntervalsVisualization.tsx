@@ -197,7 +197,7 @@ export const MergeIntervalsVisualization: React.FC = () => {
     });
 
     return stepsList;
-  }, [initialTreeData, initialIntervals]);
+  }, [initialIntervals]);
 
   const handleCaseToggle = (type: 'case1' | 'case2') => {
     setCaseType(type);
