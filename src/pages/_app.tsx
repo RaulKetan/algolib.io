@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <div className="flex min-h-screen">
           <AppSidebar />
           <SidebarInset>
-            <Navbar />
+            <Navbar className="global-nav" />
             <main className="flex-1">
               <Component {...pageProps} />
             </main>

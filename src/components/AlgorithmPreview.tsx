@@ -7,7 +7,7 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/componen
 import dynamic from "next/dynamic";
 const ProblemDescriptionPanel = dynamic(() => import("@/components/algorithm/ProblemDescriptionPanel").then(mod => mod.ProblemDescriptionPanel), { ssr: false });
 const CodeWorkspacePanel = dynamic(() => import("@/components/algorithm/CodeWorkspacePanel").then(mod => mod.CodeWorkspacePanel), { ssr: false });
-const AlgorithmHeader = dynamic(() => import("@/components/algorithm/AlgorithmHeader").then(mod => mod.AlgorithmHeader), { ssr: false });
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
 const CodeRunner = dynamic(() => import("@/components/CodeRunner/CodeRunner").then(mod => mod.CodeRunner), { ssr: false });
 const BrainstormSection = dynamic(() => import("@/components/brainstorm/BrainstormSection").then(mod => mod.BrainstormSection), { ssr: false });
 
@@ -154,11 +154,9 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
           <div className="flex-1 flex flex-col overflow-hidden relative">
             {/* Header Mock */}
             <div className="pointer-events-none opacity-80 border-b">
-              <AlgorithmHeader
-                user={{ email: 'preview@example.com' } as any}
+              <Navbar
+                isProblemMode={true}
                 algorithm={previewAlgorithm}
-                isMobile={isMobile}
-                windowWidth={1200}
                 isInterviewMode={false}
                 toggleInterviewMode={() => { }}
                 timerSeconds={0}
@@ -170,10 +168,8 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
                 handleNextProblem={() => { }}
                 handlePreviousProblem={() => { }}
                 handleShare={() => { }}
-                handleSignOut={() => { }}
-                hideUserMenu={true}
-                hideFeedback={true}
                 hideShare={true}
+                hideFeedback={true}
               />
             </div>
             <div className="flex-1 overflow-hidden relative">
@@ -264,27 +260,23 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
         <div className="flex-1 flex flex-col overflow-hidden relative bg-background">
           {/* Header Mock */}
           <div className="pointer-events-none opacity-80 border-b">
-            <AlgorithmHeader
-              user={{ email: 'preview@example.com' } as any}
-              algorithm={previewAlgorithm}
-              isMobile={isMobile}
-              windowWidth={1200}
-              isInterviewMode={false}
-              toggleInterviewMode={() => { }}
-              timerSeconds={0}
-              isTimerRunning={false}
-              setIsTimerRunning={() => { }}
-              setTimerSeconds={() => { }}
-              formatTime={() => "00:00"}
-              handleRandomProblem={() => { }}
-              handleNextProblem={() => { }}
-              handlePreviousProblem={() => { }}
-              handleShare={() => { }}
-              handleSignOut={() => { }}
-              hideUserMenu={true}
-              hideFeedback={true}
-              hideShare={true}
-            />
+          <Navbar
+            isProblemMode={true}
+            algorithm={previewAlgorithm}
+            isInterviewMode={false}
+            toggleInterviewMode={() => { }}
+            timerSeconds={0}
+            isTimerRunning={false}
+            setIsTimerRunning={() => { }}
+            setTimerSeconds={() => { }}
+            formatTime={() => "00:00"}
+            handleRandomProblem={() => { }}
+            handleNextProblem={() => { }}
+            handlePreviousProblem={() => { }}
+            handleShare={() => { }}
+            hideShare={true}
+            hideFeedback={true}
+          />
           </div>
 
           <div className="flex-1 overflow-hidden relative">

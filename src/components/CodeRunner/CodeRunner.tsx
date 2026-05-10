@@ -243,13 +243,18 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
   };
 
   const handleReset = () => {
+    let resetCode: string;
     if (algorithmData) {
       const impl = algorithmData.implementations?.find((i: any) => i.lang.toLowerCase() === language.toLowerCase());
       const algoCode = impl?.code?.find((c: any) => c.codeType === 'starter')?.code || impl?.code?.find((c: any) => c.codeType === 'optimize')?.code;
-      setCode(algoCode || DEFAULT_CODE[language]);
+      resetCode = algoCode || DEFAULT_CODE[language];
     } else {
-      setCode(DEFAULT_CODE[language]);
+      resetCode = DEFAULT_CODE[language];
     }
+    setCode(resetCode);
+    // Sync parent's savedCode immediately so the initialCode effect doesn't
+    // overwrite the reset with the user's old code on the next render cycle.
+    onCodeChange?.(resetCode);
     toast.success("Code reset to default");
   };
 

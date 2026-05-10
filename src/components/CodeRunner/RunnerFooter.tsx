@@ -80,63 +80,8 @@ export const RunnerFooter: React.FC<RunnerFooterProps> = ({
                 />
             </div>
 
-            {/* Right: Problem Navigation */}
+            {/* Right: Spacer */}
             <div className="flex-1 flex justify-end">
-                <div className="flex items-center shadow-sm rounded-lg overflow-hidden border border-border bg-secondary/80 dark:bg-secondary/50 h-9">
-                    <TooltipProvider>
-                        {handlePreviousProblem && (
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={handlePreviousProblem}
-                                            className="h-9 w-9 rounded-none text-black dark:text-white hover:text-primary hover:bg-muted border-r border-border transition-colors px-0"
-                                        >
-                                            <ChevronLeft className="h-4 w-4" />
-                                        </Button>
-                                    </motion.div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top">Previous Problem</TooltipContent>
-                            </Tooltip>
-                        )}
-                        {handleRandomProblem && (
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={handleRandomProblem}
-                                            className="h-9 w-9 rounded-none text-black dark:text-white hover:text-primary hover:bg-muted border-r border-border transition-colors px-0"
-                                        >
-                                            <Shuffle className="h-3.5 w-3.5" />
-                                        </Button>
-                                    </motion.div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top">Random Problem</TooltipContent>
-                            </Tooltip>
-                        )}
-                        {handleNextProblem && (
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={handleNextProblem}
-                                            className="h-9 w-9 rounded-none text-black dark:text-white hover:text-primary hover:bg-muted transition-colors px-0"
-                                        >
-                                            <ChevronRight className="h-4 w-4" />
-                                        </Button>
-                                    </motion.div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top">Next Problem</TooltipContent>
-                            </Tooltip>
-                        )}
-                    </TooltipProvider>
-                </div>
             </div>
         </div>
     );

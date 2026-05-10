@@ -12,11 +12,10 @@ import dynamic from 'next/dynamic';
 // Components
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
-import { PremiumLoader } from "@/components/PremiumLoader";
 import { CodeRunnerRef } from "@/components/CodeRunner/CodeRunner";
 
 // Refactored Components
-import { AlgorithmHeader } from "@/components/algorithm/AlgorithmHeader";
+import Navbar from "@/components/Navbar";
 import { ProblemDescriptionPanel } from "@/components/algorithm/ProblemDescriptionPanel";
 import { CodeWorkspacePanel } from "@/components/algorithm/CodeWorkspacePanel";
 import { Paywall } from "@/components/Paywall";
@@ -267,14 +266,11 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
 
   return (
     <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+      <style dangerouslySetInnerHTML={{ __html: '.global-nav { display: none !important; }' }} />
       <div className={`h-screen w-full overflow-hidden flex flex-col bg-background ${session.isInterviewMode ? 'border-4 border-green-500/30' : ''}`}>
-        <AlgorithmHeader
-          user={user}
-          profile={profile}
-          hasPremiumAccess={hasPremiumAccess}
+        <Navbar
+          isProblemMode={true}
           algorithm={activeAlgorithm}
-          isMobile={layout.isMobile}
-          windowWidth={layout.windowWidth}
           isInterviewMode={session.isInterviewMode}
           toggleInterviewMode={session.toggleInterviewMode}
           timerSeconds={session.timerSeconds}
@@ -286,15 +282,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
           handleNextProblem={interactions.handleNextProblem}
           handlePreviousProblem={interactions.handlePreviousProblem}
           handleShare={interactions.handleShare}
-          handleSignOut={handleSignOut}
-          onRun={handleRun}
-          onSubmit={handleSubmit}
-          onThinkpad={() => runnerRef.current?.openThinkpad()}
-          isRunnerLoading={runnerState.isLoading}
-          isRunnerSubmitting={runnerState.isSubmitting}
-          lastRunSuccess={runnerState.lastRunSuccess}
-          activeListType={activeListType}
           onToggleSidebar={() => setIsSidebarOpen(true)}
+          activeListType={activeListType}
         />
 
         <div className={`flex-1 relative ${showHorizontalScroll ? 'overflow-x-auto overflow-y-hidden' : 'overflow-hidden'}`}>
@@ -440,8 +429,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                     collapsible={true}
                     className={layout.isRightCollapsed ? 'min-w-[0px]' : ''}
                   >
-                    <div className="h-full pt-0 pl-0 pr-0 sm:pt-0 sm:pl-0 sm:pr-0 pb-1.5 sm:pb-2">
-                      <div className="h-full rounded-xl overflow-hidden border border-border/70 shadow-md bg-card/30 backdrop-blur-sm">
+                    <div className="h-full pt-0 pl-0 pr-0 sm:pt-0 sm:pl-0 sm:pr-0 pb-1.5 sm:pb-2 mr-2">
+                      <div className="h-full rounded-lg overflow-hidden border border-border/70 shadow-md bg-card/30 backdrop-blur-sm">
                         {codeWorkspacePanel}
                       </div>
                     </div>
