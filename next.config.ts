@@ -46,7 +46,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    return [
+    const rewrites = [
       {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
@@ -55,11 +55,16 @@ const nextConfig: NextConfig = {
         source: '/ingest/:path*',
         destination: 'https://us.i.posthog.com/:path*',
       },
-      {
+    ];
+
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      rewrites.push({
         source: '/api/v1/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
-      },
-    ];
+      });
+    }
+
+    return rewrites;
   },
   images: {
     remotePatterns: [
