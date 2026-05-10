@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function FeedbackButton() {
   const pathname = usePathname();
-  
+
   // Hide on problem pages as per request
   if (pathname?.startsWith("/problem/")) {
     return null;
@@ -15,14 +15,14 @@ export function FeedbackButton() {
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] flex items-center">
-      <Button 
-        variant="outline" 
-        size="sm" 
-        asChild 
+      <Button
+        variant="outline"
+        size="sm"
+        asChild
         className="rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-background/90 backdrop-blur-md border-border/60 hover:bg-accent hover:border-border transition-all duration-300 hover:scale-110 active:scale-95 px-4 h-11"
       >
         <a
-          href="https://github.com/rkmahale17/algolib.io"
+          href="https://github.com/rkmahale17/rulcode.com"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2.5"

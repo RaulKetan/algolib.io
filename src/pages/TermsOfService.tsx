@@ -150,7 +150,7 @@ export default function TermsOfService() {
                   </a>{" "}
                   or open an issue on our{" "}
                   <a
-                    href="https://github.com/rkmahale17/algolib.io/issues"
+                    href="https://github.com/rkmahale17/rulcode.com/issues"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline"

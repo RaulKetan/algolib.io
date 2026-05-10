@@ -1,5 +1,5 @@
 /**
- * Environment configuration utility for Algolib.io
+ * Environment configuration utility for rulcode.com
  * Handles switching between Local, QA, and Production environments.
  */
 

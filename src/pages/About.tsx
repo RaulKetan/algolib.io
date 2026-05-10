@@ -130,7 +130,7 @@ export default function About() {
                     <div className="flex flex-wrap gap-4 pt-2">
                       <Button asChild className="gap-2">
                         <a
-                          href="https://github.com/rkmahale17/algolib.io"
+                          href="https://github.com/rkmahale17/rulcode.com"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -140,7 +140,7 @@ export default function About() {
                       </Button>
                       <Button variant="outline" asChild className="gap-2">
                         <a
-                          href="https://github.com/rkmahale17/algolib.io/issues/new"
+                          href="https://github.com/rkmahale17/rulcode.com/issues/new"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -235,7 +235,7 @@ export default function About() {
                   </p>
                   <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
                     <a
-                      href="https://github.com/rkmahale17/algolib.io#-contribute"
+                      href="https://github.com/rkmahale17/rulcode.com#-contribute"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
