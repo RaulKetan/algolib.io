@@ -45,6 +45,7 @@ const blind75Map: Record<string, React.LazyExoticComponent<React.ComponentType<a
   "decode-ways": React.lazy(() => import("@/components/visualizations/algorithms/DecodeWaysVisualization").then(m => ({ default: m.DecodeWaysVisualization }))),
   'unique-paths': React.lazy(() => import('@/components/visualizations/algorithms/MatrixPathVisualization').then(m => ({ default: m.MatrixPathVisualization }))),
   "jump-game": React.lazy(() => import("@/components/visualizations/algorithms/JumpGameVisualization").then(m => ({ default: m.JumpGameVisualization }))),
+  "jump-game-ii": React.lazy(() => import("@/components/visualizations/algorithms/JumpGameIIVisualization").then(m => ({ default: m.JumpGameIIVisualization }))),
   "clone-graph": React.lazy(() => import("@/components/visualizations/algorithms/CloneGraphVisualization").then(m => ({ default: m.CloneGraphVisualization }))),
   "course-schedule": React.lazy(() => import("@/components/visualizations/algorithms/CourseScheduleVisualization").then(m => ({ default: m.CourseScheduleVisualization }))),
   "pacific-atlantic": React.lazy(() => import("@/components/visualizations/algorithms/PacificAtlanticVisualization").then(m => ({ default: m.PacificAtlanticVisualization }))),

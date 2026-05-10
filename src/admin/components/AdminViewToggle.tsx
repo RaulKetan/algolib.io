@@ -1,37 +1,47 @@
+"use client";
+
 import React from 'react';
-import { usePathname, useRouter, useParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
-import { Layout, Edit3, User } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { User, ShieldCheck } from 'lucide-react';
 
 const AdminViewToggle = () => {
     const pathname = usePathname();
     const router = useRouter();
-    const params = useParams();
-    const { id, slug } = params as { id?: string; slug?: string };
-    const { user, profile } = useApp();
+    const { profile } = useApp();
 
     const isAdmin = profile?.role === 'admin';
 
-    // We only show this toggle on problem detail pages or admin problem detail pages
-    const isProblemPage = pathname.startsWith('/problem/');
-    const isAdminProblemPage = pathname.startsWith('/admin/problem/');
-
-    if (!isAdmin || (!isProblemPage && !isAdminProblemPage)) {
+    if (!isAdmin) {
         return null;
     }
 
-    const problemId = id || slug || pathname.split('/').pop();
-    if (!problemId || problemId === 'new') return null;
-
-    const currentMode = isAdminProblemPage ? 'admin' : 'user';
+    const isAdminPage = pathname.startsWith('/admin');
 
     const toggleMode = () => {
-        if (currentMode === 'user') {
-            router.push(`/admin/problem/${problemId}`);
+        if (isAdminPage) {
+            // For problem pages, try to go to the equivalent user page
+            if (pathname.startsWith('/admin/problem/')) {
+                const problemId = pathname.split('/').pop();
+                if (problemId && problemId !== 'new') {
+                    router.push(`/problem/${problemId}`);
+                    return;
+                }
+            }
+            // Otherwise, go to user home
+            router.push('/');
         } else {
-            router.push(`/problem/${problemId}`);
+            // For problem pages, try to go to the equivalent admin page
+            if (pathname.startsWith('/problem/')) {
+                const problemId = pathname.split('/').pop();
+                if (problemId) {
+                    router.push(`/admin/problem/${problemId}`);
+                    return;
+                }
+            }
+            // Otherwise, go to admin dashboard
+            router.push('/admin');
         }
     };
 
@@ -41,13 +51,13 @@ const AdminViewToggle = () => {
                 variant="outline"
                 size="icon"
                 onClick={toggleMode}
-                className="w-10 h-10 rounded-full shadow-2xl bg-background/80 backdrop-blur-md border border-border hover:bg-accent transition-all"
-                title={currentMode === 'user' ? "Switch to Admin View" : "Switch to User View"}
+                className="w-12 h-12 rounded-full shadow-2xl bg-background/80 backdrop-blur-md border border-border hover:bg-accent transition-all"
+                title={isAdminPage ? "Switch to User View" : "Switch to Admin View"}
             >
-                {currentMode === 'user' ? (
-                    <Edit3 className="w-4 h-4 text-primary" />
+                {isAdminPage ? (
+                    <User className="w-5 h-5 text-primary" />
                 ) : (
-                    <User className="w-4 h-4 text-primary" />
+                    <ShieldCheck className="w-5 h-5 text-emerald-500" />
                 )}
             </Button>
         </div>

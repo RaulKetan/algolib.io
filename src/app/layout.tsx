@@ -9,6 +9,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { FeedbackButton } from "@/components/FeedbackButton";
 import Script from "next/script";
 import PostHogPageView from "./PostHogPageView";
+import AdminViewToggle from "@/admin/components/AdminViewToggle";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -71,6 +72,7 @@ export default function RootLayout({
             <Navbar />
             {children}
           </SidebarInset>
+          <AdminViewToggle />
           <FeedbackButton />
         </Providers>
       </body>
