@@ -5,11 +5,9 @@ export enum ListType {
 }
 
 export const LIST_TYPE_LABELS: Record<string, string> = {
-    [ListType.Core]: 'Core Patterns',
+    'all': 'All Problems',
+    [ListType.Core]: 'Core',
     [ListType.Blind75]: 'Blind 75',
-    [ListType.CoreAndBlind75]: 'Core & Blind 75',
-    'coreAlgo': 'Core Patterns',
-    'all': 'All Problems'
 };
 
 export const DIFFICULTY_MAP: Record<string, string> = {
