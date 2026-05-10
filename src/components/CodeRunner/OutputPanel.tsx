@@ -195,16 +195,16 @@ export const OutputPanel = React.memo(({
               onValueChange={setActiveTestCaseTab}
               className="flex-1 flex flex-col min-h-0"
             >
-              <div className="flex items-start justify-between bg-background/50 shrink-0 py-2 px-2 min-h-[52px]">
+              <div className="flex items-start justify-between bg-background/50 shrink-0 py-1.5 px-2 min-h-[44px]">
                 {/* Scrollable Tabs List */}
                 <ScrollArea className="flex-1 w-full whitespace-nowrap">
                   <div className="flex items-center w-max p-1">
-                    <TabsList className="h-10 bg-transparent p-0 flex-nowrap justify-start gap-1 border-none shadow-none">
+                    <TabsList className="h-9 bg-transparent p-0 flex-nowrap justify-start gap-1 border-none shadow-none">
                       {allTestCases.filter(tc => !tc.isSubmission).map((tc, index) => (
                         <TabsTrigger
                           key={tc.id}
                           value={`case-${tc.id}`}
-                          className="text-[13px] px-4 h-8 rounded-full whitespace-nowrap bg-muted/30 border border-black/20 dark:border-white/30 text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white data-[state=active]:bg-primary/15 data-[state=active]:border-primary/20 data-[state=active]:shadow-none data-[state=active]:text-black dark:data-[state=active]:text-white relative group shrink-0 transition-all font-medium"
+                          className="text-xs px-2.5 h-7 rounded-full whitespace-nowrap bg-muted/30 border border-black/20 dark:border-white/30 text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white data-[state=active]:bg-primary/15 data-[state=active]:border-primary/20 data-[state=active]:shadow-none data-[state=active]:text-black dark:data-[state=active]:text-white relative group shrink-0 transition-all font-medium"
                         >
                           {tc.isCustom ? `Case ${index + 1}` : `Case ${index + 1}`}
                           {/* Delete button for all cases */}
@@ -231,7 +231,7 @@ export const OutputPanel = React.memo(({
                                   variant="ghost"
                                   size="icon"
                                   onClick={onAddTestCase}
-                                  className="h-8 w-8 rounded-full bg-muted/30 border border-black/20 dark:border-white/30 hover:bg-muted text-foreground/70 hover:text-foreground transition-colors ml-1"
+                                  className="h-7 w-7 rounded-full bg-muted/30 border border-black/20 dark:border-white/30 hover:bg-muted text-foreground/70 hover:text-foreground transition-colors ml-1"
                                   disabled={loading}
                                 >
                                   <Plus className="w-4 h-4" />
@@ -340,15 +340,15 @@ export const OutputPanel = React.memo(({
               {output.testResults && (
                 <div className="h-full flex flex-col min-h-0">
                   <Tabs value={activeResultTab} onValueChange={setActiveResultTab} className="flex-1 flex flex-col min-h-0">
-                    <div className="flex border-b bg-background/50 shrink-0 sticky top-0 z-10 py-2 px-2 items-start w-full min-h-[52px]">
+                    <div className="flex border-b bg-background/50 shrink-0 sticky top-0 z-10 py-1.5 px-2 items-start w-full min-h-[44px]">
                       <ScrollArea className="flex-1 w-full whitespace-nowrap">
                         <div className="flex w-max p-1">
-                          <TabsList className="h-10 bg-transparent p-0 flex-nowrap justify-start gap-1 border-none shadow-none">
+                          <TabsList className="h-9 bg-transparent p-0 flex-nowrap justify-start gap-1 border-none shadow-none">
                             {output.testResults.map((result: any, index: number) => (
                               <TabsTrigger
                                 key={index}
                                 value={`result-${index}`}
-                                className={`text-[13px] px-4 h-8 rounded-full whitespace-nowrap gap-1.5 shadow-none transition-all font-medium bg-muted/30 border border-black/20 dark:border-white/30 text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white data-[state=active]:bg-primary/15 data-[state=active]:text-black dark:data-[state=active]:text-white data-[state=active]:shadow-none data-[state=active]:border-primary/20`}
+                                className={`text-xs px-2.5 h-7 rounded-full whitespace-nowrap gap-1 shadow-none transition-all font-medium bg-muted/30 border border-black/20 dark:border-white/30 text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white data-[state=active]:bg-primary/15 data-[state=active]:text-black dark:data-[state=active]:text-white data-[state=active]:shadow-none data-[state=active]:border-primary/20`}
                               >
                               {result.status === 'pass' ? (
                                 <CheckCircle2 className="w-3.5 h-3.5 text-green-600 dark:text-green-500" />

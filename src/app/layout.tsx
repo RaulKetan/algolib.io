@@ -69,7 +69,7 @@ export default function RootLayout({
 
           <AppSidebar />
           <SidebarInset>
-            <Navbar />
+            <Navbar className="global-nav" />
             {children}
           </SidebarInset>
           <AdminViewToggle />
