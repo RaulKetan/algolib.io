@@ -344,6 +344,7 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                         setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                         handleRichTextClick={handleRichTextClick}
                         submissions={submissions}
+                        user={user}
                         onSelectSubmission={handleSelectSubmission}
                       />
                     </div>
@@ -419,6 +420,7 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                           setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
                           handleRichTextClick={handleRichTextClick}
                           hasPremiumAccess={hasPremiumAccess}
+                          user={user}
                           submissions={submissions}
                           onSelectSubmission={handleSelectSubmission}
                         />

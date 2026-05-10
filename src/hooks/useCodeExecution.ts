@@ -161,6 +161,14 @@ export const useCodeExecution = ({
     };
 
     const executeCode = async (isSubmission: boolean = false) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            toast.error("Sign in required", {
+                description: "Please log in to run or submit code solutions."
+            });
+            return { result: { stderr: "Authentication required" }, allPassed: false, execTime: 0 };
+        }
+
         if (isLimitExceeded) {
             toast.error("Daily execution limit exceeded! Please try again in sometime.");
             return { result: { stderr: "Limit exceeded" }, allPassed: false, execTime: 0 };

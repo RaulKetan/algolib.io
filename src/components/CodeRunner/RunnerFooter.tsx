@@ -1,6 +1,7 @@
 import React from "react";
 import { ChevronUp, ChevronDown, Shuffle, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { CodeExecutionButtonGroup } from "./CodeExecutionButtonGroup";
 import {
@@ -22,6 +23,7 @@ interface RunnerFooterProps {
     isSubmitting: boolean;
     lastRunSuccess: boolean;
     algorithm?: any;
+    user?: User | null;
     hideUserMenu?: boolean;
     hasPremiumAccess?: boolean;
     handleRandomProblem?: () => void;
@@ -38,6 +40,7 @@ export const RunnerFooter: React.FC<RunnerFooterProps> = ({
     isSubmitting,
     lastRunSuccess,
     algorithm,
+    user,
     hideUserMenu,
     hasPremiumAccess,
     handleRandomProblem,
@@ -70,6 +73,7 @@ export const RunnerFooter: React.FC<RunnerFooterProps> = ({
                     isSubmitting={isSubmitting}
                     lastRunSuccess={lastRunSuccess}
                     algorithm={algorithm}
+                    user={user}
                     hideUserMenu={hideUserMenu}
                     hasPremiumAccess={hasPremiumAccess}
                     showTooltips={true}

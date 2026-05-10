@@ -111,7 +111,7 @@ export const CodeWorkspacePanel = React.memo(({
           <AuthGuard
             fallbackTitle="Sign in to use Code Runner"
             fallbackDescription="Create an account or sign in to run and test your code solutions."
-            disabled={isPlatformPreview}
+            disabled={true}
           >
             {algorithmId && algorithm ? (
               <CodeRunner

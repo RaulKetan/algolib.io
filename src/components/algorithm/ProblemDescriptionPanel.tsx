@@ -29,7 +29,9 @@ import {
   History,
   AlertTriangle,
   XCircle,
+  User as UserIcon,
 } from "lucide-react";
+import { User } from "@supabase/supabase-js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -48,6 +50,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { TabWarning } from "@/components/TabWarning";
 import { FeatureGuard } from "@/components/FeatureGuard";
 import { ProOverlay } from "@/components/ProOverlay";
+import { AuthNudge } from "@/components/AuthNudge";
 import { VideoTutorialCard } from "./VideoTutorialCard";
 
 // Lazy components via next/dynamic to avoid SSR issues
@@ -89,6 +92,7 @@ interface ProblemDescriptionPanelProps {
   handleRichTextClick: (e: React.MouseEvent<HTMLDivElement>) => void;
   isPlatformPreview?: boolean;
   hasPremiumAccess?: boolean;
+  user?: User | null;
   submissions?: Submission[];
   onSelectSubmission?: (submission: Submission) => void;
 }
@@ -111,6 +115,7 @@ export const ProblemDescriptionPanel = React.memo(({
   handleRichTextClick,
   isPlatformPreview = false,
   hasPremiumAccess = false,
+  user = null,
   submissions = [],
   onSelectSubmission,
 }: ProblemDescriptionPanelProps) => {
@@ -824,7 +829,7 @@ export const ProblemDescriptionPanel = React.memo(({
               <AuthGuard
                 fallbackTitle="Sign in to view Visualizations"
                 fallbackDescription="Create an account or sign in to access interactive algorithm visualizations."
-                disabled={isPlatformPreview}
+                disabled={true}
               >
                 <div className="flex-1 flex flex-col border rounded-lg overflow-hidden bg-muted/10 m-4">
                   <div className="flex items-center justify-between px-4 py-2 border-b bg-background/50 backdrop-blur-sm shrink-0">
@@ -846,7 +851,16 @@ export const ProblemDescriptionPanel = React.memo(({
                     {(algorithm?.is_premium || algorithm?.is_pro || algorithm?.metadata?.is_pro) && !hasPremiumAccess && !isPlatformPreview ? (
                       <ProOverlay className="rounded-none border-0 flex-1 h-full" />
                     ) : (
-                      renderVisualization()
+                      <div className="flex-1 flex flex-col min-h-0 relative">
+                        <div className="flex-1 overflow-auto no-scrollbar">
+                          {renderVisualization()}
+                        </div>
+                        {!user && (
+                          <div className="px-4 pb-4 pt-2">
+                            <AuthNudge />
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
