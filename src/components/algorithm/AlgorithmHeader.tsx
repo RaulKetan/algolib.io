@@ -165,7 +165,7 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
               <Button variant="outline" size="sm" asChild className="h-8">
                 <a
-                  href="https://github.com/rkmahale17/algolib.io"
+                  href="https://github.com/rkmahale17/rulcode.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"
@@ -178,116 +178,116 @@ export const AlgorithmHeader: React.FC<AlgorithmHeaderProps> = ({
             </div>
           )}
 
-      {/* Right Side: Share, Bug, Timer, Interview, Theme, Profile */}
-      <div className="ml-auto flex items-center gap-2">
+          {/* Right Side: Share, Bug, Timer, Interview, Theme, Profile */}
+          <div className="ml-auto flex items-center gap-2">
 
-        {/* Condensed Menu (Tablet/Mobile < 778px) */}
-        {showCondensedMenu && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Menu className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Menu</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-
-
-              {!hideShare && (
-                <DropdownMenuItem onClick={handleShare}>
-                  <Share2 className="mr-2 h-4 w-4" />
-                  <span>Share</span>
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem asChild>
-                <Link href={profile?.username ? `/profile/${profile.username}` : "/profile"}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {/* Interview Mode - Hidden for now */}
-              <FeatureGuard flag="interview_mode">
-                <DropdownMenuItem onClick={toggleInterviewMode}>
-                  <Monitor className="mr-2 h-4 w-4" />
-                  <span>{isInterviewMode ? "Exit Interview Mode" : "Interview Mode"}</span>
-                </DropdownMenuItem>
-              </FeatureGuard>
-
-              {/* Timer in Dropdown */}
-              <div className="p-2 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm">
-                  <Timer className="h-4 w-4" />
-                  <span className="font-mono">{formatTime(timerSeconds)}</span>
-                </div>
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setIsTimerRunning(!isTimerRunning); }}>
-                    {isTimerRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+            {/* Condensed Menu (Tablet/Mobile < 778px) */}
+            {showCondensedMenu && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Menu className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setTimerSeconds(0); setIsTimerRunning(false); }}>
-                    <RotateCcw className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
-        {/* Desktop Actions - Show only if NOT condensed menu */}
-        {!hideShare && !showCondensedMenu && (!algorithm?.controls || algorithm.controls?.social?.share !== false) && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShare}>
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Share</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Menu</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
 
 
-        {!showCondensedMenu && (!algorithm?.controls || algorithm.controls?.header?.timer !== false) && (
-          <TooltipProvider>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={isTimerRunning ? "secondary" : "ghost"}
-                  size="sm"
-                  className="gap-2 font-mono h-8 text-xs"
-                >
-                  <Timer className="h-4 w-4" />
-                  {formatTime(timerSeconds)}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-lg">{formatTime(timerSeconds)}</span>
-                    <Button variant="ghost" size="icon" onClick={() => setTimerSeconds(0)}>
-                      <RotateCcw className="h-4 w-4" />
-                    </Button>
+                  {!hideShare && (
+                    <DropdownMenuItem onClick={handleShare}>
+                      <Share2 className="mr-2 h-4 w-4" />
+                      <span>Share</span>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem asChild>
+                    <Link href={profile?.username ? `/profile/${profile.username}` : "/profile"}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {/* Interview Mode - Hidden for now */}
+                  <FeatureGuard flag="interview_mode">
+                    <DropdownMenuItem onClick={toggleInterviewMode}>
+                      <Monitor className="mr-2 h-4 w-4" />
+                      <span>{isInterviewMode ? "Exit Interview Mode" : "Interview Mode"}</span>
+                    </DropdownMenuItem>
+                  </FeatureGuard>
+
+                  {/* Timer in Dropdown */}
+                  <div className="p-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Timer className="h-4 w-4" />
+                      <span className="font-mono">{formatTime(timerSeconds)}</span>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setIsTimerRunning(!isTimerRunning); }}>
+                        {isTimerRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setTimerSeconds(0); setIsTimerRunning(false); }}>
+                        <RotateCcw className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button className="flex-1" onClick={() => setIsTimerRunning(!isTimerRunning)}>
-                      {isTimerRunning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
-                      {isTimerRunning ? "Pause" : "Start"}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {/* Desktop Actions - Show only if NOT condensed menu */}
+            {!hideShare && !showCondensedMenu && (!algorithm?.controls || algorithm.controls?.social?.share !== false) && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShare}>
+                      <Share2 className="h-4 w-4" />
                     </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </TooltipProvider>
-        )}
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Share</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
 
-        <div className="h-4 w-px bg-border mx-1" />
 
-        <ThemeToggle />
+            {!showCondensedMenu && (!algorithm?.controls || algorithm.controls?.header?.timer !== false) && (
+              <TooltipProvider>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={isTimerRunning ? "secondary" : "ghost"}
+                      size="sm"
+                      className="gap-2 font-mono h-8 text-xs"
+                    >
+                      <Timer className="h-4 w-4" />
+                      {formatTime(timerSeconds)}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-lg">{formatTime(timerSeconds)}</span>
+                        <Button variant="ghost" size="icon" onClick={() => setTimerSeconds(0)}>
+                          <RotateCcw className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button className="flex-1" onClick={() => setIsTimerRunning(!isTimerRunning)}>
+                          {isTimerRunning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                          {isTimerRunning ? "Pause" : "Start"}
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </TooltipProvider>
+            )}
 
-        {!hideUserMenu && <UserMenu />}
-      </div>
+            <div className="h-4 w-px bg-border mx-1" />
+
+            <ThemeToggle />
+
+            {!hideUserMenu && <UserMenu />}
+          </div>
         </div>
       </div>
     </nav>

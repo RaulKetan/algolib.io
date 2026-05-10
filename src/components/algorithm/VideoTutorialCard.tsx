@@ -41,7 +41,7 @@ export const VideoTutorialCard: React.FC<VideoTutorialCardProps> = ({ tutorial, 
           <div className="pt-2 border-t border-border/50">
             <p className="text-[10px] sm:text-xs text-muted-foreground italic">
               <strong>Credits:</strong> Video tutorial by NeetCode (used with permission). All written
-              explanations, code examples, and additional insights provided by algolib.io.
+              explanations, code examples, and additional insights provided by rulcode.com.
             </p>
           </div>
         </div>
