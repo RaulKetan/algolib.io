@@ -3,7 +3,9 @@ import { Card } from '@/components/ui/card';
 import { SimpleStepControls } from '../shared/SimpleStepControls';
 import { VariablePanel } from '../shared/VariablePanel';
 import { AnimatedCodeEditor } from '../shared/AnimatedCodeEditor';
-import { motion, AnimatePresence } from 'framer-motion';
+import { VisualizationLayout } from '../shared/VisualizationLayout';
+import { TreeDeciduous, Activity, Target } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface TreeNode {
   val: number;
@@ -13,32 +15,27 @@ interface TreeNode {
 }
 
 interface Step {
-  line: number;
-  vars: {
-    node: string;
-    leftMax: string;
-    rightMax: string;
-    res: string;
-    returnVal: string;
-  };
-  msg: string;
   activeNodeId: number | null;
-  highlightedPath: number[];
-  completedNodes: Set<number>;
+  maxPathFound: number;
+  leftMax: number | string;
+  rightMax: number | string;
+  returnValue: number | string;
+  explanation: string;
+  highlightedLines: number[];
+  completedNodes: number[];
 }
 
-export const BinaryTreeMaximumPathSumVisualization = () => {
+export const BinaryTreeMaximumPathSumVisualization: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+
   const code = `function maxPathSum(root: TreeNode | null): number {
   let res = -Infinity;
 
   function dfs(node: TreeNode | null): number {
     if (!node) return 0;
 
-    let leftMax = dfs(node.left);
-    let rightMax = dfs(node.right);
-
-    leftMax = Math.max(leftMax, 0);
-    rightMax = Math.max(rightMax, 0);
+    let leftMax = Math.max(dfs(node.left), 0);
+    let rightMax = Math.max(dfs(node.right), 0);
 
     res = Math.max(res, node.val + leftMax + rightMax);
 
@@ -49,12 +46,6 @@ export const BinaryTreeMaximumPathSumVisualization = () => {
   return res;
 }`;
 
-  // Define a demo tree
-  //      -10(0)
-  //      /    \
-  //    9(1)  20(2)
-  //          /   \
-  //        15(3) 7(4)
   const tree: TreeNode = {
     val: -10,
     id: 0,
@@ -67,238 +58,202 @@ export const BinaryTreeMaximumPathSumVisualization = () => {
     },
   };
 
-  const steps = useMemo<Step[]>(() => {
+  const steps = useMemo(() => {
     const s: Step[] = [];
     let res = -Infinity;
-    const completedNodes = new Set<number>();
+    const completed: number[] = [];
 
-    function addStep(line: number, node: TreeNode | null, leftMax: any, rightMax: any, currRes: any, returnVal: any, msg: string, activeNodeId: number | null = null, path: number[] = []) {
+    function addStep(node: TreeNode | null, left: any, right: any, ret: any, msg: string, lines: number[]) {
       s.push({
-        line,
-        vars: {
-          node: node ? `${node.val}` : (node === null ? 'null' : '-'),
-          leftMax: leftMax !== undefined ? `${leftMax}` : '-',
-          rightMax: rightMax !== undefined ? `${rightMax}` : '-',
-          res: currRes === -Infinity ? '-∞' : `${currRes}`,
-          returnVal: returnVal !== undefined ? `${returnVal}` : '-',
-        },
-        msg,
-        activeNodeId: activeNodeId ?? (node ? node.id : null),
-        highlightedPath: path,
-        completedNodes: new Set(completedNodes),
+        activeNodeId: node ? node.id : null,
+        maxPathFound: res,
+        leftMax: left ?? '-',
+        rightMax: right ?? '-',
+        returnValue: ret ?? '-',
+        explanation: msg,
+        highlightedLines: lines,
+        completedNodes: [...completed]
       });
     }
 
-    addStep(2, null, undefined, undefined, res, undefined, "Initialize result res = -Infinity");
-    addStep(18, tree, undefined, undefined, res, undefined, "Start DFS from the root node (-10)");
+    addStep(null, null, null, null, "Initialize global maximum res = -Infinity.", [2]);
 
     function dfs(node: TreeNode | null): number {
-      const nodeId = node ? node.id : -1;
-      
       if (!node) {
-        addStep(5, null, undefined, undefined, res, 0, "Base case: Node is null, return 0");
+        addStep(null, null, null, 0, "Base case: node is null, return 0.", [5]);
         return 0;
       }
 
-      addStep(5, node, undefined, undefined, res, undefined, `Enter DFS for node ${node.val}`);
+      addStep(node, null, null, null, `Visiting node ${node.val}. Calculating max path through children.`, [4, 7, 8]);
       
-      addStep(7, node, undefined, undefined, res, undefined, `Visit left child of ${node.val}`);
-      const leftRaw = dfs(node.left);
-      let leftMax = leftRaw;
-      addStep(7, node, leftMax, undefined, res, undefined, `Left child returned ${leftMax}`);
+      const left = Math.max(dfs(node.left), 0);
+      addStep(node, left, null, null, `Left child of ${node.val} processed. Max path from left: ${left}.`, [7]);
 
-      addStep(8, node, leftMax, undefined, res, undefined, `Visit right child of ${node.val}`);
-      const rightRaw = dfs(node.right);
-      let rightMax = rightRaw;
-      addStep(8, node, leftMax, rightMax, res, undefined, `Right child returned ${rightMax}`);
+      const right = Math.max(dfs(node.right), 0);
+      addStep(node, left, right, null, `Right child of ${node.val} processed. Max path from right: ${right}.`, [8]);
 
-      leftMax = Math.max(leftMax, 0);
-      addStep(10, node, leftMax, rightMax, res, undefined, `Adjust leftMax: max(${leftRaw}, 0) = ${leftMax}`);
-
-      rightMax = Math.max(rightMax, 0);
-      addStep(11, node, leftMax, rightMax, res, undefined, `Adjust rightMax: max(${rightRaw}, 0) = ${rightMax}`);
-
-      const currentSum = node.val + leftMax + rightMax;
       const oldRes = res;
-      res = Math.max(res, currentSum);
-      
-      let path: number[] = [];
-      if (res === 42 && node.id === 2) {
-         path = [3, 2, 4]; // 15 -> 20 -> 7
-      }
+      const currentPathSum = node.val + left + right;
+      res = Math.max(res, currentPathSum);
 
-      const resMsg = res > oldRes 
-        ? `New global maximum found! max(${oldRes === -Infinity ? '-∞' : oldRes}, ${node.val} + ${leftMax} + ${rightMax}) = ${res}`
-        : `Global maximum stays ${res}. currentSum at this node = ${currentSum}`;
-      
-      addStep(13, node, leftMax, rightMax, res, undefined, resMsg, node.id, path);
+      addStep(node, left, right, null, 
+        currentPathSum > oldRes 
+          ? `Found new max path sum! max(${oldRes === -Infinity ? '-∞' : oldRes}, ${node.val} + ${left} + ${right}) = ${res}.`
+          : `Global max remains ${res}. (Current path sum: ${currentPathSum}).`, 
+        [10]
+      );
 
-      const returnVal = node.val + Math.max(leftMax, rightMax);
-      addStep(15, node, leftMax, rightMax, res, returnVal, `Return max path through this node without split: ${node.val} + max(${leftMax}, ${rightMax}) = ${returnVal}`);
+      const ret = node.val + Math.max(left, right);
+      addStep(node, left, right, ret, `Returning ${ret} as the max path that can be extended to this node's parent.`, [12]);
       
-      completedNodes.add(node.id);
-      return returnVal;
+      completed.push(node.id);
+      return ret;
     }
 
     dfs(tree);
-    addStep(19, null, undefined, undefined, res, res, `Final result: ${res}`);
+    addStep(null, null, null, res, `DFS complete. Final maximum path sum is ${res}.`, [16]);
 
     return s;
   }, []);
 
-  const [currentStepIdx, setCurrentStepIdx] = useState(0);
-  const step = steps[currentStepIdx];
+  const step = steps[currentStep];
 
-  const nodePositions: Record<number, { x: number; y: number }> = {
-    0: { x: 50, y: 15 },
-    1: { x: 25, y: 45 },
-    2: { x: 75, y: 45 },
-    3: { x: 65, y: 75 },
-    4: { x: 85, y: 75 },
-  };
+  const renderTree = () => {
+    const positions: Record<number, { x: number, y: number }> = {
+      0: { x: 200, y: 40 },
+      1: { x: 100, y: 120 },
+      2: { x: 300, y: 120 },
+      3: { x: 250, y: 200 },
+      4: { x: 350, y: 200 }
+    };
 
-  const renderEdges = (node: TreeNode | null, parentX?: number, parentY?: number): JSX.Element[] => {
-    if (!node) return [];
-    const pos = nodePositions[node.id];
-    let edges: JSX.Element[] = [];
+    const edges = [[0, 1], [0, 2], [2, 3], [2, 4]];
+    const nodeIds = Object.keys(positions).map(Number);
+    const nodeMap: Record<number, number> = { 0: -10, 1: 9, 2: 20, 3: 15, 4: 7 };
 
-    if (parentX !== undefined && parentY !== undefined) {
-      const isInPath = step.highlightedPath.includes(node.id) && step.highlightedPath.includes(node.id === 1 ? 0 : node.id === 2 ? 0 : node.id === 3 ? 2 : 2);
-      // Simplified path logic for demo tree
-      const isActuallyInPath = (node.id === 3 && step.highlightedPath.includes(3) && step.highlightedPath.includes(2)) ||
-                               (node.id === 4 && step.highlightedPath.includes(4) && step.highlightedPath.includes(2)) ||
-                               (node.id === 1 && step.highlightedPath.includes(1) && step.highlightedPath.includes(0)) ||
-                               (node.id === 2 && step.highlightedPath.includes(2) && step.highlightedPath.includes(0));
-
-      edges.push(
-        <motion.line
-          key={`edge-${node.id}`}
-          x1={parentX}
-          y1={parentY}
-          x2={pos.x}
-          y2={pos.y}
-          stroke="currentColor"
-          strokeWidth="2"
-          className={isActuallyInPath ? "text-green-500" : "text-slate-300 dark:text-slate-700"}
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-        />
-      );
-    }
-
-    return [
-      ...edges,
-      ...renderEdges(node.left, pos.x, pos.y),
-      ...renderEdges(node.right, pos.x, pos.y),
-    ];
-  };
-
-  const renderNodes = (node: TreeNode | null): JSX.Element[] => {
-    if (!node) return [];
-    const pos = nodePositions[node.id];
-    const isActive = step.activeNodeId === node.id;
-    const isCompleted = step.completedNodes.has(node.id);
-    const isInPath = step.highlightedPath.includes(node.id);
-
-    return [
-      <motion.g
-        key={`node-${node.id}`}
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', damping: 12, stiffness: 200 }}
-      >
-        <circle
-          cx={pos.x}
-          cy={pos.y}
-          r="8"
-          className={`transition-colors duration-300 fill-card stroke-2 ${
-            isInPath
-              ? "stroke-green-500 fill-green-500/10"
-              : isActive
-              ? "stroke-yellow-500 fill-yellow-500/10"
-              : isCompleted
-              ? "stroke-blue-500 fill-blue-500/5"
-              : "stroke-slate-300 dark:stroke-slate-700"
-          }`}
-        />
-        <text
-          x={pos.x}
-          y={pos.y}
-          dy="0.32em"
-          textAnchor="middle"
-          className={`text-[4px] font-bold ${
-            isInPath ? "fill-green-600 dark:fill-green-400" : "fill-foreground"
-          }`}
-        >
-          {node.val}
-        </text>
-      </motion.g>,
-      ...renderNodes(node.left),
-      ...renderNodes(node.right),
-    ];
+    return (
+      <div className="w-full aspect-[400/240] relative">
+        <svg viewBox="0 0 400 240" className="w-full h-full">
+          {edges.map(([u, v], i) => (
+            <line 
+              key={i} 
+              x1={positions[u].x} y1={positions[u].y} 
+              x2={positions[v].x} y2={positions[v].y} 
+              stroke="currentColor" className="text-border" strokeWidth="2" 
+            />
+          ))}
+          {nodeIds.map(id => {
+            const isCurrent = id === step.activeNodeId;
+            const isDone = step.completedNodes.includes(id);
+            
+            return (
+              <g key={id}>
+                <motion.circle
+                  cx={positions[id].x} cy={positions[id].y} r="18"
+                  animate={{
+                    fill: isCurrent ? '#3b82f6' : isDone ? '#10b98120' : 'hsl(var(--card))',
+                    stroke: isCurrent ? '#3b82f6' : isDone ? '#10b981' : 'hsl(var(--border))',
+                    scale: isCurrent ? 1.2 : 1
+                  }}
+                  transition={{ duration: 0 }}
+                  strokeWidth="2"
+                />
+                <text 
+                  x={positions[id].x} y={positions[id].y + 4} textAnchor="middle" 
+                  className={`text-[10px] font-bold select-none ${isCurrent ? 'fill-white' : 'fill-foreground'}`}
+                >
+                  {nodeMap[id]}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    );
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <SimpleStepControls
-        currentStep={currentStepIdx}
-        totalSteps={steps.length}
-        onStepChange={setCurrentStepIdx}
-      />
+    <VisualizationLayout
+      controls={
+        <SimpleStepControls
+          currentStep={currentStep}
+          totalSteps={steps.length}
+          onStepChange={setCurrentStep}
+        />
+      }
+      leftContent={
+        <div className="space-y-6 flex flex-col h-full">
+          <div>
+            <h2 className="text-sm font-bold text-foreground mb-4 opacity-90 flex items-center gap-2">
+              <TreeDeciduous size={16} className="text-primary" />
+              Maximum Path Sum Analysis
+            </h2>
+            <Card className="p-8 bg-card/60 backdrop-blur border-border/50 shadow-sm overflow-hidden flex justify-center items-center">
+              {renderTree()}
+            </Card>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="flex flex-col gap-6">
-          <Card className="p-6 flex flex-col items-center justify-center min-h-[300px] bg-slate-50/50 dark:bg-slate-900/50 relative overflow-hidden">
-            <div className="absolute top-2 left-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Tree Visualization
-            </div>
-            <svg viewBox="0 0 100 80" className="w-full h-[300px]" preserveAspectRatio="xMidYMin meet">
-              {renderEdges(tree)}
-              {renderNodes(tree)}
-            </svg>
-            <div className="mt-4 flex gap-4 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full border-2 border-yellow-500 bg-yellow-500/10" />
-                <span>Current</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full border-2 border-blue-500 bg-blue-500/5" />
-                <span>Processed</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full border-2 border-green-500 bg-green-500/10" />
-                <span>Max Path</span>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <Card className="p-4 bg-primary/5 border-l-4 border-primary shadow-sm h-full flex flex-col justify-center">
+               <h4 className="text-[9px] font-bold uppercase tracking-widest text-primary/80 mb-2">Commentary</h4>
+               <p className="text-[13px] font-medium leading-relaxed text-foreground/90">
+                 {step.explanation}
+               </p>
+             </Card>
+             
+             <Card className="p-4 bg-muted/30 border-muted">
+                <h4 className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                  <Activity size={12} />
+                  DFS Context
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-muted-foreground">Left Max:</span>
+                    <span className="font-mono font-bold text-primary">{step.leftMax}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-muted-foreground">Right Max:</span>
+                    <span className="font-mono font-bold text-primary">{step.rightMax}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[11px] pt-2 border-t border-border/50">
+                    <span className="text-muted-foreground font-bold">Return:</span>
+                    <span className="font-mono font-bold text-green-600">{step.returnValue}</span>
+                  </div>
+                </div>
+             </Card>
+          </div>
+
+          <Card className="p-4 bg-primary/5 border-primary/20 shadow-inner">
+             <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Target size={14} className="text-primary" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Global Maximum (res)</span>
+                </div>
+                <span className="text-xl font-black text-primary">
+                  {step.maxPathFound === -Infinity ? '-∞' : step.maxPathFound}
+                </span>
+             </div>
           </Card>
 
-          <div className="flex flex-col gap-4">
-            <Card className="p-4 bg-primary/5 border-primary/10 min-h-[80px] flex items-center">
-              <p className="text-sm leading-relaxed text-foreground/90 font-medium">
-                {step.msg}
-              </p>
-            </Card>
-
-            <VariablePanel
-              variables={{
-                "Node": step.vars.node,
-                "Left Max Path": step.vars.leftMax,
-                "Right Max Path": step.vars.rightMax,
-                "Global Max (res)": step.vars.res,
-                "Return Value": step.vars.returnVal,
-              }}
-            />
-          </div>
+          <VariablePanel
+            variables={step.activeNodeId !== null ? {
+              "activeNode": tree.id === step.activeNodeId ? tree.val : "...", // simplified
+              "leftMax": step.leftMax,
+              "rightMax": step.rightMax,
+              "currentRes": step.maxPathFound
+            } : { "res": step.maxPathFound }}
+          />
         </div>
-
-        <Card className="overflow-hidden border-slate-200 dark:border-slate-800">
+      }
+      rightContent={
+        <Card className="h-full overflow-hidden flex flex-col shadow-sm border-border/50">
           <AnimatedCodeEditor
             code={code}
             language="typescript"
-            highlightedLines={[step.line]}
+            highlightedLines={step.highlightedLines}
           />
         </Card>
-      </div>
-    </div>
+      }
+    />
   );
 };

@@ -69,12 +69,12 @@ export function AlgorithmList() {
 
   const filteredAlgorithms = algorithms.filter(algo => {
     if (listTypeFilter === 'all') return true;
-    // Check list_type
-    const type = algo.list_type || 'core';
+    // Check listType (from Redux) or list_type (from raw DB if applicable)
+    const type = algo.listType || algo.list_type || 'core';
     return type === listTypeFilter;
   })?.sort((a: any, b: any) => {
-    let aValue = a[sortConfig.key];
-    let bValue = b[sortConfig.key];
+    let aValue = sortConfig.key === 'list_type' ? (a.listType || a.list_type) : a[sortConfig.key];
+    let bValue = sortConfig.key === 'list_type' ? (b.listType || b.list_type) : b[sortConfig.key];
 
     if (sortConfig.key === 'serial_no') {
       const aNum = aValue === null || aValue === undefined || aValue === '' ? -1 : Number(aValue);
@@ -168,7 +168,7 @@ export function AlgorithmList() {
 
 
             {Object.entries(LIST_TYPE_LABELS)
-              .filter(([key]) => key !== 'all')
+              .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
               .map(([value, label]) => (
                 <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
@@ -226,7 +226,7 @@ export function AlgorithmList() {
                     </TableCell>
                     <TableCell className="font-mono text-sm">{algo.serial_no || '-'}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{algo.list_type || 'core'}</Badge>
+                      <Badge variant="outline">{LIST_TYPE_LABELS[algo.listType || algo.list_type || 'core'] || algo.listType || algo.list_type || 'Core Patterns'}</Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2">

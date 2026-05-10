@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { SkipBack, SkipForward, RotateCcw } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { SimpleStepControls } from '../shared/SimpleStepControls';
 import { VariablePanel } from '../shared/VariablePanel';
-import { IsolatedCodeEditor } from '../shared/IsolatedCodeEditor';
+import { AnimatedCodeEditor } from '../shared/AnimatedCodeEditor';
+import { VisualizationLayout } from '../shared/VisualizationLayout';
+import { TreeDeciduous, Inbox, Maximize2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TreeNode {
   val: number;
@@ -13,413 +14,367 @@ interface TreeNode {
 }
 
 interface Step {
-  currentNode: number | null;
-  visitedNodes: number[];
-  stack: { node: number; depth: number }[];
-  maxDepth: number;
+  currentNodeVal: number | null;
+  maxDepthFound: number;
   currentDepth: number;
-  action: string;
-  message: string;
+  queue: { val: number; depth: number }[];
+  variables: Record<string, any>;
+  explanation: string;
   highlightedLines: number[];
 }
 
-export const MaximumDepthOfBinaryTreeVisualization = () => {
+export const MaximumDepthOfBinaryTreeVisualization: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [caseType, setCaseType] = useState<'case1' | 'case2'>('case1');
+
+  const treeData = useMemo(() => {
+    if (caseType === 'case1') {
+      return {
+        val: 3,
+        left: { val: 9, left: null, right: null },
+        right: {
+          val: 20,
+          left: { val: 15, left: null, right: null },
+          right: { val: 7, left: null, right: null }
+        }
+      };
+    } else {
+      return {
+        val: 1,
+        left: { 
+          val: 2, 
+          left: { val: 4, left: null, right: null }, 
+          right: { val: 5, left: null, right: null } 
+        },
+        right: { val: 3, left: null, right: null }
+      };
+    }
+  }, [caseType]);
+
   const code = `function maxDepth(root: TreeNode | null): number {
-  if (root === null) {
+  if (!root) {
     return 0;
   }
-  
-  const leftDepth = maxDepth(root.left);
-  const rightDepth = maxDepth(root.right);
-  
-  return 1 + Math.max(leftDepth, rightDepth);
+
+  let max = 0;
+  const queue: [TreeNode, number][] = [[root, 1]];
+
+  while (queue.length > 0) {
+    const [node, depth] = queue.shift()!;
+    max = Math.max(max, depth);
+
+    if (node.left) {
+      queue.push([node.left, depth + 1]);
+    }
+    if (node.right) {
+      queue.push([node.right, depth + 1]);
+    }
+  }
+
+  return max;
 }`;
 
-  const tree = {
-    val: 3,
-    left: { val: 9, left: null, right: null },
-    right: {
-      val: 20,
-      left: { val: 15, left: null, right: null },
-      right: { val: 7, left: null, right: null }
+  const steps = useMemo(() => {
+    const stepsList: Step[] = [];
+    const root = treeData;
+    
+    if (!root) {
+        stepsList.push({
+          currentNodeVal: null,
+          maxDepthFound: 0,
+          currentDepth: 0,
+          queue: [],
+          variables: { root: "null" },
+          explanation: "Root is null, return 0.",
+          highlightedLines: [2, 3, 4]
+        });
+        return stepsList;
     }
+
+    let max = 0;
+    const queue: [any, number][] = [[root, 1]];
+
+    stepsList.push({
+      currentNodeVal: null,
+      maxDepthFound: 0,
+      currentDepth: 0,
+      queue: [[root.val, 1]].map(q => ({ val: q[0], depth: q[1] })),
+      variables: { max, "queue": "[[root, 1]]" },
+      explanation: "Initialize max to 0 and a queue with the root node at depth 1.",
+      highlightedLines: [6, 7]
+    });
+
+    while (queue.length > 0) {
+        stepsList.push({
+          currentNodeVal: null,
+          maxDepthFound: max,
+          currentDepth: 0,
+          queue: queue.map(q => ({ val: q[0].val, depth: q[1] })),
+          variables: { "queue.length": queue.length, max },
+          explanation: "Queue is not empty, continuing BFS traversal.",
+          highlightedLines: [9]
+        });
+
+        const [node, depth] = queue.shift()!;
+        
+        stepsList.push({
+          currentNodeVal: node.val,
+          maxDepthFound: max,
+          currentDepth: depth,
+          queue: queue.map(q => ({ val: q[0].val, depth: q[1] })),
+          variables: { node: node.val, depth, max },
+          explanation: `Dequeue node ${node.val} at depth ${depth}.`,
+          highlightedLines: [10]
+        });
+
+        const oldMax = max;
+        max = Math.max(max, depth);
+
+        stepsList.push({
+          currentNodeVal: node.val,
+          maxDepthFound: max,
+          currentDepth: depth,
+          queue: queue.map(q => ({ val: q[0].val, depth: q[1] })),
+          variables: { depth, "prev_max": oldMax, "new_max": max },
+          explanation: `Update maximum depth encountered so far: max(${oldMax}, ${depth}) = ${max}.`,
+          highlightedLines: [11]
+        });
+
+        stepsList.push({
+          currentNodeVal: node.val,
+          maxDepthFound: max,
+          currentDepth: depth,
+          queue: queue.map(q => ({ val: q[0].val, depth: q[1] })),
+          variables: { "node.left": node.left ? node.left.val : "null" },
+          explanation: node.left 
+            ? `Left child exists (${node.left.val}). Enqueue it with depth ${depth + 1}.`
+            : `No left child for node ${node.val}.`,
+          highlightedLines: [13]
+        });
+
+        if (node.left) {
+            queue.push([node.left, depth + 1]);
+            stepsList.push({
+              currentNodeVal: node.val,
+              maxDepthFound: max,
+              currentDepth: depth,
+              queue: queue.map(q => ({ val: q[0].val, depth: q[1] })),
+              variables: { added: node.left.val, depth: depth + 1 },
+              explanation: `Pushed [${node.left.val}, ${depth + 1}] to the queue.`,
+              highlightedLines: [14]
+            });
+        }
+
+        stepsList.push({
+          currentNodeVal: node.val,
+          maxDepthFound: max,
+          currentDepth: depth,
+          queue: queue.map(q => ({ val: q[0].val, depth: q[1] })),
+          variables: { "node.right": node.right ? node.right.val : "null" },
+          explanation: node.right 
+            ? `Right child exists (${node.right.val}). Enqueue it with depth ${depth + 1}.`
+            : `No right child for node ${node.val}.`,
+          highlightedLines: [16]
+        });
+
+        if (node.right) {
+            queue.push([node.right, depth + 1]);
+            stepsList.push({
+              currentNodeVal: node.val,
+              maxDepthFound: max,
+              currentDepth: depth,
+              queue: queue.map(q => ({ val: q[0].val, depth: q[1] })),
+              variables: { added: node.right.val, depth: depth + 1 },
+              explanation: `Pushed [${node.right.val}, ${depth + 1}] to the queue.`,
+              highlightedLines: [17]
+            });
+        }
+    }
+
+    stepsList.push({
+      currentNodeVal: null,
+      maxDepthFound: max,
+      currentDepth: 0,
+      queue: [],
+      variables: { return: max },
+      explanation: `All nodes processed. The final maximum depth is ${max}.`,
+      highlightedLines: [21]
+    });
+
+    return stepsList;
+  }, [treeData]);
+
+  const handleCaseToggle = (type: 'case1' | 'case2') => {
+    setCaseType(type);
+    setCurrentStep(0);
   };
 
-  const steps: Step[] = [
-    {
-      currentNode: null,
-      visitedNodes: [],
-      stack: [],
-      maxDepth: 0,
-      currentDepth: 0,
-      action: "start",
-      message: "Start: Call maxDepth(root=3) at depth 0",
-      highlightedLines: [1]
-    },
-    {
-      currentNode: 3,
-      visitedNodes: [3],
-      stack: [{ node: 3, depth: 0 }],
-      maxDepth: 0,
-      currentDepth: 0,
-      action: "check",
-      message: "Node 3: Not null, continue recursion",
-      highlightedLines: [2]
-    },
-    {
-      currentNode: 3,
-      visitedNodes: [3],
-      stack: [{ node: 3, depth: 0 }],
-      maxDepth: 0,
-      currentDepth: 0,
-      action: "recurse_left",
-      message: "Node 3: Recurse left → Call maxDepth(9) at depth 1",
-      highlightedLines: [6]
-    },
-    {
-      currentNode: 9,
-      visitedNodes: [3, 9],
-      stack: [{ node: 3, depth: 0 }, { node: 9, depth: 1 }],
-      maxDepth: 0,
-      currentDepth: 1,
-      action: "check",
-      message: "Node 9: Not null, continue",
-      highlightedLines: [2]
-    },
-    {
-      currentNode: 9,
-      visitedNodes: [3, 9],
-      stack: [{ node: 3, depth: 0 }, { node: 9, depth: 1 }],
-      maxDepth: 0,
-      currentDepth: 1,
-      action: "recurse_left",
-      message: "Node 9: Recurse left → left is null",
-      highlightedLines: [6]
-    },
-    {
-      currentNode: null,
-      visitedNodes: [3, 9],
-      stack: [{ node: 3, depth: 0 }, { node: 9, depth: 1 }],
-      maxDepth: 0,
-      currentDepth: 2,
-      action: "return",
-      message: "Null node: Return 0 (base case)",
-      highlightedLines: [3]
-    },
-    {
-      currentNode: 9,
-      visitedNodes: [3, 9],
-      stack: [{ node: 3, depth: 0 }, { node: 9, depth: 1 }],
-      maxDepth: 0,
-      currentDepth: 1,
-      action: "recurse_right",
-      message: "Node 9: leftDepth=0. Recurse right → right is null",
-      highlightedLines: [7]
-    },
-    {
-      currentNode: null,
-      visitedNodes: [3, 9],
-      stack: [{ node: 3, depth: 0 }, { node: 9, depth: 1 }],
-      maxDepth: 0,
-      currentDepth: 2,
-      action: "return",
-      message: "Null node: Return 0",
-      highlightedLines: [3]
-    },
-    {
-      currentNode: 9,
-      visitedNodes: [3, 9],
-      stack: [{ node: 3, depth: 0 }, { node: 9, depth: 1 }],
-      maxDepth: 1,
-      currentDepth: 1,
-      action: "compute",
-      message: "Node 9: rightDepth=0. Return 1 + max(0, 0) = 1",
-      highlightedLines: [9]
-    },
-    {
-      currentNode: 3,
-      visitedNodes: [3, 9],
-      stack: [{ node: 3, depth: 0 }],
-      maxDepth: 1,
-      currentDepth: 0,
-      action: "recurse_right",
-      message: "Node 3: leftDepth=1. Recurse right → Call maxDepth(20) at depth 1",
-      highlightedLines: [7]
-    },
-    {
-      currentNode: 20,
-      visitedNodes: [3, 9, 20],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }],
-      maxDepth: 1,
-      currentDepth: 1,
-      action: "check",
-      message: "Node 20: Not null, continue",
-      highlightedLines: [2]
-    },
-    {
-      currentNode: 20,
-      visitedNodes: [3, 9, 20],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }],
-      maxDepth: 1,
-      currentDepth: 1,
-      action: "recurse_left",
-      message: "Node 20: Recurse left → Call maxDepth(15) at depth 2",
-      highlightedLines: [6]
-    },
-    {
-      currentNode: 15,
-      visitedNodes: [3, 9, 20, 15],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }, { node: 15, depth: 2 }],
-      maxDepth: 1,
-      currentDepth: 2,
-      action: "check",
-      message: "Node 15: Not null, continue",
-      highlightedLines: [2]
-    },
-    {
-      currentNode: 15,
-      visitedNodes: [3, 9, 20, 15],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }, { node: 15, depth: 2 }],
-      maxDepth: 1,
-      currentDepth: 2,
-      action: "leaf",
-      message: "Node 15: Both children null. Return 1 + max(0, 0) = 1",
-      highlightedLines: [9]
-    },
-    {
-      currentNode: 20,
-      visitedNodes: [3, 9, 20, 15],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }],
-      maxDepth: 1,
-      currentDepth: 1,
-      action: "recurse_right",
-      message: "Node 20: leftDepth=1. Recurse right → Call maxDepth(7) at depth 2",
-      highlightedLines: [7]
-    },
-    {
-      currentNode: 7,
-      visitedNodes: [3, 9, 20, 15, 7],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }, { node: 7, depth: 2 }],
-      maxDepth: 1,
-      currentDepth: 2,
-      action: "check",
-      message: "Node 7: Not null, continue",
-      highlightedLines: [2]
-    },
-    {
-      currentNode: 7,
-      visitedNodes: [3, 9, 20, 15, 7],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }, { node: 7, depth: 2 }],
-      maxDepth: 1,
-      currentDepth: 2,
-      action: "leaf",
-      message: "Node 7: Both children null. Return 1 + max(0, 0) = 1",
-      highlightedLines: [9]
-    },
-    {
-      currentNode: 20,
-      visitedNodes: [3, 9, 20, 15, 7],
-      stack: [{ node: 3, depth: 0 }, { node: 20, depth: 1 }],
-      maxDepth: 2,
-      currentDepth: 1,
-      action: "compute",
-      message: "Node 20: rightDepth=1. Return 1 + max(1, 1) = 2",
-      highlightedLines: [9]
-    },
-    {
-      currentNode: 3,
-      visitedNodes: [3, 9, 20, 15, 7],
-      stack: [{ node: 3, depth: 0 }],
-      maxDepth: 3,
-      currentDepth: 0,
-      action: "compute",
-      message: "Node 3: rightDepth=2. Return 1 + max(1, 2) = 3. Maximum depth = 3 ✓",
-      highlightedLines: [9]
-    }
-  ];
-
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const currentStep = steps[Math.min(currentStepIndex, steps.length - 1)];
-  // Decorations are now handled via props in IsolatedCodeEditor
+  const step = steps[currentStep];
 
   const renderTree = () => {
+    const positions: Record<number, { x: number, y: number }> = caseType === 'case1' 
+      ? {
+          3: { x: 200, y: 40 },
+          9: { x: 100, y: 120 },
+          20: { x: 300, y: 120 },
+          15: { x: 250, y: 200 },
+          7: { x: 350, y: 200 }
+        }
+      : {
+          1: { x: 200, y: 40 },
+          2: { x: 100, y: 120 },
+          3: { x: 300, y: 120 },
+          4: { x: 50, y: 200 },
+          5: { x: 150, y: 200 }
+        };
+
+    const edges = caseType === 'case1'
+      ? [[3, 9], [3, 20], [20, 15], [20, 7]]
+      : [[1, 2], [1, 3], [2, 4], [2, 5]];
+
+    const nodeVals = Object.keys(positions).map(Number);
+
     return (
-      <div className="flex flex-col items-center space-y-6">
-        <motion.div
-          animate={{
-            scale: currentStep.currentNode === 3 ? 1.2 : 1,
-          }}
-          className={`w-12 h-12 rounded-full flex items-center justify-center font- border-2 ${currentStep.currentNode === 3
-            ? 'bg-primary/20 border-primary text-primary ring-2 ring-primary'
-            : currentStep.visitedNodes.includes(3)
-              ? 'bg-green-500/20 border-green-500 text-green-600'
-              : 'bg-muted/50 border-border text-foreground'
-            }`}
-        >
-          3
-        </motion.div>
-
-        <div className="flex gap-24">
-          <motion.div
-            animate={{
-              scale: currentStep.currentNode === 9 ? 1.2 : 1,
-            }}
-            className={`w-12 h-12 rounded-full flex items-center justify-center font- border-2 ${currentStep.currentNode === 9
-              ? 'bg-primary/20 border-primary text-primary ring-2 ring-primary'
-              : currentStep.visitedNodes.includes(9)
-                ? 'bg-green-500/20 border-green-500 text-green-600'
-                : 'bg-muted/50 border-border text-foreground'
-              }`}
-          >
-            9
-          </motion.div>
-
-          <motion.div
-            animate={{
-              scale: currentStep.currentNode === 20 ? 1.2 : 1,
-            }}
-            className={`w-12 h-12 rounded-full flex items-center justify-center font- border-2 ${currentStep.currentNode === 20
-              ? 'bg-primary/20 border-primary text-primary ring-2 ring-primary'
-              : currentStep.visitedNodes.includes(20)
-                ? 'bg-green-500/20 border-green-500 text-green-600'
-                : 'bg-muted/50 border-border text-foreground'
-              }`}
-          >
-            20
-          </motion.div>
-        </div>
-
-        <div className="flex gap-12 ml-24">
-          <motion.div
-            animate={{
-              scale: currentStep.currentNode === 15 ? 1.2 : 1,
-            }}
-            className={`w-12 h-12 rounded-full flex items-center justify-center font- border-2 ${currentStep.currentNode === 15
-              ? 'bg-primary/20 border-primary text-primary ring-2 ring-primary'
-              : currentStep.visitedNodes.includes(15)
-                ? 'bg-green-500/20 border-green-500 text-green-600'
-                : 'bg-muted/50 border-border text-foreground'
-              }`}
-          >
-            15
-          </motion.div>
-
-          <motion.div
-            animate={{
-              scale: currentStep.currentNode === 7 ? 1.2 : 1,
-            }}
-            className={`w-12 h-12 rounded-full flex items-center justify-center font- border-2 ${currentStep.currentNode === 7
-              ? 'bg-primary/20 border-primary text-primary ring-2 ring-primary'
-              : currentStep.visitedNodes.includes(7)
-                ? 'bg-green-500/20 border-green-500 text-green-600'
-                : 'bg-muted/50 border-border text-foreground'
-              }`}
-          >
-            7
-          </motion.div>
-        </div>
+      <div className="w-full aspect-[400/240] relative">
+        <svg viewBox="0 0 400 240" className="w-full h-full">
+          {edges.map(([u, v], i) => (
+            <line 
+              key={i} 
+              x1={positions[u].x} y1={positions[u].y} 
+              x2={positions[v].x} y2={positions[v].y} 
+              stroke="currentColor" className="text-border" strokeWidth="2" 
+            />
+          ))}
+          {nodeVals.map(val => {
+            const isCurrent = val === step.currentNodeVal;
+            const inQueue = step.queue.some(q => q.val === val);
+            
+            return (
+              <g key={val}>
+                <motion.circle
+                  cx={positions[val].x} cy={positions[val].y} r="18"
+                  animate={{
+                    fill: isCurrent ? '#3b82f6' : inQueue ? '#3b82f620' : 'hsl(var(--card))',
+                    stroke: isCurrent ? '#3b82f6' : inQueue ? '#3b82f6' : 'hsl(var(--border))',
+                    scale: isCurrent ? 1.2 : 1
+                  }}
+                  transition={{ duration: 0 }}
+                  strokeWidth="2"
+                />
+                <text 
+                  x={positions[val].x} y={positions[val].y + 4} textAnchor="middle" 
+                  className={`text-[11px] font-bold select-none ${isCurrent ? 'fill-white' : 'fill-foreground'}`}
+                >
+                  {val}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
       </div>
     );
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setCurrentStepIndex(0)} variant="outline" size="sm">
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-          <Button onClick={() => setCurrentStepIndex(Math.max(0, currentStepIndex - 1))} disabled={currentStepIndex === 0} variant="outline" size="sm">
-            <SkipBack className="h-4 w-4" />
-          </Button>
-          <Button onClick={() => setCurrentStepIndex(Math.min(steps.length - 1, currentStepIndex + 1))} disabled={currentStepIndex === steps.length - 1} variant="outline" size="sm">
-            <SkipForward className="h-4 w-4" />
-          </Button>
+    <VisualizationLayout
+      controls={
+        <div className="flex items-center gap-4 w-full justify-between">
+          <SimpleStepControls
+            currentStep={currentStep}
+            totalSteps={steps.length}
+            onStepChange={setCurrentStep}
+          />
+          <div className="flex gap-2">
+            <button 
+              onClick={() => handleCaseToggle('case1')}
+              className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all ${
+                caseType === 'case1' ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Tree 1
+            </button>
+            <button 
+              onClick={() => handleCaseToggle('case2')}
+              className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all ${
+                caseType === 'case2' ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Tree 2
+            </button>
+          </div>
         </div>
-        <span className="text-sm text-muted-foreground">Step {currentStepIndex + 1} of {steps.length}</span>
-      </div>
+      }
+      leftContent={
+        <div className="space-y-6 flex flex-col h-full">
+          <div>
+            <h2 className="text-sm font-bold text-foreground mb-4 opacity-90 flex items-center gap-2">
+              <TreeDeciduous size={16} className="text-primary" />
+              BFS Traversal
+            </h2>
+            <Card className="p-8 bg-card/60 backdrop-blur border-border/50 shadow-sm overflow-hidden flex justify-center items-center">
+              {renderTree()}
+            </Card>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-6">Binary Tree</h3>
-            {renderTree()}
-
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              <motion.div
-                animate={{ scale: currentStep.maxDepth > 0 ? 1 : 0.95 }}
-                className="p-4 bg-green-500/10 rounded border border-green-500/20"
-              >
-                <p className="text-xs text-muted-foreground mb-1">Max Depth</p>
-                <p className="text-3xl font- text-green-600">{currentStep.maxDepth}</p>
-              </motion.div>
-
-              <div className="p-4 bg-primary/10 rounded border border-primary/20">
-                <p className="text-xs text-muted-foreground mb-1">Current Depth</p>
-                <p className="text-3xl font- text-primary">{currentStep.currentDepth}</p>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <h4 className="text-sm font-semibold mb-3">Call Stack</h4>
-              <div className="min-h-[80px] border-2 border-dashed border-border rounded-lg p-3 bg-muted/20">
-                {currentStep.stack.length > 0 ? (
-                  <div className="space-y-2">
-                    {currentStep.stack.map((item, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        className="flex items-center gap-3 p-2 bg-background rounded"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="space-y-4">
+               <Card className="p-4 bg-primary/5 border-l-4 border-primary shadow-sm h-full flex flex-col justify-center">
+                 <h4 className="text-[9px] font-bold uppercase tracking-widest text-primary/80 mb-2">Commentary</h4>
+                 <p className="text-[13px] font-medium leading-relaxed text-foreground/90">
+                   {step.explanation}
+                 </p>
+               </Card>
+             </div>
+             
+             <Card className="p-4 bg-muted/30 border-muted">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                    <Inbox size={12} />
+                    Queue Status
+                  </h4>
+                  <div className="flex items-center gap-1">
+                    <Maximize2 size={10} className="text-muted-foreground" />
+                    <span className="text-[10px] font-bold text-primary">{step.maxDepthFound}</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <AnimatePresence mode="popLayout">
+                    {step.queue.map((q, idx) => (
+                      <motion.div 
+                        key={`${q.val}-${idx}`}
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0 }}
+                        className="flex flex-col items-center p-2 bg-background rounded border border-border shadow-sm min-w-[45px]"
                       >
-                        <span className="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center font-">
-                          {item.node}
-                        </span>
-                        <span className="text-sm">depth={item.depth}</span>
+                        <span className="text-[12px] font-bold text-primary">{q.val}</span>
+                        <span className="text-[9px] text-muted-foreground font-mono">d:{q.depth}</span>
                       </motion.div>
                     ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground text-center">Empty</p>
-                )}
-              </div>
-            </div>
-
-            <VariablePanel
-              variables={{
-                currentNode: currentStep.currentNode || 'null',
-                currentDepth: currentStep.currentDepth,
-                maxDepth: currentStep.maxDepth,
-                action: currentStep.action
-              }}
-            />
-
-            <Card className="p-4 mt-4 bg-primary/5 border-primary/20">
-              <p className="text-sm text-foreground">{currentStep.message}</p>
-            </Card>
-          </Card>
-        </div>
-
-        <Card className="p-4 overflow-hidden">
-          <div className="h-[700px]">
-            <IsolatedCodeEditor
-              code={code}
-              language="typescript"
-              theme="vs-dark"
-              highlightedLines={currentStep.highlightedLines}
-              readOnly={true}
-              fontSize={13}
-            />
+                    {step.queue.length === 0 && (
+                      <span className="text-xs text-muted-foreground italic">Empty</span>
+                    )}
+                  </AnimatePresence>
+                </div>
+             </Card>
           </div>
-        </Card>
-      </div>
 
-      <style>{`
-        .highlighted-line {
-          background: rgba(59, 130, 246, 0.15);
-          border-left: 3px solid rgb(59, 130, 246);
-        }
-      `}</style>
-    </div>
+          <div className="p-1">
+            <VariablePanel variables={step.variables} />
+          </div>
+        </div>
+      }
+      rightContent={
+        <Card className="h-full overflow-hidden flex flex-col shadow-sm border-border/50">
+          <AnimatedCodeEditor
+            code={code}
+            language="typescript"
+            highlightedLines={step.highlightedLines}
+          />
+        </Card>
+      }
+    />
   );
 };

@@ -51,8 +51,8 @@ export default function Page() {
       />
       <div className="min-h-screen bg-white dark:bg-black text-[#1A1A1A] dark:text-white overflow-x-hidden relative w-full">
         <HeroSection />
-        <HomeClient type="platform-preview" />
         <HomeClient type="interviews" />
+        <HomeClient type="platform-preview" />
         <CraftingSection />
         <VisualPatternsSection />
         <WorkspaceSection />

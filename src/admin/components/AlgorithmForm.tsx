@@ -2,7 +2,7 @@ import {
   useCreateAlgorithm,
   useUpdateAlgorithm,
 } from "@/hooks/useAlgorithms";
-import { Algorithm } from "@/types/algorithm";
+import { Algorithm, LIST_TYPE_LABELS } from "@/types/algorithm";
 import {
   Select,
   SelectContent,
@@ -36,7 +36,7 @@ export function AlgorithmForm({
 }: AlgorithmFormProps) {
   const [activeTab, setActiveTab] = useState("basic");
   const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
-  const [listType, setListType] = useState("coreAlgo");
+  const [listType, setListType] = useState("core");
   const [unordered, setUnordered] = useState(false);
 
   const [multiExpected, setMultiExpected] = useState(false);
@@ -78,7 +78,9 @@ export function AlgorithmForm({
         ? JSON.parse(algorithm.metadata)
         : algorithm.metadata;
 
-      setListType(metadataObj?.listType || "coreAlgo");
+      let initialListType = algorithm.listType || algorithm.list_type || metadataObj?.listType || "core";
+      if (initialListType === "coreAlgo") initialListType = "core";
+      setListType(initialListType);
       setUnordered(!!metadataObj?.unordered);
 
       setMultiExpected(!!metadataObj?.multi_expected);
@@ -118,7 +120,7 @@ export function AlgorithmForm({
       });
 
     } else {
-      setListType("coreAlgo");
+      setListType("core");
       setUnordered(false);
 
       setMultiExpected(false);
@@ -190,6 +192,7 @@ export function AlgorithmForm({
     // Parse JSON fields
     const parsedData = {
       ...data,
+      list_type: listType,
       explanation: JSON.parse(data.explanation),
       implementations: JSON.parse(data.implementations),
       problems_to_solve: JSON.parse(data.problems_to_solve),
@@ -336,9 +339,11 @@ export function AlgorithmForm({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="core">Core Pattern</SelectItem>
-                    <SelectItem value="blind75">Blind 75</SelectItem>
-                    <SelectItem value="core+blind75">Core + Blind 75</SelectItem>
+                    {Object.entries(LIST_TYPE_LABELS)
+                      .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
+                      .map(([value, label]) => (
+                        <SelectItem key={value} value={value}>{label}</SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
