@@ -64,7 +64,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         <div className="flex items-center justify-between px-0 border-b bg-muted/40 h-10 shrink-0 gap-2">
             <div className="flex items-center gap-0 overflow-x-auto no-scrollbar mask-linear-fade shrink-0 h-full">
                 {activeEditorTab === 'current' && (
-                    <div className="flex items-center gap-2 mr-4">
+                    <div className="flex items-center h-full">
                         <LanguageSelector
                             language={language}
                             onLanguageChange={onLanguageChange}

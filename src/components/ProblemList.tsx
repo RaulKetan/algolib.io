@@ -119,7 +119,8 @@ export const ProblemList = ({
 
 
       // Normalize algo list type (default to Core if missing) and selection
-      const algoListType = (algo.listType || ListType.Core).toLowerCase();
+      let algoListType = (algo.listType || ListType.Core).toLowerCase();
+      if (algoListType === 'corealgo') algoListType = ListType.Core.toLowerCase();
       const selectedType = selectedListType?.toLowerCase();
 
       let matchesListType = true;

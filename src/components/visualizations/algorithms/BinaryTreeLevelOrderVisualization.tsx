@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
-import { motion, AnimatePresence } from 'framer-motion';
-import { VariablePanel } from '../shared/VariablePanel';
 import { SimpleStepControls } from '../shared/SimpleStepControls';
+import { VariablePanel } from '../shared/VariablePanel';
 import { AnimatedCodeEditor } from '../shared/AnimatedCodeEditor';
+import { VisualizationLayout } from '../shared/VisualizationLayout';
+import { TreeDeciduous, Inbox, ListChecks } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Step {
   queue: number[];
@@ -12,11 +14,13 @@ interface Step {
   levelSize: number;
   i: number | string;
   currentNode: number | string;
-  message: string;
+  explanation: string;
   highlightedLines: number[];
 }
 
-export const BinaryTreeLevelOrderVisualization = () => {
+export const BinaryTreeLevelOrderVisualization: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+
   const code = `function levelOrder(root: TreeNode | null): number[][] {
   if (root === null) return [];
   const result: number[][] = [];
@@ -35,146 +39,147 @@ export const BinaryTreeLevelOrderVisualization = () => {
   return result;
 }`;
 
-  // Line Mapping:
-  // 1: function levelOrder...
-  // 2:   if (root === null) return [];
-  // 3:   const result: number[][] = [];
-  // 4:   const queue: TreeNode[] = [root];
-  // 5:   while (queue.length > 0) {
-  // 6:     const levelSize = queue.length;
-  // 7:     const currentLevel: number[] = [];
-  // 8:     for (let i = 0; i < levelSize; i++) {
-  // 9:       const node = queue.shift()!;
-  // 10:      currentLevel.push(node.val);
-  // 11:      if (node.left) queue.push(node.left);
-  // 12:      if (node.right) queue.push(node.right);
-  // 13:    }
-  // 14:    result.push(currentLevel);
-  // 15:  }
-  // 16:  return result;
-  // 17: }
+  const treeData = {
+    val: 3,
+    left: { val: 9, left: null, right: null },
+    right: {
+      val: 20,
+      left: { val: 15, left: null, right: null },
+      right: { val: 7, left: null, right: null }
+    }
+  };
 
-  const steps: Step[] = [
-    { queue: [], result: [], currentLevel: [], levelSize: 0, i: '-', currentNode: '-', message: "The algorithm begins. Our first task is to check if the root is null. This handles the edge case of an empty tree.", highlightedLines: [2] },
-    { queue: [], result: [], currentLevel: [], levelSize: 0, i: '-', currentNode: 3, message: "The root node exists (value: 3), so the null check is bypassed and the function continues.", highlightedLines: [2] },
-    { queue: [], result: [], currentLevel: [], levelSize: 0, i: '-', currentNode: '-', message: "We initialize an empty array called 'result'. This will eventually store our final list of levels: [[layer 0], [layer 1], ...].", highlightedLines: [3] },
-    { queue: [3], result: [], currentLevel: [], levelSize: 0, i: '-', currentNode: '-', message: "We initialize a queue with the root node. In a Level-Order Traversal (BFS), a queue is essential for processing nodes layer by layer.", highlightedLines: [4] },
+  const steps = useMemo(() => {
+    const stepsList: Step[] = [];
+    const root = treeData;
+    
+    if (!root) {
+        stepsList.push({
+          queue: [], result: [], currentLevel: [], levelSize: 0, i: '-', currentNode: '-',
+          explanation: "Root is null, return empty array.",
+          highlightedLines: [2]
+        });
+        return stepsList;
+    }
 
-    { queue: [3], result: [], currentLevel: [], levelSize: 0, i: '-', currentNode: '-', message: "We enter the main 'while' loop. This loop will persist as long as there are nodes remaining in the queue to be explored.", highlightedLines: [5] },
-    { queue: [3], result: [], currentLevel: [], levelSize: 1, i: '-', currentNode: '-', message: "We measure 'levelSize' (queue.length = 1). This tells the algorithm exactly how many nodes currently exist at this specific depth of the tree.", highlightedLines: [6] },
-    { queue: [3], result: [], currentLevel: [], levelSize: 1, i: '-', currentNode: '-', message: "We prepare an empty 'currentLevel' list. This will accumulate the values of all nodes at the current depth.", highlightedLines: [7] },
+    const result: number[][] = [];
+    const queue: any[] = [root];
 
-    { queue: [3], result: [], currentLevel: [], levelSize: 1, i: 0, currentNode: '-', message: "We enter the 'for' loop to process precisely 'levelSize' nodes. Currently, i = 0.", highlightedLines: [8] },
-    { queue: [], result: [], currentLevel: [], levelSize: 1, i: 0, currentNode: 3, message: "We dequeue node 3. This node is now 'active' and its children will be the next to enter the queue.", highlightedLines: [9] },
-    { queue: [], result: [], currentLevel: [3], levelSize: 1, i: 0, currentNode: 3, message: "We add the value 3 to our 'currentLevel' list. Node 3 is part of the first level.", highlightedLines: [10] },
+    stepsList.push({
+      queue: [root.val], result: [], currentLevel: [], levelSize: 0, i: '-', currentNode: '-',
+      explanation: "Initialize an empty result array and a queue with the root node.",
+      highlightedLines: [3, 4]
+    });
 
-    { queue: [], result: [], currentLevel: [3], levelSize: 1, i: 0, currentNode: 3, message: "Checking node 3's left child. Value 9 is found and pushed to the back of the queue.", highlightedLines: [11] },
-    { queue: [9], result: [], currentLevel: [3], levelSize: 1, i: 0, currentNode: 3, message: "Checking node 3's right child. Value 20 is found and pushed into the queue. Level 1 nodes are now queued up.", highlightedLines: [12] },
-    { queue: [9, 20], result: [], currentLevel: [3], levelSize: 1, i: 1, currentNode: '-', message: "Loop check: i is incremented to 1. Since i is no longer less than levelSize (1), the inner loop terminates.", highlightedLines: [8] },
+    while (queue.length > 0) {
+        const levelSize = queue.length;
+        const currentLevel: number[] = [];
 
-    { queue: [9, 20], result: [[3]], currentLevel: [3], levelSize: 1, i: '-', currentNode: '-', message: "All nodes for Level 0 have been processed. We push the 'currentLevel' list ([3]) into our final 'result' array.", highlightedLines: [14] },
+        stepsList.push({
+          queue: queue.map(q => q.val), result: result.map(r => [...r]), currentLevel: [], levelSize, i: '-', currentNode: '-',
+          explanation: `Enter loop. Current queue has ${levelSize} nodes for the current level.`,
+          highlightedLines: [5, 6, 7]
+        });
 
-    { queue: [9, 20], result: [[3]], currentLevel: [], levelSize: 1, i: '-', currentNode: '-', message: "The queue is not empty (it contains [9, 20]), indicating we have another level to process.", highlightedLines: [5] },
-    { queue: [9, 20], result: [[3]], currentLevel: [], levelSize: 2, i: '-', currentNode: '-', message: "Level 1 contains 2 nodes (9 and 20). We set 'levelSize' to 2.", highlightedLines: [6] },
-    { queue: [9, 20], result: [[3]], currentLevel: [], levelSize: 2, i: '-', currentNode: '-', message: "Resetting 'currentLevel' to an empty list to collect node values for Level 1.", highlightedLines: [7] },
+        for (let i = 0; i < levelSize; i++) {
+            const node = queue.shift()!;
 
-    { queue: [9, 20], result: [[3]], currentLevel: [], levelSize: 2, i: 0, currentNode: '-', message: "Starting the inner processing for Level 1. Processing node 0 of 2 (i = 0).", highlightedLines: [8] },
-    { queue: [20], result: [[3]], currentLevel: [], levelSize: 2, i: 0, currentNode: 9, message: "We dequeue the first node at this level: node 9.", highlightedLines: [9] },
-    { queue: [20], result: [[3]], currentLevel: [9], levelSize: 2, i: 0, currentNode: 9, message: "Adding value 9 to the current level collection.", highlightedLines: [10] },
+            stepsList.push({
+              queue: queue.map(q => q.val), result: result.map(r => [...r]), currentLevel: [...currentLevel], levelSize, i, currentNode: node.val,
+              explanation: `Dequeue node ${node.val} (i=${i}).`,
+              highlightedLines: [8, 9]
+            });
 
-    { queue: [20], result: [[3]], currentLevel: [9], levelSize: 2, i: 0, currentNode: 9, message: "Node 9 is a leaf; it has no left or right children to add to the queue.", highlightedLines: [11] },
-    { queue: [20], result: [[3]], currentLevel: [9], levelSize: 2, i: 1, currentNode: '-', message: "Moving to the next node in the current level (i = 1).", highlightedLines: [8] },
-    { queue: [], result: [[3]], currentLevel: [9], levelSize: 2, i: 1, currentNode: 20, message: "We dequeue node 20.", highlightedLines: [9] },
-    { queue: [], result: [[3]], currentLevel: [9, 20], levelSize: 2, i: 1, currentNode: 20, message: "Adding value 20 to the 'currentLevel' array, making it [9, 20].", highlightedLines: [10] },
+            currentLevel.push(node.val);
 
-    { queue: [], result: [[3]], currentLevel: [9, 20], levelSize: 2, i: 1, currentNode: 20, message: "Node 20 has a left child (15), so we add it to the queue for the next layer.", highlightedLines: [11] },
-    { queue: [15], result: [[3]], currentLevel: [9, 20], levelSize: 2, i: 1, currentNode: 20, message: "Node 20 has a right child (7), so we add it to the queue as well.", highlightedLines: [12] },
-    { queue: [15, 7], result: [[3]], currentLevel: [9, 20], levelSize: 2, i: 2, currentNode: '-', message: "All work for the 2 nodes at this level is finished (i = 2, levelSize = 2).", highlightedLines: [8] },
+            stepsList.push({
+              queue: queue.map(q => q.val), result: result.map(r => [...r]), currentLevel: [...currentLevel], levelSize, i, currentNode: node.val,
+              explanation: `Add ${node.val} to the current level list.`,
+              highlightedLines: [10]
+            });
 
-    { queue: [15, 7], result: [[3], [9, 20]], currentLevel: [9, 20], levelSize: 2, i: '-', currentNode: '-', message: "Level 1 processing complete. We push [9, 20] into our final 'result'.", highlightedLines: [14] },
+            if (node.left) {
+                queue.push(node.left);
+                stepsList.push({
+                  queue: queue.map(q => q.val), result: result.map(r => [...r]), currentLevel: [...currentLevel], levelSize, i, currentNode: node.val,
+                  explanation: `Left child ${node.left.val} exists, add to queue.`,
+                  highlightedLines: [11]
+                });
+            }
 
-    { queue: [15, 7], result: [[3], [9, 20]], currentLevel: [], levelSize: 2, i: '-', currentNode: '-', message: "Re-entering main loop. The queue contains nodes for Level 2.", highlightedLines: [5] },
-    { queue: [15, 7], result: [[3], [9, 20]], currentLevel: [], levelSize: 2, i: '-', currentNode: '-', message: "Level 2 has 2 nodes: 15 and 7. We set 'levelSize' to 2.", highlightedLines: [6] },
-    { queue: [15, 7], result: [[3], [9, 20]], currentLevel: [], levelSize: 2, i: '-', currentNode: '-', message: "Preparing Level 2's 'currentLevel' list.", highlightedLines: [7] },
+            if (node.right) {
+                queue.push(node.right);
+                stepsList.push({
+                  queue: queue.map(q => q.val), result: result.map(r => [...r]), currentLevel: [...currentLevel], levelSize, i, currentNode: node.val,
+                  explanation: `Right child ${node.right.val} exists, add to queue.`,
+                  highlightedLines: [12]
+                });
+            }
+        }
+        result.push([...currentLevel]);
+        stepsList.push({
+          queue: queue.map(q => q.val), result: result.map(r => [...r]), currentLevel: [...currentLevel], levelSize, i: '-', currentNode: '-',
+          explanation: `Finished level. Push [${currentLevel.join(', ')}] to the result array.`,
+          highlightedLines: [14]
+        });
+    }
 
-    { queue: [15, 7], result: [[3], [9, 20]], currentLevel: [], levelSize: 2, i: 0, currentNode: '-', message: "Processing node 0 of 2 for Level 2 (i = 0).", highlightedLines: [8] },
-    { queue: [7], result: [[3], [9, 20]], currentLevel: [], levelSize: 2, i: 0, currentNode: 15, message: "Dequeue node 15.", highlightedLines: [9] },
-    { queue: [7], result: [[3], [9, 20]], currentLevel: [15], levelSize: 2, i: 0, currentNode: 15, message: "Add value 15 to Level 2's dataset.", highlightedLines: [10] },
+    stepsList.push({
+      queue: [], result: result.map(r => [...r]), currentLevel: [], levelSize: 0, i: '-', currentNode: '-',
+      explanation: "Queue is empty. Return the final level-order traversal.",
+      highlightedLines: [16]
+    });
 
-    { queue: [7], result: [[3], [9, 20]], currentLevel: [15], levelSize: 2, i: 0, currentNode: 15, message: "Node 15 is a leaf node; no children to enqueue.", highlightedLines: [11] },
-    { queue: [7], result: [[3], [9, 20]], currentLevel: [15], levelSize: 2, i: 1, currentNode: '-', message: "Moving to the final node of Level 2 (i = 1).", highlightedLines: [8] },
-    { queue: [], result: [[3], [9, 20]], currentLevel: [15], levelSize: 2, i: 1, currentNode: 7, message: "Dequeue node 7.", highlightedLines: [9] },
-    { queue: [], result: [[3], [9, 20]], currentLevel: [15, 7], levelSize: 2, i: 1, currentNode: 7, message: "Add value 7 to Level 2 dataset.", highlightedLines: [10] },
+    return stepsList;
+  }, []);
 
-    { queue: [], result: [[3], [9, 20]], currentLevel: [15, 7], levelSize: 2, i: 1, currentNode: 7, message: "Node 7 is also a leaf node; no children to explore.", highlightedLines: [11] },
-    { queue: [], result: [[3], [9, 20]], currentLevel: [15, 7], levelSize: 2, i: 2, currentNode: '-', message: "Finished processing Level 2 nodes (i = 2, levelSize = 2).", highlightedLines: [8] },
-
-    { queue: [], result: [[3], [9, 20], [15, 7]], currentLevel: [15, 7], levelSize: 2, i: '-', currentNode: '-', message: "Level 2 complete! We push [15, 7] into our 'result'. our final result is now [[3], [9, 20], [15, 7]].", highlightedLines: [14] },
-
-    { queue: [], result: [[3], [9, 20], [15, 7]], currentLevel: [], levelSize: 0, i: '-', currentNode: '-', message: "The queue is now empty. We break out of the main 'while' loop.", highlightedLines: [5] },
-    { queue: [], result: [[3], [9, 20], [15, 7]], currentLevel: [], levelSize: 0, i: '-', currentNode: '-', message: "Returning the fully constructed level-order traversal result.", highlightedLines: [16] }
-  ];
-
-  const [currentStep, setCurrentStep] = useState(0);
   const step = steps[currentStep];
 
   const renderTree = () => {
-    const positions = [
-      { x: 200, y: 40, value: 3, level: 0 },
-      { x: 120, y: 100, value: 9, level: 1 },
-      { x: 280, y: 100, value: 20, level: 1 },
-      { x: 240, y: 160, value: 15, level: 2 },
-      { x: 320, y: 160, value: 7, level: 2 }
-    ];
+    const positions: Record<number, { x: number, y: number }> = {
+      3: { x: 200, y: 40 },
+      9: { x: 100, y: 120 },
+      20: { x: 300, y: 120 },
+      15: { x: 250, y: 200 },
+      7: { x: 350, y: 200 }
+    };
 
-    const visitedNodes = step.result.flat();
+    const edges = [[3, 9], [3, 20], [20, 15], [20, 7]];
+    const nodeVals = Object.keys(positions).map(Number);
 
     return (
-      <div className="w-full">
-        <svg viewBox="0 0 400 220" className="w-full h-auto">
-          {/* Lines */}
-          <line x1={200} y1={40} x2={120} y2={100} stroke="currentColor" className="text-border" strokeWidth="2" />
-          <line x1={200} y1={40} x2={280} y2={100} stroke="currentColor" className="text-border" strokeWidth="2" />
-          <line x1={280} y1={100} x2={240} y2={160} stroke="currentColor" className="text-border" strokeWidth="2" />
-          <line x1={280} y1={100} x2={320} y2={160} stroke="currentColor" className="text-border" strokeWidth="2" />
-
-          {/* Nodes */}
-          {positions.map((pos, i) => {
-            const isCurrent = step.currentNode === pos.value;
-            const isInQueue = step.queue.includes(pos.value);
-            const isVisited = visitedNodes.includes(pos.value) || (step.currentLevel.includes(pos.value) && currentStep < steps.length - 1);
-
+      <div className="w-full aspect-[400/240] relative">
+        <svg viewBox="0 0 400 240" className="w-full h-full">
+          {edges.map(([u, v], i) => (
+            <line 
+              key={i} 
+              x1={positions[u].x} y1={positions[u].y} 
+              x2={positions[v].x} y2={positions[v].y} 
+              stroke="currentColor" className="text-border" strokeWidth="2" 
+            />
+          ))}
+          {nodeVals.map(val => {
+            const isCurrent = val === step.currentNode;
+            const inQueue = step.queue.includes(val);
+            const isVisited = step.result.flat().includes(val) || step.currentLevel.includes(val);
+            
             return (
-              <g key={i}>
-                <circle
-                  cx={pos.x}
-                  cy={pos.y}
-                  r="20"
-                  className={`${isCurrent
-                    ? 'fill-yellow-500'
-                    : isVisited
-                      ? 'fill-green-500'
-                      : isInQueue
-                        ? 'fill-blue-500'
-                        : 'fill-card'
-                    } stroke-foreground`}
+              <g key={val}>
+                <motion.circle
+                  cx={positions[val].x} cy={positions[val].y} r="18"
+                  animate={{
+                    fill: isCurrent ? '#3b82f6' : isVisited ? '#10b98120' : inQueue ? '#3b82f620' : 'hsl(var(--card))',
+                    stroke: isCurrent ? '#3b82f6' : isVisited ? '#10b981' : inQueue ? '#3b82f6' : 'hsl(var(--border))',
+                    scale: isCurrent ? 1.2 : 1
+                  }}
+                  transition={{ duration: 0 }}
                   strokeWidth="2"
                 />
-                <text
-                  x={pos.x}
-                  y={pos.y + 5}
-                  textAnchor="middle"
-                  className="text-xs font-bold fill-foreground"
+                <text 
+                  x={positions[val].x} y={positions[val].y + 4} textAnchor="middle" 
+                  className={`text-[11px] font-bold select-none ${isCurrent ? 'fill-white' : 'fill-foreground'}`}
                 >
-                  {pos.value}
-                </text>
-                <text
-                  x={pos.x}
-                  y={pos.y + 35}
-                  textAnchor="middle"
-                  className="text-[10px] fill-muted-foreground"
-                >
-                  L{pos.level}
+                  {val}
                 </text>
               </g>
             );
@@ -185,69 +190,108 @@ export const BinaryTreeLevelOrderVisualization = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <SimpleStepControls
-        currentStep={currentStep}
-        totalSteps={steps.length}
-        onStepChange={setCurrentStep}
-      />
+    <VisualizationLayout
+      controls={
+        <SimpleStepControls
+          currentStep={currentStep}
+          totalSteps={steps.length}
+          onStepChange={setCurrentStep}
+        />
+      }
+      leftContent={
+        <div className="space-y-6 flex flex-col h-full">
+          <div>
+            <h2 className="text-sm font-bold text-foreground mb-4 opacity-90 flex items-center gap-2">
+              <TreeDeciduous size={16} className="text-primary" />
+              Level Order Traversal
+            </h2>
+            <Card className="p-8 bg-card/60 backdrop-blur border-border/50 shadow-sm overflow-hidden flex justify-center items-center">
+              {renderTree()}
+            </Card>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          <Card className="p-6">
-            <div className="text-sm font-semibold mb-4 text-center">Binary Tree Structure</div>
-            {renderTree()}
-            <div className="mt-4 flex justify-center gap-4 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full bg-yellow-500 border border-foreground" />
-                <span>Current</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full bg-blue-500 border border-foreground" />
-                <span>In Queue</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full bg-green-500 border border-foreground" />
-                <span>Visited</span>
-              </div>
-            </div>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <Card className="p-4 bg-primary/5 border-l-4 border-primary shadow-sm h-full flex flex-col justify-center">
+               <h4 className="text-[9px] font-bold uppercase tracking-widest text-primary/80 mb-2">Commentary</h4>
+               <p className="text-[13px] font-medium leading-relaxed text-foreground/90">
+                 {step.explanation}
+               </p>
+             </Card>
+             
+             <Card className="p-4 bg-muted/30 border-muted">
+                <h4 className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                  <Inbox size={12} />
+                  Queue Status
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <AnimatePresence mode="popLayout">
+                    {step.queue.map((q, idx) => (
+                      <motion.div 
+                        key={`${q}-${idx}`}
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0 }}
+                        className="p-2 bg-background rounded border border-border shadow-sm min-w-[35px] text-center"
+                      >
+                        <span className="text-[12px] font-bold text-primary">{q}</span>
+                      </motion.div>
+                    ))}
+                    {step.queue.length === 0 && (
+                      <span className="text-xs text-muted-foreground italic">Empty</span>
+                    )}
+                  </AnimatePresence>
+                </div>
+             </Card>
+          </div>
 
-          <Card className="p-6 border-l-4 border-l-primary bg-primary/5">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <p className="text-sm font-medium leading-relaxed">{step.message}</p>
-              </motion.div>
-            </AnimatePresence>
+          <Card className="p-4 bg-muted/30 border-muted">
+             <h4 className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+               <ListChecks size={12} />
+               Result (Levels)
+             </h4>
+             <div className="space-y-2">
+               {step.result.map((level, idx) => (
+                 <motion.div 
+                   key={idx}
+                   initial={{ opacity: 0, y: 5 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   className="flex items-center gap-2"
+                 >
+                   <span className="text-[10px] font-bold text-muted-foreground w-12">Level {idx}:</span>
+                   <div className="flex gap-1">
+                     {level.map((v, i) => (
+                       <span key={i} className="px-2 py-1 bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20 rounded text-[11px] font-bold">
+                         {v}
+                       </span>
+                     ))}
+                   </div>
+                 </motion.div>
+               ))}
+               {step.result.length === 0 && <span className="text-xs text-muted-foreground italic">No levels processed yet</span>}
+             </div>
           </Card>
 
           <VariablePanel
             variables={{
-              queue: `[${step.queue.join(', ')}]`,
               levelSize: step.levelSize,
-              i: step.i,
+              "i": step.i,
               currentNode: step.currentNode,
-              currentLevel: `[${step.currentLevel.join(', ')}]`,
-              result: JSON.stringify(step.result)
+              "currentLevel": JSON.stringify(step.currentLevel)
             }}
           />
         </div>
-
-        <div className="h-full">
+      }
+      rightContent={
+        <Card className="h-full overflow-hidden flex flex-col shadow-sm border-border/50">
           <AnimatedCodeEditor
             code={code}
             language="typescript"
             highlightedLines={step.highlightedLines}
-            className="h-full"
           />
-        </div>
-      </div>
-    </div>
+        </Card>
+      }
+    />
   );
 };

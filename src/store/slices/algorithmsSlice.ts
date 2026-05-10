@@ -48,7 +48,7 @@ export const fetchAllAlgorithms = createAsyncThunk(
         timeComplexity: algo.time_complexity,
         spaceComplexity: algo.space_complexity,
         slug: algo.id,
-        listType: algo.list_type,
+        listType: algo.list_type || (typeof algo.metadata === 'string' ? JSON.parse(algo.metadata || '{}')?.listType : algo.metadata?.listType),
         serial_no: algo.serial_no,
         metadata: algo.metadata,
       }));
