@@ -126,7 +126,6 @@ export const CodeWorkspacePanel = React.memo(({
                 language={selectedLanguage as any}
                 onLanguageChange={(lang) => {
                   setSelectedLanguage(lang);
-                  localStorage.setItem('preferredLanguage', lang);
                 }}
                 onSuccess={handleCodeSuccess}
                 controls={algorithm.controls?.code_runner}

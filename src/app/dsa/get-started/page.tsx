@@ -2,11 +2,11 @@ import { Metadata } from 'next';
 import GetStartedClient from './GetStartedClient';
 
 export const metadata: Metadata = {
-  title: "DSA Roadmap - RulCode | Master Patterns",
-  description: "Master essential recurring algorithm patterns with our curated DSA roadmap.",
+  title: "All Practice - Master Data Structures & Algorithms | RulCode",
+  description: "Explore our comprehensive bank of 150+ coding problems and curated patterns.",
   openGraph: {
-    title: "DSA Roadmap - RulCode | Master Patterns",
-    description: "Master essential recurring algorithm patterns with our curated DSA roadmap.",
+    title: "All Practice - Master DSA | RulCode",
+    description: "Explore our comprehensive bank of 150+ coding problems and curated patterns.",
     url: 'https://rulcode.com/dsa/get-started',
   }
 };

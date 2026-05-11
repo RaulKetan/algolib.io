@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useLanguagePreference } from '@/hooks/useLanguagePreference';
+import { Language } from '@/types/algorithm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -267,8 +269,31 @@ const SolutionApproach: React.FC<{
     });
 
     // Local state for the active tab, defaulting to typescript if available, otherwise the first sorted one
-    const defaultLang = sortedImplementations.find(i => i.lang.toLowerCase() === 'typescript')?.lang || sortedImplementations[0]?.lang || 'typescript';
-    const [activeLang, setActiveLang] = useState(defaultLang);
+    const { preferredLanguage, setPreferredLanguage } = useLanguagePreference();
+
+    // Local state for the active tab, defaulting to preference if available, otherwise typescript, otherwise first sorted one
+    const initialLang = useMemo(() => {
+        const preferred = sortedImplementations.find(i => i.lang.toLowerCase() === preferredLanguage.toLowerCase());
+        if (preferred) return preferred.lang;
+
+        return sortedImplementations.find(i => i.lang.toLowerCase() === 'typescript')?.lang || sortedImplementations[0]?.lang || 'typescript';
+    }, [sortedImplementations, preferredLanguage]);
+
+    const [activeLang, setActiveLang] = useState(initialLang);
+
+    // Sync with global preference when it changes elsewhere
+    useEffect(() => {
+        const preferred = sortedImplementations.find(i => i.lang.toLowerCase() === preferredLanguage.toLowerCase());
+        if (preferred && preferred.lang !== activeLang) {
+            setActiveLang(preferred.lang);
+        }
+    }, [preferredLanguage, sortedImplementations, activeLang]);
+
+    // Handle manual language change
+    const handleLanguageChange = (lang: string) => {
+        setActiveLang(lang);
+        setPreferredLanguage(lang.toLowerCase() as Language);
+    };
     const [isNarrow, setIsNarrow] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const [monacoLoaded, setMonacoLoaded] = useState(false);
@@ -314,7 +339,7 @@ const SolutionApproach: React.FC<{
         {/* Language Tabs for this approach */}
         <Tabs
           value={activeLang}
-          onValueChange={setActiveLang}
+          onValueChange={handleLanguageChange}
           className="w-full"
         >
           <div className="relative rounded-lg border overflow-hidden">
@@ -343,7 +368,7 @@ const SolutionApproach: React.FC<{
                 {/* MOBILE: Select Dropdown */}
                 {(controls?.languages !== false && langImplementations.length > 1) && isNarrow && (
                   <div className="px-2 py-1">
-                    <Select value={activeLang} onValueChange={setActiveLang}>
+                    <Select value={activeLang} onValueChange={handleLanguageChange}>
                       <SelectTrigger className="h-8 w-[140px] border-none shadow-none bg-transparent focus:ring-0 focus:ring-offset-0 text-sm font-medium">
                         <SelectValue placeholder="Language" />
                       </SelectTrigger>

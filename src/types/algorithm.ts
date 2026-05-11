@@ -1,3 +1,5 @@
+export type Language = 'cpp' | 'java' | 'python' | 'typescript' | 'javascript' | 'c';
+
 export enum ListType {
     Core = 'core',
     Blind75 = 'blind75',

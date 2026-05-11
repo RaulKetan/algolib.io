@@ -45,7 +45,7 @@ const sidebarConfig = {
             },
             {
                 title: "DSA",
-                url: "/dsa/problems",
+                url: "/dsa/get-started",
                 icon: ListTodo,
                 hasCaret: true,
                 isGroup: true,
@@ -55,12 +55,6 @@ const sidebarConfig = {
                         url: "/dsa/get-started",
                         icon: Rocket,
                         description: "Your personalized roadmap to mastering DSA."
-                    },
-                    {
-                        title: "All practice",
-                        url: "/dsa/problems",
-                        icon: Layers,
-                        description: "Browse and filter the entire coding question bank."
                     },
                     {
                         title: "Core patterns",
@@ -93,20 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const isSidebarRoute = sidebarRoutes.some(route => pathname?.startsWith(route));
     const lastPathRef = React.useRef(pathname);
 
-    React.useEffect(() => {
-        const isCurrentlyListing = sidebarRoutes.some(route => pathname?.startsWith(route));
-        const wasListing = sidebarRoutes.some(route => lastPathRef.current?.startsWith(route));
-
-        // If we just entered a listing route from somewhere else, or switched between listing routes
-        // BUT don't auto-expand for the query page specifically as per user request
-        if (isCurrentlyListing && pathname !== '/dsa/query' && (!wasListing || lastPathRef.current !== pathname)) {
-            if (!isMobile && state === "collapsed") {
-                setOpen(true);
-            }
-        }
-
-        lastPathRef.current = pathname;
-    }, [pathname, isMobile, state, setOpen]);
+    // Removed auto-expansion logic for DSA routes as per user request
 
     const { user, hasPremiumAccess } = useApp();
 

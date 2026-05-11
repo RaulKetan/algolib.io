@@ -31,6 +31,7 @@ interface ListingLayoutProps {
         hours?: number;
     };
     progressWidget?: ReactNode;
+    stickyHeaderSlot?: ReactNode;
     icon?: any;
 }
 
@@ -88,6 +89,7 @@ export const ListingLayout = ({
     children,
     stats,
     progressWidget,
+    stickyHeaderSlot,
     icon
 }: ListingLayoutProps) => {
     const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
@@ -119,6 +121,12 @@ export const ListingLayout = ({
                                 {progressWidget && (
                                     <div className="w-full max-w-[300px]">
                                         {progressWidget}
+                                    </div>
+                                )}
+
+                                {stickyHeaderSlot && (
+                                    <div className="sticky top-[48px] z-30 bg-background/95 backdrop-blur-sm -mx-2 px-2 py-3 mb-2">
+                                        {stickyHeaderSlot}
                                     </div>
                                 )}
 
