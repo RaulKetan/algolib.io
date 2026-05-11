@@ -1,15 +1,23 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Language } from '@/types/algorithm';
 
-const STORAGE_KEY = 'preferredLanguage';
-const SYNC_EVENT = 'language-preference-changed';
+export type PreferenceScope = 'editor' | 'solution';
 
-export function useLanguagePreference() {
+export function useLanguagePreference(scope: PreferenceScope = 'editor') {
+    const storageKey = useMemo(() => {
+        // Keep 'preferredLanguage' for editor for backward compatibility
+        return scope === 'editor' ? 'preferredLanguage' : `preferredLanguage_${scope}`;
+    }, [scope]);
+
+    const syncEvent = useMemo(() => {
+        return scope === 'editor' ? 'language-preference-changed' : `language-preference-changed-${scope}`;
+    }, [scope]);
+
     const [preferredLanguage, setPreferredLanguageState] = useState<Language>(() => {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem(STORAGE_KEY);
+            const saved = localStorage.getItem(storageKey);
             // Validate that the saved value is a valid Language
             if (['cpp', 'java', 'python', 'typescript', 'javascript', 'c'].includes(saved || '')) {
                 return saved as Language;
@@ -21,12 +29,12 @@ export function useLanguagePreference() {
 
     const setPreferredLanguage = useCallback((lang: Language) => {
         if (typeof window !== 'undefined') {
-            localStorage.setItem(STORAGE_KEY, lang);
+            localStorage.setItem(storageKey, lang);
             setPreferredLanguageState(lang);
-            // Dispatch event to sync other instances of this hook
-            window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: lang }));
+            // Dispatch event to sync other instances of this hook with the same scope
+            window.dispatchEvent(new CustomEvent(syncEvent, { detail: lang }));
         }
-    }, []);
+    }, [storageKey, syncEvent]);
 
     useEffect(() => {
         const handleSync = (event: Event) => {
@@ -37,7 +45,7 @@ export function useLanguagePreference() {
         };
 
         const handleStorageChange = (event: StorageEvent) => {
-            if (event.key === STORAGE_KEY && event.newValue) {
+            if (event.key === storageKey && event.newValue) {
                 const newValue = event.newValue as Language;
                 if (newValue !== preferredLanguage) {
                     setPreferredLanguageState(newValue);
@@ -45,14 +53,14 @@ export function useLanguagePreference() {
             }
         };
 
-        window.addEventListener(SYNC_EVENT, handleSync);
+        window.addEventListener(syncEvent, handleSync);
         window.addEventListener('storage', handleStorageChange);
 
         return () => {
-            window.removeEventListener(SYNC_EVENT, handleSync);
+            window.removeEventListener(syncEvent, handleSync);
             window.removeEventListener('storage', handleStorageChange);
         };
-    }, [preferredLanguage]);
+    }, [preferredLanguage, storageKey, syncEvent]);
 
     return {
         preferredLanguage,

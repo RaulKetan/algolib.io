@@ -269,7 +269,7 @@ const SolutionApproach: React.FC<{
     });
 
     // Local state for the active tab, defaulting to typescript if available, otherwise the first sorted one
-    const { preferredLanguage, setPreferredLanguage } = useLanguagePreference();
+    const { preferredLanguage, setPreferredLanguage } = useLanguagePreference('solution');
 
     // Local state for the active tab, defaulting to preference if available, otherwise typescript, otherwise first sorted one
     const initialLang = useMemo(() => {

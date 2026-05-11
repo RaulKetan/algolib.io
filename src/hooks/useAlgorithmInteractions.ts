@@ -39,7 +39,7 @@ export const useAlgorithmInteractions = ({
 
     // Code Management
     const [savedCode, setSavedCode] = useState<string>("");
-    const { preferredLanguage, setPreferredLanguage } = useLanguagePreference();
+    const { preferredLanguage, setPreferredLanguage } = useLanguagePreference('editor');
     const selectedLanguage = preferredLanguage;
     const [codeCache, setCodeCache] = useState<Record<string, string>>({});
     const [isUserModified, setIsUserModified] = useState(false);
