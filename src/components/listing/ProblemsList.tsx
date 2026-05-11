@@ -26,6 +26,7 @@ interface ProblemsListProps {
   initialSelectedTopics?: string[];
   initialSelectedCompanies?: string[];
   initialExpandAll?: boolean;
+  stickyHeaderSlot?: ReactNode;
 }
 
 const EMPTY_ARRAY: string[] = [];
@@ -37,7 +38,7 @@ export const ProblemsList = ({
   listType,
   showRecommendation = false,
   showCategoryToggle = true,
-  initialCategoryWise = true,
+  initialCategoryWise = false,
   headerSlot,
   footerSlot,
   progressTitle = "Progress",
@@ -45,7 +46,8 @@ export const ProblemsList = ({
   icon,
   initialSelectedTopics = EMPTY_ARRAY,
   initialSelectedCompanies = EMPTY_ARRAY,
-  initialExpandAll = false
+  initialExpandAll = false,
+  stickyHeaderSlot
 }: ProblemsListProps) => {
   const { activeListType, setActiveListType, progressMap, hasPremiumAccess } = useApp();
 
@@ -53,7 +55,20 @@ export const ProblemsList = ({
   const [sortBy, setSortBy] = useState('serial-asc');
   const [selectedTopics, setSelectedTopics] = useState<string[]>(initialSelectedTopics.map(normalizeCategory));
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>(initialSelectedCompanies);
-  const [isCategoryWise, setIsCategoryWise] = useState(initialCategoryWise);
+  const [isCategoryWise, setIsCategoryWise] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dsa_category_wise');
+      return saved !== null ? JSON.parse(saved) : initialCategoryWise;
+    }
+    return initialCategoryWise;
+  });
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dsa_category_wise', JSON.stringify(isCategoryWise));
+    }
+  }, [isCategoryWise]);
+
   const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [hasInitializedExpand, setHasInitializedExpand] = useState(false);
 
@@ -244,6 +259,7 @@ export const ProblemsList = ({
       showCategoryToggle={showCategoryToggle}
       isCategoryWise={isCategoryWise}
       onCategoryWiseChange={setIsCategoryWise}
+      stickyHeaderSlot={stickyHeaderSlot}
       progressWidget={
         !isLoading && overallStats.totalQuestions > 0 ? (
           <Card className="bg-card border-border/40 shadow-sm overflow-hidden h-full flex flex-col mt-[-10px]">

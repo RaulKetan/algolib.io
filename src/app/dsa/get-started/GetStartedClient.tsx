@@ -1,84 +1,117 @@
 'use client';
 
-import { useMemo } from "react";
-import Link from "next/link";
+import { useMemo, useState } from "react";
 import { useAlgorithms } from "@/hooks/useAlgorithms";
 import { ListType } from "@/types/algorithm";
-import { Rocket, Layers, ChevronRight, Target, Brain } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Layers, Target, Brain, ChevronDown } from "lucide-react";
 import { ProblemsList } from "@/components/listing/ProblemsList";
-
-const ListCard = ({ title, description, icon: Icon, badge, link, color, isFirst, isLast }: any) => (
-  <Link href={link} className="group block relative w-full">
-    <div className={cn(
-      "flex items-center gap-4 sm:gap-6 p-5 transition-all duration-300",
-      "bg-card hover:bg-muted/15",
-      "border-x border-t border-border/40",
-      isFirst && "rounded-t-xl",
-      isLast && "rounded-b-xl border-b",
-      !isFirst && !isLast && "rounded-none",
-      "shadow-sm hover:shadow-md relative overflow-hidden"
-    )}>
-      <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110", color)}>
-        {Icon ? <Icon className="w-6 h-6" /> : <span className="text-xl font-medium">{badge}</span>}
-      </div>
-      <div className="flex-1 min-w-0">
-        <h4 className="font-medium text-[16px] mb-1 group-hover:text-primary transition-colors">{title}</h4>
-        <p className="text-[13px] text-muted-foreground leading-snug line-clamp-1">{description}</p>
-      </div>
-      <div className="shrink-0 flex items-center justify-center w-8 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all">
-        <ChevronRight className="w-5 h-5" strokeWidth={2} />
-      </div>
-    </div>
-  </Link>
-);
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const GetStartedClient = () => {
   const { data, isLoading } = useAlgorithms();
+  const [activeTab, setActiveTab] = useState("all");
+  const isMobile = useIsMobile();
 
   const allAlgorithms = data?.algorithms ?? [];
+  
   const coreAlgorithms = useMemo(() => 
-    allAlgorithms.filter(algo => !algo.listType || algo.listType === ListType.Core || algo.listType === ListType.CoreAndBlind75),
+    allAlgorithms.filter(algo => algo.listType === ListType.Core || algo.listType === ListType.CoreAndBlind75),
     [allAlgorithms]
   );
 
+  const blind75Algorithms = useMemo(() => 
+    allAlgorithms.filter(algo => algo.listType === ListType.Blind75 || algo.listType === ListType.CoreAndBlind75),
+    [allAlgorithms]
+  );
+
+  const currentAlgorithms = useMemo(() => {
+    if (activeTab === "core") return coreAlgorithms;
+    if (activeTab === "blind75") return blind75Algorithms;
+    return allAlgorithms;
+  }, [activeTab, allAlgorithms, coreAlgorithms, blind75Algorithms]);
+
+  const activeIcon = useMemo(() => {
+    if (activeTab === "core") return Target;
+    if (activeTab === "blind75") return Brain;
+    return Layers;
+  }, [activeTab]);
+
+  const tabs = [
+    { value: "all", label: "All Questions", icon: Layers },
+    { value: "core", label: "Core Patterns", icon: Target },
+    { value: "blind75", label: "Blind 75", icon: Brain },
+  ];
+
+  const activeTabLabel = tabs.find(t => t.value === activeTab)?.label || "Select Category";
+
   return (
     <ProblemsList
-      algorithms={coreAlgorithms}
-      title="DSA Roadmap"
-      description="Kickstart your DSA journey with a structured roadmap. Learn to break down complex problems into recurring patterns, systematically building the intuition needed to tackle any interview with confidence."
-      listType="core"
-      progressTitle="Your Roadmap Progress"
+      algorithms={currentAlgorithms}
+      title="All Practice"
+      description="Explore our comprehensive library of coding problems. Whether you're mastering fundamental patterns or preparing for top-tier technical interviews, we've got you covered."
+      listType={activeTab as any}
       isLoading={isLoading}
-      showRecommendation={true}
-      initialCategoryWise={true}
-      icon={Rocket}
-      headerSlot={
-        <div className="w-full max-w-[700px] mx-auto flex flex-col mb-12">
-          <ListCard
-            title="All Practice"
-            description="Browse the complete bank of 150+ problems."
-            icon={Layers}
-            link="/dsa/problems"
-            color="bg-blue-500/10 text-blue-500"
-            isFirst={true}
-          />
-          <ListCard
-            title="Core Patterns"
-            description="Learn essential recurring logic patterns."
-            icon={Target}
-            link="/dsa/core"
-            color="bg-purple-500/10 text-purple-500"
-          />
-          <ListCard
-            title="Blind 75"
-            description="The curated list of must-do FAANG questions."
-            icon={Brain}
-            badge="75"
-            link="/dsa/blind-75"
-            color="bg-amber-500/10 text-amber-500"
-            isLast={true}
-          />
+      showRecommendation={activeTab === "all"}
+      initialCategoryWise={activeTab !== "all"}
+      icon={activeIcon}
+      stickyHeaderSlot={
+        <div className="w-full">
+          {isMobile ? (
+            <div className="flex items-center gap-2 mb-2">
+              <Select value={activeTab} onValueChange={setActiveTab}>
+                <SelectTrigger className="w-full h-11 rounded-xl border-border/40 bg-background shadow-sm focus:ring-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                      {activeTab === "all" && <Layers className="w-3.5 h-3.5" />}
+                      {activeTab === "core" && <Target className="w-3.5 h-3.5" />}
+                      {activeTab === "blind75" && <Brain className="w-3.5 h-3.5" />}
+                    </div>
+                    <span className="font-medium text-sm">{activeTabLabel}</span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-border/40 shadow-xl">
+                  {tabs.map((tab) => (
+                    <SelectItem key={tab.value} value={tab.value} className="py-3 focus:bg-primary/5 focus:text-primary">
+                      <div className="flex items-center gap-3">
+                        <tab.icon className="w-4 h-4 opacity-70" />
+                        <span className="font-medium">{tab.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <Tabs value={activeTab} className="w-full" onValueChange={setActiveTab}>
+              <TabsList className="h-12 bg-transparent p-0 flex justify-start gap-6 sm:gap-8 rounded-none border-b border-border/40">
+                {tabs.map((tab) => (
+                  <TabsTrigger 
+                    key={tab.value}
+                    value={tab.value} 
+                    className={cn(
+                      "relative h-12 rounded-none bg-transparent px-0 pb-3 pt-2 font-medium text-muted-foreground transition-all duration-200",
+                      "border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none",
+                      "hover:text-foreground/80"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                        <tab.icon className={cn("w-4 h-4 transition-colors", activeTab === tab.value ? "text-primary" : "text-muted-foreground/60")} />
+                        <span className="text-sm sm:text-[15px]">{tab.label}</span>
+                    </div>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          )}
         </div>
       }
     />

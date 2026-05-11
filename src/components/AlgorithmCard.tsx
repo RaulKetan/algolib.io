@@ -106,8 +106,10 @@ export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, 
                 </div>
 
                 {/* Navigation Arrow */}
-                <div className="shrink-0 self-center block group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                    <ArrowRight className={cn("text-bg", isSidebar ? "w-4 h-4" : "w-5 h-5")} />
+                <div className="shrink-0 self-center">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-muted-foreground/30 group-hover:text-primary group-hover:bg-primary/5 group-hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.15)] dark:group-hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)] transition-all duration-300 transform group-hover:translate-x-1 border border-transparent group-hover:border-primary/10">
+                        <ArrowRight className={cn(isSidebar ? "w-4 h-4" : "w-5 h-5")} strokeWidth={2} />
+                    </div>
                 </div>
             </div>
         </Link>

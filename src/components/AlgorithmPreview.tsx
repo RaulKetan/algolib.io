@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLanguagePreference } from "@/hooks/useLanguagePreference";
+import { Language } from "@/types/algorithm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +26,9 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
   const [activeTab, setActiveTab] = useState("description");
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("typescript");
+  const { preferredLanguage, setPreferredLanguage } = useLanguagePreference();
+  const selectedLanguage = preferredLanguage;
+  const setSelectedLanguage = (lang: string) => setPreferredLanguage(lang as Language);
   const [isCodeRunnerMaximized, setIsCodeRunnerMaximized] = useState(false);
   const [isVisualizationMaximized, setIsVisualizationMaximized] = useState(false);
   const [isBrainstormMaximized, setIsBrainstormMaximized] = useState(false);

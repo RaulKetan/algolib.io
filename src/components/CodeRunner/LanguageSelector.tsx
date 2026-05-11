@@ -7,8 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Code2, Coffee, FileJson, Hash } from "lucide-react";
-
-export type Language = 'cpp' | 'java' | 'python' | 'typescript';
+import { Language } from '@/types/algorithm';
 
 interface LanguageSelectorProps {
   language: Language;

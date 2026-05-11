@@ -102,8 +102,10 @@ export const PremiumProblemCard = ({ algorithm, status, isPremium: isPremiumProp
                 </div>
 
                 {/* Action Indicator */}
-                <div className="shrink-0 flex items-center justify-center w-6 sm:w-8 text-muted-foreground/30 transition-transform duration-300">
-                    <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5" strokeWidth={1.5} />
+                <div className="shrink-0 flex items-center justify-center">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-muted-foreground/30 group-hover:text-primary group-hover:bg-primary/5 group-hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.15)] dark:group-hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)] transition-all duration-300 transform group-hover:translate-x-1 border border-transparent group-hover:border-primary/10">
+                        <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5" strokeWidth={2} />
+                    </div>
                 </div>
             </div>
         </Link>

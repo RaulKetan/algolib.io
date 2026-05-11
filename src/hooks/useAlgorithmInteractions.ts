@@ -8,6 +8,8 @@ import confetti from 'canvas-confetti';
 import { usePostHog } from '@posthog/react';
 import { trackEvent } from '@/lib/analytics';
 import { useApp } from '@/contexts/AppContext';
+import { useLanguagePreference } from './useLanguagePreference';
+import { Language } from '@/types/algorithm';
 
 interface UseAlgorithmInteractionsProps {
     user: any;
@@ -37,12 +39,8 @@ export const useAlgorithmInteractions = ({
 
     // Code Management
     const [savedCode, setSavedCode] = useState<string>("");
-    const [selectedLanguage, setSelectedLanguage] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('preferredLanguage') || 'typescript';
-        }
-        return 'typescript';
-    });
+    const { preferredLanguage, setPreferredLanguage } = useLanguagePreference();
+    const selectedLanguage = preferredLanguage;
     const [codeCache, setCodeCache] = useState<Record<string, string>>({});
     const [isUserModified, setIsUserModified] = useState(false);
     const latestCodeRef = useRef(savedCode);
@@ -457,18 +455,19 @@ export const useAlgorithmInteractions = ({
         savedCode,
         selectedLanguage,
         setSelectedLanguage: (lang: string) => {
-            const prevLang = selectedLanguage;
-            setSelectedLanguage(lang);
-            localStorage.setItem('preferredLanguage', lang);
+            const newLang = lang as Language;
+            const prevLang = preferredLanguage;
+            setPreferredLanguage(newLang);
+
             // Sync savedCode immediately to avoid one-render lag for CodeRunner
-            const codeForLanguage = codeCache[lang] || '';
+            const codeForLanguage = codeCache[newLang] || '';
             setSavedCode(codeForLanguage);
             setIsUserModified(false);
-            currentLanguageRef.current = lang;
+            currentLanguageRef.current = newLang;
             trackEvent(posthog, 'language_changed', {
                 algorithm_id: algorithmId,
                 from_language: prevLang,
-                to_language: lang,
+                to_language: newLang,
             });
         },
         isUserModified,
