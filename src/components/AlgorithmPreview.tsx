@@ -26,7 +26,7 @@ export function AlgorithmPreview({ algorithm, initialCode = "", isPlatformPrevie
   const [activeTab, setActiveTab] = useState("description");
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
-  const { preferredLanguage, setPreferredLanguage } = useLanguagePreference();
+  const { preferredLanguage, setPreferredLanguage } = useLanguagePreference('editor');
   const selectedLanguage = preferredLanguage;
   const setSelectedLanguage = (lang: string) => setPreferredLanguage(lang as Language);
   const [isCodeRunnerMaximized, setIsCodeRunnerMaximized] = useState(false);
