@@ -136,6 +136,7 @@ export const CodeWorkspacePanel = React.memo(({
                 isMobile={isMobile}
                 isLoading={isLoading}
                 onToggleRightPanel={toggleRightPanel}
+                isPlatformPreview={isPlatformPreview}
                 brainstormProps={isBrainstormGlobalEnabled && algorithm?.controls?.brainstorm !== false ? {
                   algorithmId: algorithmId,
                   algorithmTitle: algorithm?.title || algorithm?.name || "",

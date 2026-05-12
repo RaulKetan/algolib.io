@@ -7,6 +7,7 @@ import { addSubmission, updateProgress } from '@/utils/userAlgorithmDataHelpers'
 import { Submission } from '@/types/userAlgorithmData';
 import { LANGUAGE_IDS } from '@/components/CodeRunner/constants';
 import { Language } from '@/components/CodeRunner/LanguageSelector';
+import { trackEvent } from '@/lib/analytics';
 
 const mapStatusStringToId = (status: string): { id: number; description: string } => {
     switch (status.toLowerCase()) {
@@ -328,7 +329,7 @@ export const useCodeExecution = ({
             }
 
             if (!isSubmission && posthog) {
-                posthog.capture('run_code', {
+                trackEvent(posthog, 'run_code', {
                     problemId: algorithmId,
                     language: language,
                     status: result.status?.id === 3 ? (allPassed ? 'pass' : 'fail') : 'error',
@@ -412,7 +413,7 @@ export const useCodeExecution = ({
         }
 
         if (posthog) {
-            posthog.capture('submit_code', {
+            trackEvent(posthog, 'submit_code', {
                 problemId: algorithmId,
                 language: language,
                 status: allPassed ? 'pass' : (result?.status?.id === 3 ? 'fail' : 'error'),

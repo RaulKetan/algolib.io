@@ -238,53 +238,56 @@ const Navbar = ({
           {/* Standard Navigation Links (Desktop only) */}
           {!isProblemMode && (
             <div className="hidden md:flex items-center gap-6 lg:gap-8 ml-6 flex-1 text-sm font-medium">
-              <div
-                onMouseEnter={handleInterviewsMouseEnter}
-                onMouseLeave={handleInterviewsMouseLeave}
-              >
-                <DropdownMenu open={isInterviewsOpen} onOpenChange={setIsInterviewsOpen} modal={false}>
-                  <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-colors outline-none relative font-normal shutter-click">
-                    <span>Interviews</span>
-                    <span className="absolute -top-1 -right-2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-1" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="start"
-                    className="w-[300px] p-4"
-                    onMouseEnter={handleInterviewsMouseEnter}
-                    onMouseLeave={handleInterviewsMouseLeave}
-                    sideOffset={4}
-                  >
-                    <div className="text-xs text-muted-foreground mb-3 font-normal">Products</div>
-                    <div className="flex flex-col gap-1 mb-4">
-                      <Link
-                        href="/"
-                        className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors shutter-click"
-                      >
-                        <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
-                        <span className="font-medium text-sm">Rulcode <span className="text-muted-foreground font-normal ml-1">Interviews</span></span>
-                      </Link>
-                      <div className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors cursor-not-allowed opacity-80">
-                        <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
-                        <span className="font-medium text-sm flex items-center gap-2">Rulcode <span className="text-muted-foreground font-normal ml-1">Projects</span><div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div></span>
-                        <Badge variant="secondary" className="bg-[#E5FF7F] text-black hover:bg-[#d6f555] border-transparent ml-auto text-[10px] h-5 py-0 whitespace-nowrap">Coming soon</Badge>
+              {/* Hidden for now as per user request */}
+              {false && (
+                <div
+                  onMouseEnter={handleInterviewsMouseEnter}
+                  onMouseLeave={handleInterviewsMouseLeave}
+                >
+                  <DropdownMenu open={isInterviewsOpen} onOpenChange={setIsInterviewsOpen} modal={false}>
+                    <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-colors outline-none relative font-normal shutter-click">
+                      <span>Interviews</span>
+                      <span className="absolute -top-1 -right-2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-1" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      className="w-[300px] p-4"
+                      onMouseEnter={handleInterviewsMouseEnter}
+                      onMouseLeave={handleInterviewsMouseLeave}
+                      sideOffset={4}
+                    >
+                      <div className="text-xs text-muted-foreground mb-3 font-normal">Products</div>
+                      <div className="flex flex-col gap-1 mb-4">
+                        <Link
+                          href="/"
+                          className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors shutter-click"
+                        >
+                          <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
+                          <span className="font-medium text-sm">Rulcode <span className="text-muted-foreground font-normal ml-1">Interviews</span></span>
+                        </Link>
+                        <div className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors cursor-not-allowed opacity-80">
+                          <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
+                          <span className="font-medium text-sm flex items-center gap-2">Rulcode <span className="text-muted-foreground font-normal ml-1">Projects</span><div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div></span>
+                          <Badge variant="secondary" className="bg-[#E5FF7F] text-black hover:bg-[#d6f555] border-transparent ml-auto text-[10px] h-5 py-0 whitespace-nowrap">Coming soon</Badge>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="text-xs text-muted-foreground mb-3 font-normal">Resources</div>
-                    <div className="flex flex-col gap-1">
-                      <Link
-                        href="/blog"
-                        className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors shutter-click"
-                        onClick={closeMenus}
-                      >
-                        <MessageSquare className="w-5 h-5 text-muted-foreground" />
-                        <span className="font-medium text-sm">Blog</span>
-                      </Link>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                      <div className="text-xs text-muted-foreground mb-3 font-normal">Resources</div>
+                      <div className="flex flex-col gap-1">
+                        <Link
+                          href="/blog"
+                          className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors shutter-click"
+                          onClick={closeMenus}
+                        >
+                          <MessageSquare className="w-5 h-5 text-muted-foreground" />
+                          <span className="font-medium text-sm">Blog</span>
+                        </Link>
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
 
               <div className="h-4 w-[1px] bg-border/60 mx-1"></div>
 
@@ -339,7 +342,14 @@ const Navbar = ({
                           <Link
                             href="/dsa/get-started"
                             className="group flex items-start gap-5 relative shutter-click"
-                            onClick={closeMenus}
+                            onClick={() => {
+                              closeMenus();
+                              trackEvent(posthog, 'home_cta_clicked', {
+                                cta_label: 'Get Started',
+                                destination: '/dsa/get-started',
+                                section: 'navbar_prepare'
+                              });
+                            }}
                           >
                             <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
                               <Rocket className="w-5 h-5 text-foreground group-hover:text-primary" />
@@ -358,7 +368,14 @@ const Navbar = ({
                           <Link
                             href="/dsa/problems"
                             className="group flex items-start gap-5 relative shutter-click"
-                            onClick={closeMenus}
+                            onClick={() => {
+                              closeMenus();
+                              trackEvent(posthog, 'home_cta_clicked', {
+                                cta_label: 'All practice questions',
+                                destination: '/dsa/problems',
+                                section: 'navbar_prepare'
+                              });
+                            }}
                           >
                             <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
                               <Layers className="w-5 h-5 text-foreground group-hover:text-primary" />
@@ -378,7 +395,14 @@ const Navbar = ({
                           <Link
                             href="/dsa/core"
                             className="group flex items-start gap-5 relative shutter-click"
-                            onClick={closeMenus}
+                            onClick={() => {
+                              closeMenus();
+                              trackEvent(posthog, 'home_cta_clicked', {
+                                cta_label: 'Core patterns',
+                                destination: '/dsa/core',
+                                section: 'navbar_prepare'
+                              });
+                            }}
                           >
                             <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
                               <Target className="w-5 h-5 text-foreground group-hover:text-primary" />
@@ -398,7 +422,14 @@ const Navbar = ({
                           <Link
                             href="/dsa/blind-75"
                             className="group flex items-start gap-5 relative shutter-click"
-                            onClick={closeMenus}
+                            onClick={() => {
+                              closeMenus();
+                              trackEvent(posthog, 'home_cta_clicked', {
+                                cta_label: 'Blind 75 list',
+                                destination: '/dsa/blind-75',
+                                section: 'navbar_prepare'
+                              });
+                            }}
                           >
                             <div className="p-3 bg-primary/5 rounded-xl group-hover:bg-primary/10 transition-colors border border-primary/10 shrink-0 text-primary">
                               <Brain className="w-5 h-5" />
