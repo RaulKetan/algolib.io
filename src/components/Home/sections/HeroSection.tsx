@@ -1,9 +1,15 @@
+"use client";
+
 import { ArrowRight, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
+import { usePostHog } from '@posthog/react';
+import { trackEvent } from '@/lib/analytics';
 
 export function HeroSection() {
+    const posthog = usePostHog();
+
     return (
         <div className="relative pt-20 pb-4 lg:pt-32 lg:pb-8 overflow-hidden">
             <div className="w-full max-w-[1600px] mx-auto px-4 relative z-10">
@@ -24,8 +30,19 @@ export function HeroSection() {
 
                     <div className="flex flex-wrap items-center gap-6 mb-8">
                         <div className="flex flex-col gap-4">
-                            <Button className=" text-black rounded-full bg-primary hover:bg-primary/80 transition-colors " asChild>
-                                <Link href="/dsa/get-started">
+                            <Button 
+                                size="lg"
+                                className="rounded-full px-8 py-6 text-base bg-primary hover:bg-primary/90 text-black transition-all hover:scale-105 active:scale-95 shadow-xl shadow-primary/20" 
+                                asChild
+                            >
+                                <Link 
+                                    href="/dsa/get-started"
+                                    onClick={() => trackEvent(posthog, 'home_cta_clicked', { 
+                                        cta_label: 'Get started now', 
+                                        destination: '/dsa/get-started',
+                                        section: 'hero'
+                                    })}
+                                >
                                     Get started now <ArrowRight className="ml-2 w-6 h-6" />
                                 </Link>
                             </Button>

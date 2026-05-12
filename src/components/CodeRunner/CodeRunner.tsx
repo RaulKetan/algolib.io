@@ -53,6 +53,7 @@ interface CodeRunnerProps {
   onSubmissionComplete?: () => void;
   onSubmissionStart?: () => void;
   setSubmissions?: React.Dispatch<React.SetStateAction<Submission[]>>;
+  isPlatformPreview?: boolean;
 }
 
 export interface CodeRunnerRef {
@@ -87,7 +88,8 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
   handlePreviousProblem,
   onSubmissionComplete,
   onSubmissionStart,
-  setSubmissions: setSubmissionsProp
+  setSubmissions: setSubmissionsProp,
+  isPlatformPreview = false
 }, ref) => {
   const posthog = usePostHog();
   const isLimitExceeded = useFeatureFlag("todays_limit_exceed");
@@ -476,7 +478,7 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
         onShortcut={handleShortcut}
       />
 
-      {!user && (
+      {!user && !isPlatformPreview && (
         <div className="px-4 pb-2 pt-1 bg-background border-t">
           <AuthNudge 
             message="Sign in to execute code" 
