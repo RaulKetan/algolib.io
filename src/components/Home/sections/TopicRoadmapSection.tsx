@@ -19,7 +19,8 @@ import {
   TrendingUp,
   Activity,
   Shield,
-  LayoutGrid
+  LayoutGrid,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -200,7 +201,7 @@ export function TopicRoadmapSection() {
       <div className="w-full max-w-[1500px] mx-auto px-6 relative z-10">
         
         {/* INTERACTIVE DSA TOPIC CANVAS */}
-        <div className="max-w-[1400px] mx-auto border border-zinc-200 dark:border-zinc-900 bg-zinc-50/80 dark:bg-[#060606]/80 backdrop-blur-xl rounded-[36px] p-8 sm:p-12 relative overflow-hidden shadow-2xl">
+        <div className="max-w-[1400px] mx-auto border border-zinc-200 dark:border-zinc-900 bg-zinc-50/80 dark:bg-[#060606]/80 backdrop-blur-xl rounded-xl p-8 sm:p-12 relative overflow-hidden shadow-2xl">
           
           {/* Subtle dotted canvas style overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1c1c1c_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] pointer-events-none opacity-45"></div>
@@ -214,7 +215,7 @@ export function TopicRoadmapSection() {
                 <LayoutGrid className="w-3.5 h-3.5" /> Interactive Roadmap Canvas
               </div>
               
-              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white mb-3">
+              <h3 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-3">
                 Start Your Journey Topic-Wise
               </h3>
               
@@ -243,11 +244,10 @@ export function TopicRoadmapSection() {
             </div>
           </div>
 
-          {/* Reduced size and fully center-aligned card grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 relative z-10 justify-center">
+          {/* Accordion List Layout - Flat Design mimicking native DSA accordions */}
+          <div className="max-w-[950px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-3.5 relative z-10">
             {TOPIC_NODES.map((topic, index) => {
               const Icon = topic.icon;
-              const isHovered = hoveredNode === index;
               
               return (
                 <motion.div
@@ -256,44 +256,32 @@ export function TopicRoadmapSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.3, delay: index * 0.015 }}
-                  onMouseEnter={() => setHoveredNode(index)}
-                  onMouseLeave={() => setHoveredNode(null)}
                 >
                   <Link
                     href={`/dsa/query?topic=${encodeURIComponent(topic.name)}`}
                     onClick={() => handleCtaClick(topic.name, `/dsa/query?topic=${encodeURIComponent(topic.name)}`, "learning_canvas_node")}
-                    className="group block h-full"
+                    className="group block"
                   >
                     <Card
-                      className="h-full bg-white dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 hover:border-primary/30 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-primary/5 group-hover:-translate-y-1 p-4 rounded-xl overflow-hidden relative flex flex-col items-center justify-between text-center min-h-[140px]"
-                      style={{
-                        boxShadow: isHovered ? `0 8px 24px -8px ${topic.glowColor}` : "none"
-                      }}
+                      className="flex items-center justify-between p-4 bg-white dark:bg-[#080808] border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-zinc-950/20 transition-all duration-200 rounded-xl"
                     >
-                      {/* Background hover light effect */}
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-br from-transparent via-transparent"
-                        style={{
-                          backgroundImage: `radial-gradient(circle at 50% 50%, ${topic.glowColor}, transparent 55%)`
-                        }}
-                      ></div>
-
-                      <div className="relative z-10 flex flex-col items-center justify-between h-full w-full">
-                        <div className="flex flex-col items-center w-full">
-                          {/* Centered stylized smaller icon box */}
-                          <div className="w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-3 transition-all duration-300 group-hover:bg-primary group-hover:text-black">
-                            <Icon className="w-5 h-5 transition-colors duration-300" />
-                          </div>
-
-                          <h4 className="text-xs sm:text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-primary transition-colors line-clamp-2 leading-snug w-full px-1">
+                      {/* Left Block: Icon & Title info */}
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 dark:bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
+                          <Icon className="w-6 h-6 text-primary" />
+                        </div>
+                        <div className="flex flex-col text-left">
+                          <h4 className="text-sm sm:text-base font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-primary transition-colors leading-tight">
                             {topic.name}
                           </h4>
+                          <span className="text-xs text-zinc-500 mt-1">
+                            {topic.count} essential problems
+                          </span>
                         </div>
-
-                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block mt-3">
-                          {topic.count} Questions
-                        </span>
                       </div>
+
+                      {/* Right Block: Chevron Indicator */}
+                      <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500 group-hover:translate-x-0.5 group-hover:text-primary transition-all shrink-0" />
                     </Card>
                   </Link>
                 </motion.div>

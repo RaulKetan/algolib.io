@@ -3,7 +3,6 @@ import HomeClient from './HomeClient';
 import Script from 'next/script';
 import { HeroSection } from '@/components/Home/sections/HeroSection';
 import { InteractiveSandboxTeaser } from '@/components/Home/sections/InteractiveSandboxTeaser';
-import { CorePatternsBanner } from '@/components/Home/sections/CorePatternsBanner';
 import { TopicRoadmapSection } from '@/components/Home/sections/TopicRoadmapSection';
 import { SprintsAndTracksSection } from '@/components/Home/sections/SprintsAndTracksSection';
 import { CraftingSection } from '@/components/Home/sections/CraftingSection';
@@ -55,9 +54,8 @@ export default function Page() {
       <div className="min-h-screen bg-white dark:bg-black text-[#1A1A1A] dark:text-white overflow-x-hidden relative w-full">
         <HeroSection />
         <InteractiveSandboxTeaser />
-        <CorePatternsBanner />
-        <TopicRoadmapSection />
         <SprintsAndTracksSection />
+        <TopicRoadmapSection />
         <HomeClient type="platform-preview" />
         <WorkspaceSection />
         <ScratchpadSection />

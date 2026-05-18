@@ -33,12 +33,12 @@ export function InteractiveSandboxTeaser() {
               <Eye className="w-3.5 h-3.5" /> Interactive Sandbox Teaser
             </div>
             
-            <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-6 leading-[1.1]">
-              See Kadane&apos;s Subarray Sum in Lockstep Motion
+            <h3 className="text-3xl sm:text-5xl font-medium tracking-tight text-zinc-900 dark:text-white mb-6 leading-[1.1]">
+              Solve. Visualize. Understand.
             </h3>
             
             <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg mb-8 leading-relaxed font-medium">
-              Kadane&apos;s algorithm isn&apos;t just a static loop—it&apos;s a dynamic window sliding over local maxima. Watch live as the running sum decides whether to grow or reset from scratch at each array index, while updating the record-breaking maximum sum in real-time.
+              Watch Kadane&apos;s algorithm slide over contiguous ranges in lockstep motion. Observe live as the running sum decides whether to grow or reset from scratch at each array index, while updating the record-breaking maximum sum in real-time.
             </p>
 
             <div className="space-y-4 mb-8">
@@ -61,7 +61,7 @@ export function InteractiveSandboxTeaser() {
 
             <Button
               size="lg"
-              className="rounded-2xl py-6 text-base bg-zinc-950 dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black font-medium tracking-tight transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-xl flex items-center gap-2 group/btn w-full sm:w-fit px-8"
+              className="rounded-lg py-6 text-base bg-zinc-950 dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black font-medium tracking-tight transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-xl flex items-center gap-2 group/btn w-full sm:w-fit px-8"
               asChild
             >
               <Link
@@ -78,9 +78,9 @@ export function InteractiveSandboxTeaser() {
           <div className="lg:col-span-7 order-1 lg:order-2 w-full">
             <div className="relative group w-full">
               {/* Vibrant neon background aura */}
-              <div className="absolute -inset-[1.5px] bg-gradient-to-r from-primary/30 to-[#EAFF96]/20 rounded-[32px] blur-xl opacity-20 dark:opacity-30 group-hover:opacity-60 transition duration-700"></div>
+              <div className="absolute -inset-[1.5px] bg-gradient-to-r from-primary/30 to-[#EAFF96]/20 rounded-xl blur-xl opacity-20 dark:opacity-30 group-hover:opacity-60 transition duration-700"></div>
 
-              <div className="relative bg-zinc-50 dark:bg-[#080808] border border-zinc-200 dark:border-zinc-800 rounded-[30px] overflow-hidden shadow-2xl p-6 sm:p-8">
+              <div className="relative bg-zinc-50 dark:bg-[#080808] border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-2xl p-6 sm:p-8">
                 <MaximumSubarrayVisualization />
               </div>
             </div>

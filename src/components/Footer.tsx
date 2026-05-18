@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Section */}
           <div className="space-y-3">
             <h3 className="font-semibold text-foreground">RulCode</h3>
@@ -18,38 +18,6 @@ export function Footer() {
               <Heart className="w-4 h-4 text-red-500" />
               <span>100% Developer Centric</span>
             </div>
-          </div>
-
-          {/* Resources */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Resources</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link href="/feedback" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Feedback
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/rkmahale17/rulcode.com#-algorithm-index"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Algorithm Index
-                </a>
-              </li>
-            </ul>
           </div>
 
           {/* Community */}
