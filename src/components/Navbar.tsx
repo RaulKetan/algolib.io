@@ -143,9 +143,9 @@ const Navbar = ({
   const algorithms = useAppSelector(state => state.algorithms.items);
 
   // We use a broad check to ensure we hide the global navbar on any problem-related page
-  const isDsaProblemPage = currentPath?.includes('/problem/') || 
-                          currentPath?.startsWith('/dsa/') ||
-                          ['/dsa/problems', '/dsa/get-started', '/dsa/core', '/dsa/blind-75'].includes(currentPath);
+  const isDsaProblemPage = currentPath?.includes('/problem/') ||
+    currentPath?.startsWith('/dsa/') ||
+    ['/dsa/problems', '/dsa/get-started', '/dsa/core', '/dsa/blind-75'].includes(currentPath);
 
   // Hide Navbar on valid DSA and Problem pages as they have their own implementation
   // EXCEPT if we are explicitly in problem mode (passed as prop by the page itself)
@@ -190,7 +190,7 @@ const Navbar = ({
 
   return (
     <nav className={cn(
-      "sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md", 
+      "sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md",
       !isProblemMode && "border-b border-border/50",
       className
     )}>
@@ -205,7 +205,7 @@ const Navbar = ({
                 onClick={closeMenus}
               >
                 <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
-                <span className="hidden md:inline-block font-semibold text-lg tracking-wider">RulCode</span>
+                <span className="hidden md:inline-block font-semibold text-lg tracking-wider">rulcode</span>
               </Link>
             ) : (
               <>
@@ -229,7 +229,7 @@ const Navbar = ({
                   onClick={closeMenus}
                 >
                   <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
-                  <span className="font-semibold text-lg tracking-wider ">RulCode</span>
+                  <span className="font-semibold text-lg tracking-wider ">rulcode</span>
                 </Link>
               </>
             )}
@@ -264,11 +264,11 @@ const Navbar = ({
                           className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors shutter-click"
                         >
                           <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
-                          <span className="font-medium text-sm">Rulcode <span className="text-muted-foreground font-normal ml-1">Interviews</span></span>
+                          <span className="font-medium text-sm">rulcode <span className="text-muted-foreground font-normal ml-1">Interviews</span></span>
                         </Link>
                         <div className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors cursor-not-allowed opacity-80">
                           <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
-                          <span className="font-medium text-sm flex items-center gap-2">Rulcode <span className="text-muted-foreground font-normal ml-1">Projects</span><div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div></span>
+                          <span className="font-medium text-sm flex items-center gap-2">rulcode <span className="text-muted-foreground font-normal ml-1">Projects</span><div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div></span>
                           <Badge variant="secondary" className="bg-[#E5FF7F] text-black hover:bg-[#d6f555] border-transparent ml-auto text-[10px] h-5 py-0 whitespace-nowrap">Coming soon</Badge>
                         </div>
                       </div>

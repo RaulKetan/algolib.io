@@ -12,9 +12,10 @@ interface YouTubeMetadata {
 interface YouTubePlayerProps {
   youtubeUrl: string;
   algorithmName?: string;
+  credits?: string;
 }
 
-export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ youtubeUrl, algorithmName }) => {
+export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ youtubeUrl, algorithmName, credits }) => {
   const [metadata, setMetadata] = useState<YouTubeMetadata | null>(null);
   const [error, setError] = useState(false);
 
@@ -119,7 +120,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ youtubeUrl, algori
         {/* Credits */}
         <div className="pt-4 border-t border-border/50">
           <p className="text-xs text-muted-foreground">
-            <strong>Credits:</strong> Video tutorial by NeetCode (used with permission).
+            <strong>Credits:</strong> Video tutorial by {credits || 'NeetCode'} (used with permission).
             All written explanations, code examples, and additional insights provided by Rulcode.com
           </p>
         </div>

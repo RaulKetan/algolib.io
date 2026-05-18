@@ -5,6 +5,7 @@ import { RichText } from '@/components/RichText';
 
 interface Tutorial {
   url: string;
+  credits?: string;
   moreInfo?: string;
 }
 
@@ -40,7 +41,7 @@ export const VideoTutorialCard: React.FC<VideoTutorialCardProps> = ({ tutorial, 
           </div>
           <div className="pt-2 border-t border-border/50">
             <p className="text-[10px] sm:text-xs text-muted-foreground italic">
-              <strong>Credits:</strong> Video tutorial by NeetCode (used with permission). All written
+              <strong>Credits:</strong> Video tutorial by {tutorial.credits || 'NeetCode'} (used with permission). All written
               explanations, code examples, and additional insights provided by rulcode.com.
             </p>
           </div>
