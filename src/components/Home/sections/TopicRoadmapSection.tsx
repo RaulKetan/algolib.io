@@ -194,7 +194,7 @@ export function TopicRoadmapSection() {
   };
 
   return (
-    <section className="py-20 bg-white dark:bg-black text-zinc-900 dark:text-white relative overflow-hidden">
+    <section className="pt-20 pb-28 lg:pb-36 bg-white dark:bg-black text-zinc-900 dark:text-white relative overflow-hidden">
       {/* Grid Canvas Overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#f3f4f6_1px,transparent_1px),linear-gradient(to_bottom,#f3f4f6_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#111_1px,transparent_1px),linear-gradient(to_bottom,#111_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40"></div>
 

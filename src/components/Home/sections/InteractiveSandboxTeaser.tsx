@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePostHog } from "@posthog/react";
 import { trackEvent } from "@/lib/analytics";
-import { ArrowRight, CheckCircle2, Eye } from "lucide-react";
+import { ArrowRight, CheckCircle2, Eye, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MaximumSubarrayVisualization } from "@/components/visualizations/algorithms/MaximumSubarrayVisualization";
 
@@ -20,22 +20,26 @@ export function InteractiveSandboxTeaser() {
   };
 
   return (
-    <section className="py-20 bg-white dark:bg-[#050505] text-zinc-900 dark:text-white border-t border-zinc-100 dark:border-zinc-900 relative overflow-hidden">
+    <section className="py-20 bg-white dark:bg-[#050505] text-zinc-900 dark:text-white relative overflow-hidden">
       {/* Background Glow Orb */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="w-full max-w-[1500px] mx-auto px-6 relative z-10">
+        
+        {/* Section Header - Spans full width above both columns */}
+        <div className="max-w-[1400px] mx-auto mb-16 lg:mb-20 text-center flex flex-col items-center justify-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <BarChart3 className="w-6 h-6" />
+          </div>
+          <h3 className="text-3xl sm:text-5xl font-medium tracking-tight text-zinc-900 dark:text-white leading-[1.1]">
+            Learn by Visualization
+          </h3>
+        </div>
+
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           
           {/* Detailed Selling Copy - Theme Aware */}
           <div className="lg:col-span-5 order-2 lg:order-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary mb-6 tracking-wide uppercase">
-              <Eye className="w-3.5 h-3.5" /> Interactive Sandbox Teaser
-            </div>
-            
-            <h3 className="text-3xl sm:text-5xl font-medium tracking-tight text-zinc-900 dark:text-white mb-6 leading-[1.1]">
-              Solve. Visualize. Understand.
-            </h3>
             
             <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg mb-8 leading-relaxed font-medium">
               Watch Kadane&apos;s algorithm slide over contiguous ranges in lockstep motion. Observe live as the running sum decides whether to grow or reset from scratch at each array index, while updating the record-breaking maximum sum in real-time.
