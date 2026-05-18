@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
-import { Check, Info, Calendar, CreditCard, AlertCircle, XCircle } from 'lucide-react';
+import { Check, Info, Calendar, CreditCard, AlertCircle, XCircle, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -108,6 +108,10 @@ const Pricing: React.FC = () => {
   };
 
   const isPremium = useApp().hasPremiumAccess;
+  const hasBoughtBefore = !!(
+    profile?.subscription_status &&
+    ['active', 'paid', 'past_due', 'canceled', 'cancelled', 'expired', 'unpaid', 'paused'].includes(profile.subscription_status)
+  );
   const isTrial = profile?.subscription_status === 'on_trial' ||
     profile?.subscription_status === 'trialing' ||
     (profile?.trial_end_date && new Date(profile.trial_end_date) > new Date());
@@ -225,17 +229,17 @@ const Pricing: React.FC = () => {
 
             return (
               <div key={plan.id} className={cn(
-                "border rounded-2xl bg-card p-8 flex flex-col relative group transition-all",
-                isCurrentPlan ? "border-primary ring-1 ring-primary shadow-lg scale-[1.02] z-10" : "border-border hover:border-border/80"
+                "border rounded-2xl bg-card p-8 flex flex-col relative group transition-all duration-300",
+                isCurrentPlan ? "border-2 border-primary shadow-xl shadow-primary/5 z-10" : "border-border hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 z-0"
               )}>
                 {plan.badge && !isCurrentPlan && (
-                  <div className="absolute -top-[14px] right-6 bg-[#dcf65b] text-[#558600] text-[10px] tracking-wider font-bold px-2 py-1.5 rounded shadow-sm uppercase z-10">
+                  <div className="absolute -top-3 right-6 bg-[#dcf65b] text-[#558600] text-[10px] tracking-wider font-bold px-2.5 py-1 rounded shadow-sm uppercase z-10 subpixel-antialiased">
                     {plan.badge}
                   </div>
                 )}
 
                 {isCurrentPlan && (
-                  <div className="absolute -top-[14px] right-6 bg-primary text-primary-foreground text-[10px] tracking-wider font-bold px-3 py-1.5 rounded-full shadow-md uppercase z-20 flex items-center gap-1.5 animate-in fade-in zoom-in duration-300">
+                  <div className="absolute -top-3 right-6 bg-primary text-primary-foreground text-[10px] tracking-wider font-bold px-3 py-1 rounded-full shadow-md uppercase z-20 flex items-center gap-1.5 animate-in fade-in zoom-in duration-300 subpixel-antialiased">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                     Current Plan
                   </div>
@@ -264,7 +268,7 @@ const Pricing: React.FC = () => {
                   {plan.periodSubLabel}
                 </div>
 
-                {plan.hasTrial && (
+                 {plan.hasTrial && !hasBoughtBefore && (
                   <div className="mb-6 flex flex-col gap-1">
                     <div className="text-xs font-bold text-green-600 bg-green-500/5 px-2 py-1 rounded border border-green-500/10 w-fit">
                       Includes 14-day free trial
@@ -276,26 +280,36 @@ const Pricing: React.FC = () => {
                 )}
 
                 <Button
-                  variant={isCurrentPlan ? "secondary" : "outline"}
+                  variant={isCurrentPlan ? "secondary" : "default"}
                   className={cn(
-                    "w-full rounded-full py-6 font-bold mb-8 transition-all flex items-center justify-center gap-2",
+                    "w-full rounded-xl py-6 font-bold mb-8 transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group shadow-md border-b-4 border-black/20",
                     isCurrentPlan
-                      ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90 cursor-default"
-                      : "hover:bg-muted"
+                      ? "bg-secondary text-secondary-foreground border-transparent cursor-default hover:bg-secondary"
+                      : "bg-gradient-to-r from-primary to-primary/95 text-primary-foreground border-t-transparent border-x-transparent shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] active:border-b-2 transition-all"
                   )}
                   onClick={() => !isCurrentPlan && handleUpgrade(plan.productId)}
                   disabled={isUpgrading || isCurrentPlan}
                 >
-                  {isUpgrading && activePlanId === plan.productId
-                    ? "Processing..."
-                    : isCurrentPlan
-                      ? (
-                        <>
-                          <Check className="w-5 h-5 stroke-[3]" />
-                          Active Plan
-                        </>
-                      )
-                      : plan.buttonText}
+                  {isUpgrading && activePlanId === plan.productId ? (
+                    <span className="flex items-center gap-2 justify-center">
+                      <span className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+                      Processing...
+                    </span>
+                  ) : isCurrentPlan ? (
+                    <>
+                      <Check className="w-5 h-5 stroke-[3]" />
+                      Active Plan
+                    </>
+                  ) : (
+                    <span className="flex items-center gap-2 justify-center">
+                      <span className="font-semibold tracking-wide">
+                        {hasBoughtBefore
+                          ? (profile?.subscription_duration === plan.productId ? "Renew" : "Buy Now")
+                          : (plan.hasTrial ? "Start 14-day free trial" : "Buy Now")}
+                      </span>
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 shrink-0" />
+                    </span>
+                  )}
                 </Button>
 
                 <ul className="space-y-4 mb-auto">

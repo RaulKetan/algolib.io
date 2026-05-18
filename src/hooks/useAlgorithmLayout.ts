@@ -37,6 +37,16 @@ export const useAlgorithmLayout = (): UseAlgorithmLayoutReturn => {
 
     const [activeTab, setActiveTab] = useState("description");
 
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const tabParam = params.get("tab");
+            if (tabParam) {
+                setActiveTab(tabParam);
+            }
+        }
+    }, []);
+
     const [isCodeRunnerMaximized, setIsCodeRunnerMaximized] = useState(false);
     const [isVisualizationMaximized, setIsVisualizationMaximized] = useState(false);
     const [isBrainstormMaximized, setIsBrainstormMaximized] = useState(false);
