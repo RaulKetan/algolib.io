@@ -79,24 +79,29 @@ export const pricingData = {
         title: "Jam-packed with features",
         features: [
             {
+                icon: Building2,
+                title: "Company related tag option",
+                description: "Filter and practice questions asked by top tech giants like Google, Meta, and Amazon."
+            },
+            {
+                icon: ShieldCheck,
+                title: "Pro problems solutions",
+                description: "Unlock step-by-step multi-approach solutions with clear, detailed, and optimized explanations."
+            },
+            {
+                icon: Network,
+                title: "Visualization access",
+                description: "Don't just read code — watch it run. Get full interactive access to visualize algorithm execution flow."
+            },
+            {
                 icon: BookOpen,
                 title: "Large question bank",
                 description: "200+ interview questions covering fundamental patterns and advanced algorithms."
             },
             {
-                icon: ShieldCheck,
-                title: "Curated solutions",
-                description: "Master multi-approach solutions with clear, step-by-step explanations."
-            },
-            {
                 icon: CheckSquare,
                 title: "Structured Learning Path",
                 description: "Master algorithm patterns systematically with our curated collection of interview questions."
-            },
-            {
-                icon: Building2,
-                title: "Pattern-tagged questions",
-                description: "Learn the underlying patterns (Two Pointers, Sliding Window, etc.) to solve any new problem."
             },
             {
                 icon: Terminal,
@@ -107,11 +112,6 @@ export const pricingData = {
                 icon: Hexagon,
                 title: "Multi-language support",
                 description: "Practice in your language of choice: JavaScript, Python, Java, C++, and more."
-            },
-            {
-                icon: Network,
-                title: "Visual Execution Flow",
-                description: "Don't just read code — watch it run. Our visualizer syncs perfectly with every line of code."
             },
             {
                 icon: LineChart,

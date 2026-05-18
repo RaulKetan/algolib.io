@@ -205,7 +205,7 @@ const Navbar = ({
                 onClick={closeMenus}
               >
                 <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
-                <span className="hidden md:inline-block font-semibold text-lg tracking-wider">rulcode</span>
+                <span className="hidden md:inline-block  text-lg tracking-wider">rulcode</span>
               </Link>
             ) : (
               <>
@@ -229,7 +229,7 @@ const Navbar = ({
                   onClick={closeMenus}
                 >
                   <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
-                  <span className="font-semibold text-lg tracking-wider ">rulcode</span>
+                  <span className=" text-lg tracking-wider ">rulcode</span>
                 </Link>
               </>
             )}

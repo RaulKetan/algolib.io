@@ -2,9 +2,12 @@ import { Metadata } from 'next';
 import HomeClient from './HomeClient';
 import Script from 'next/script';
 import { HeroSection } from '@/components/Home/sections/HeroSection';
+import { InteractiveSandboxTeaser } from '@/components/Home/sections/InteractiveSandboxTeaser';
+import { CorePatternsBanner } from '@/components/Home/sections/CorePatternsBanner';
+import { TopicRoadmapSection } from '@/components/Home/sections/TopicRoadmapSection';
+import { SprintsAndTracksSection } from '@/components/Home/sections/SprintsAndTracksSection';
 import { CraftingSection } from '@/components/Home/sections/CraftingSection';
 import { CommunitySection } from '@/components/Home/sections/CommunitySection';
-import { VisualPatternsSection } from '@/components/Home/sections/VisualPatternsSection';
 import { WorkspaceSection } from '@/components/Home/sections/WorkspaceSection';
 import { ScratchpadSection } from '@/components/Home/sections/ScratchpadSection';
 import { FeedbackSection } from '@/components/Home/sections/FeedbackSection';
@@ -51,14 +54,16 @@ export default function Page() {
       />
       <div className="min-h-screen bg-white dark:bg-black text-[#1A1A1A] dark:text-white overflow-x-hidden relative w-full">
         <HeroSection />
-        <HomeClient type="interviews" />
+        <InteractiveSandboxTeaser />
+        <CorePatternsBanner />
+        <TopicRoadmapSection />
+        <SprintsAndTracksSection />
         <HomeClient type="platform-preview" />
-        <CraftingSection />
-        <VisualPatternsSection />
         <WorkspaceSection />
         <ScratchpadSection />
         <FeedbackSection />
         <CommunitySection />
+        <CraftingSection />
         <BottomCTA />
         <FAQ />
         <Footer />
