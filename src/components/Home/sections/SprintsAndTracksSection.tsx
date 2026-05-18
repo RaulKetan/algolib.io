@@ -67,7 +67,7 @@ export function SprintsAndTracksSection() {
             <Flame className="w-3.5 h-3.5 fill-[#EAFF96] animate-pulse" /> Sprints & Categories
           </motion.div>
           
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-none">
+          <h2 className="text-4xl md:text-6xl font-medium tracking-tight mb-6 leading-none">
             Launch Your <span className="bg-gradient-to-r from-primary via-[#EAFF96] to-[#A3E635] bg-clip-text text-transparent">DSA Mastery</span>
           </h2>
           
@@ -88,9 +88,9 @@ export function SprintsAndTracksSection() {
             className="lg:col-span-6 group relative"
           >
             {/* Glowing active outline */}
-            <div className="absolute -inset-[1.5px] bg-gradient-to-r from-primary/30 via-[#EAFF96]/20 to-transparent rounded-[32px] blur-[2px] opacity-10 dark:opacity-30 group-hover:opacity-100 transition-all duration-700"></div>
+            <div className="absolute -inset-[1.5px] bg-gradient-to-r from-primary/30 via-[#EAFF96]/20 to-transparent rounded-xl blur-[2px] opacity-10 dark:opacity-30 group-hover:opacity-100 transition-all duration-700"></div>
             
-            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-[30px] p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
+            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
               
               {/* Internal Halo */}
               <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-500 pointer-events-none"></div>
@@ -113,7 +113,7 @@ export function SprintsAndTracksSection() {
                   </span>
                 </div>
 
-                <h4 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-4">
+                <h4 className="text-3xl sm:text-4xl font-medium tracking-tight text-zinc-900 dark:text-white mb-4">
                   7-Day Blind 75 Sprint
                 </h4>
                 
@@ -162,7 +162,7 @@ export function SprintsAndTracksSection() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full rounded-2xl py-6 text-base border-zinc-300 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-medium"
+                  className="w-full rounded-lg py-6 text-base border-zinc-300 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-medium"
                   asChild
                 >
                   <Link
@@ -185,9 +185,9 @@ export function SprintsAndTracksSection() {
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
             className="lg:col-span-6 group relative"
           >
-            <div className="absolute -inset-[1.5px] bg-gradient-to-r from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900 rounded-[32px] blur-[1px] opacity-10 dark:opacity-30 group-hover:opacity-80 transition-all duration-700"></div>
+            <div className="absolute -inset-[1.5px] bg-gradient-to-r from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900 rounded-xl blur-[1px] opacity-10 dark:opacity-30 group-hover:opacity-80 transition-all duration-700"></div>
             
-            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-[30px] p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
+            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
               
               <div className="absolute -top-24 -right-24 w-64 h-64 bg-zinc-900/30 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -204,7 +204,7 @@ export function SprintsAndTracksSection() {
                   </div>
                 </div>
 
-                <h4 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-4">
+                <h4 className="text-3xl sm:text-4xl font-medium tracking-tight text-zinc-900 dark:text-white mb-4">
                   Corporate Tracks
                 </h4>
                 
@@ -219,7 +219,7 @@ export function SprintsAndTracksSection() {
                       key={index}
                       href={`/dsa/problems?company=${company.name}`}
                       onClick={() => handleCtaClick(company.name, `/dsa/problems?company=${company.name}`, "company_track_pills")}
-                      className={`group/pill flex flex-col items-center justify-center p-3 rounded-2xl border border-zinc-200 dark:border-zinc-900/80 bg-white dark:bg-zinc-950/50 hover:bg-zinc-50/45 dark:hover:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-zinc-800 transition-all duration-300 hover:-translate-y-1 ${company.color}`}
+                      className={`group/pill flex flex-col items-center justify-center p-3 rounded-lg border border-zinc-200 dark:border-zinc-900/80 bg-white dark:bg-zinc-950/50 hover:bg-zinc-50/45 dark:hover:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-zinc-800 transition-all duration-300 hover:-translate-y-1 ${company.color}`}
                     >
                       <CompanyIcon
                         company={company.slug}
@@ -239,7 +239,7 @@ export function SprintsAndTracksSection() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full rounded-2xl py-6 text-base border-zinc-300 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-medium"
+                  className="w-full rounded-lg py-6 text-base border-zinc-300 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-medium"
                   asChild
                 >
                   <Link
