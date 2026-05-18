@@ -118,7 +118,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="flex items-center gap-3 w-full">
                     <Link href="/" className="flex items-center gap-2 shrink-0 group-data-[collapsible=icon]:mx-auto">
                         <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6 transition-all" />
-                        <span className="font-semibold text-lg tracking-wider group-data-[collapsible=icon]:hidden">RulCode</span>
+                        <span className="font-semibold text-lg tracking-wider group-data-[collapsible=icon]:hidden">rulcode</span>
                     </Link>
                     <div className="h-4 w-[1px] bg-border/80 group-data-[collapsible=icon]:hidden"></div>
                     <span className="flex items-center gap-1 text-[13px] text-muted-foreground group-data-[collapsible=icon]:hidden">
