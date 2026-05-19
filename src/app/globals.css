@@ -310,6 +310,24 @@
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
+/* Micro scrollbar styling for tabs */
+.scrollbar-micro::-webkit-scrollbar {
+  height: 2px;
+}
+
+.scrollbar-micro::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-micro::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.35);
+  border-radius: 9999px;
+}
+
+.scrollbar-micro::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.8);
+}
+
 .tldraw-rulcode .tlui-layout__bottom {
   position: relative !important;
   bottom: 65px !important;

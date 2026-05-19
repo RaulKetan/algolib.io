@@ -2,7 +2,7 @@ import "tldraw/tldraw.css";
 
 import { Download, Loader2, Save } from "lucide-react";
 import { Tldraw, useEditor } from "tldraw";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -45,23 +45,31 @@ const SaveButton = ({
     enabled: !!userId,
   });
 
+  // Track whether we've already loaded the saved snapshot into the editor.
+  // We only want to do this once on mount — not on every realtime update,
+  // which would overwrite the user's in-progress drawing.
+  const hasLoadedRef = useRef(false);
+
   // Load the latest whiteboard on mount
   useEffect(() => {
-    if (userAlgoData?.whiteboard_data && editor) {
-      try {
-        // Validate whiteboard data has required structure
-        if (userAlgoData.whiteboard_data && typeof userAlgoData.whiteboard_data === 'object') {
-          editor.store.loadSnapshot(userAlgoData.whiteboard_data as any);
+    // Only load once; stop if already loaded or dependencies aren't ready
+    if (hasLoadedRef.current || !userAlgoData || !editor) return;
 
-          // Center the canvas on the content after loading
-          setTimeout(() => {
-            editor.zoomToFit();
-          }, 100);
-        }
-      } catch (error) {
-        console.error('Error loading whiteboard data:', error);
-        // Silently fail - whiteboard will start empty
-      }
+    const snapshotData = userAlgoData.whiteboard_data;
+    if (!snapshotData || typeof snapshotData !== 'object') return;
+
+    try {
+      editor.store.loadSnapshot(snapshotData as any);
+      hasLoadedRef.current = true;
+
+      // Center the canvas on the content after loading
+      setTimeout(() => {
+        editor.zoomToFit();
+      }, 100);
+    } catch (error) {
+      console.error('Error loading whiteboard data:', error);
+      // Mark as loaded even on error so we don't keep retrying
+      hasLoadedRef.current = true;
     }
   }, [userAlgoData, editor]);
 

@@ -26,19 +26,19 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>About RulCode - Freemium Open Source Algorithm Learning Platform</title>
+        <title>About RulCode - Open Source Algorithm Learning Platform</title>
         <meta
           name="description"
-          content="Learn about RulCode's mission to make algorithm learning accessible through interactive visualizations. 100% free, open-source, and community-driven platform for developers and competitive programmers."
+          content="Learn about RulCode's mission to make algorithm learning accessible through interactive visualizations. Open-source and community-driven platform for developers and competitive programmers."
         />
         <meta
           name="keywords"
-          content="about rulcode, algorithm learning platform, open source algorithms, freemium coding education, interactive algorithm visualizations, hotjar, google analytics"
+          content="about rulcode, algorithm learning platform, open source algorithms, coding education, interactive algorithm visualizations, hotjar, google analytics"
         />
         <link rel="canonical" href="https://rulcode.com/about" />
 
-        <meta property="og:title" content="About RulCode - freemium Algorithm Learning Platform" />
-        <meta property="og:description" content="100% Open-source platform for learning algorithms with interactive visualizations" />
+        <meta property="og:title" content="About RulCode - Open Source Algorithm Learning Platform" />
+        <meta property="og:description" content="Open-source platform for learning algorithms with interactive visualizations" />
         <meta property="og:url" content="https://rulcode.com/about" />
       </Head>
 
@@ -122,7 +122,7 @@ export default function About() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <p className="text-muted-foreground leading-relaxed">
-                      We believe that high-quality educational resources should be accessible to everyone, regardless of their background or budget. That's why RulCode is committed to remaining <strong>forever free</strong>.
+                      We believe that high-quality educational resources should be interactive and visual. That's why RulCode provides open-source, community-driven visualizations to help developers worldwide.
                     </p>
                     <p className="text-muted-foreground leading-relaxed">
                       As an open-source project, we thrive on community collaboration. Developers from around the world contribute code, translations, and new visualizations, making this a true community-led platform.

@@ -1,22 +1,30 @@
-import { PenTool } from "lucide-react";
+"use client";
+
+import { PenTool, ArrowRight, NotebookPen } from "lucide-react";
 import React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { usePostHog } from "@posthog/react";
+import { trackEvent } from "@/lib/analytics";
 
 export function ScratchpadSection() {
+    const posthog = usePostHog();
+
     return (
         <section className="py-32 bg-[#FAFAFA] dark:bg-[#050505] border-t border-gray-100 dark:border-zinc-900">
             <div className="w-full max-w-[1600px] mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
                     <div className="order-2 lg:order-1">
                         <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.1]">
-                            Stuck in thinking? Try our scratchpad
+                            Stuck in thinking? Try our Thinkpad
                         </h2>
                         <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg mb-10 leading-relaxed font-medium">
-                            Sometimes code isn&apos;t enough. Our built-in scratchpad lets you draw, sketch, and map out complex algorithms before you start typing. It&apos;s the perfect tool for when you need to visualize logic that&apos;s hard to hold in your head.
+                            Sometimes code isn&apos;t enough. Our built-in Thinkpad lets you <strong className="text-gray-700 dark:text-gray-200">draw, sketch</strong>, and <strong className="text-gray-700 dark:text-gray-200">take notes</strong> alongside complex algorithms before you start typing. It&apos;s the perfect tool for when you need to visualize logic that&apos;s hard to hold in your head.
                         </p>
-                        <div className="space-y-4">
+                        <div className="space-y-4 mb-10">
                             {[
-                                "Infinite canvas for free-form sketching",
-                                "Built-in aids for common data structures",
+                                "Infinite canvas for free-form sketching and drawing",
+                                "Rich note-taking alongside your problem workspace",
                                 "Perfect for dry-running tree and graph traversals",
                                 "Save and reference your logic while you code"
                             ].map((item, i) => (
@@ -28,6 +36,24 @@ export function ScratchpadSection() {
                                 </div>
                             ))}
                         </div>
+                        <Button
+                            size="lg"
+                            className="rounded-lg py-6 text-base bg-zinc-950 dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black font-medium tracking-tight transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-xl flex items-center gap-2 group/btn w-full sm:w-fit px-8"
+                            asChild
+                        >
+                            <Link
+                                href="/problem/kadanes-algorithm?tab=thinkpad"
+                                onClick={() => trackEvent(posthog, "home_cta_clicked", {
+                                    cta_label: "Try Now – Thinkpad",
+                                    destination: "/problem/kadanes-algorithm?tab=thinkpad",
+                                    section: "scratchpad_thinkpad"
+                                })}
+                            >
+                                <NotebookPen className="w-5 h-5" />
+                                Try Now
+                                <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                            </Link>
+                        </Button>
                     </div>
                     <div className="order-1 lg:order-2 aspect-square bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-8 shadow-2xl shadow-primary/5 flex flex-col border-dashed border-2 overflow-hidden relative group" role="img" aria-label="Scratchpad drawing canvas placeholder">
                         <div className="flex items-center justify-between mb-8 relative z-10">

@@ -458,7 +458,7 @@ export const blogPosts: BlogPost[] = [
           '<strong>Direct LeetCode Links:</strong> One click from visualization to practice problem',
           '<strong>Complexity Analysis:</strong> Time and space complexity explained for every algorithm',
           '<strong>Interactive Controls:</strong> Pause, rewind, and replay at your own pace',
-          '<strong>100% Free & Open Source:</strong> No paywalls, no subscriptions, forever free'
+          '<strong>Open Source & Community-Led:</strong> Built transparently with full access to the source code'
         ]
       },
 

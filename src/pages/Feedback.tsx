@@ -294,7 +294,7 @@ const Feedback = () => {
         <title>Feedback & Suggestions - Rulcode.com | Report Bugs & Request Features</title>
         <meta
           name="description"
-          content="Share your feedback, report bugs, or request new features for Rulcode.com. Help us improve our free algorithm learning platform."
+          content="Share your feedback, report bugs, or request new features for Rulcode.com. Help us improve our interactive algorithm learning platform."
         />
         <link rel="canonical" href="https://rulcode.com/feedback" />
       </Head>

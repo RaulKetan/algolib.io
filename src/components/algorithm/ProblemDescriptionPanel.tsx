@@ -35,7 +35,8 @@ import { User } from "@supabase/supabase-js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
@@ -52,6 +53,7 @@ import { FeatureGuard } from "@/components/FeatureGuard";
 import { ProOverlay } from "@/components/ProOverlay";
 import { AuthNudge } from "@/components/AuthNudge";
 import { VideoTutorialCard } from "./VideoTutorialCard";
+import { useFeatureFlag } from "@/contexts/FeatureFlagContext";
 
 // Lazy components via next/dynamic to avoid SSR issues
 const TreeDiagram = dynamic(() => import("../visualizations/TreeDiagram").then(mod => mod.TreeDiagram), { ssr: false });
@@ -59,6 +61,7 @@ const GraphDiagram = dynamic(() => import("../visualizations/GraphDiagram").then
 const SolutionViewer = dynamic(() => import("@/components/SolutionViewer").then(mod => mod.SolutionViewer), { ssr: false });
 const RichText = dynamic(() => import("@/components/RichText").then(mod => mod.RichText), { ssr: false });
 const ContentRights = dynamic(() => import("@/pages/ContentRights"), { ssr: false });
+const BrainstormSection = dynamic(() => import("../brainstorm/BrainstormSection").then(mod => mod.BrainstormSection), { ssr: false });
 
 import { renderBlind75Visualization } from "@/utils/blind75Visualizations";
 import { renderVisualization as renderVizFromMapping, hasVisualization } from "@/utils/visualizationMapping";
@@ -123,9 +126,34 @@ export const ProblemDescriptionPanel = React.memo(({
   const topicsRef = useRef<HTMLDivElement>(null);
   const companiesRef = useRef<HTMLDivElement>(null);
   const hintsRef = useRef<HTMLDivElement>(null);
+  const tabsScrollRef = useRef<HTMLDivElement>(null);
+
+  const isBrainstormEnabled = useFeatureFlag('brainstrom_tab');
 
   const [isCompact, setIsCompact] = useState(false);
   const [isUltraCompact, setIsUltraCompact] = useState(false);
+  const [tabsShowLeftFade, setTabsShowLeftFade] = useState(false);
+  const [tabsShowRightFade, setTabsShowRightFade] = useState(false);
+
+  // Detect tab scroll overflow to show left/right gradient fades
+  useEffect(() => {
+    const el = tabsScrollRef.current;
+    if (!el) return;
+
+    const update = () => {
+      setTabsShowLeftFade(el.scrollLeft > 4);
+      setTabsShowRightFade(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+    };
+
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener('scroll', update);
+      ro.disconnect();
+    };
+  }, []);
 
   const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -194,10 +222,21 @@ export const ProblemDescriptionPanel = React.memo(({
   return (
     <div ref={containerRef} className="h-full flex flex-col">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden w-full pt-0 mt-0">
-        <div className="px-0 shrink-0 border-b h-10 overflow-hidden bg-background/50">
-          <div className="overflow-x-auto overflow-y-hidden h-[60px] no-scrollbar">
-            <TabsList className="flex w-full min-w-max sm:min-w-full p-0 bg-transparent gap-0 rounded-none h-10">
-              <TooltipProvider>
+        {/* Tabs header with ScrollArea scrollbar exactly like the test cases tab + overflow fades */}
+        <div className="px-0 shrink-0 border-b bg-background/50 relative">
+          {/* Left fade — visible when scrolled away from start (only in text mode) */}
+          <div
+            className={`absolute left-0 top-0 h-10 w-10 bg-gradient-to-r from-background via-background/80 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${!isCompact && tabsShowLeftFade ? 'opacity-100' : 'opacity-0'}`}
+          />
+          {/* Right fade — visible when content overflows to the right (only in text mode) */}
+          <div
+            className={`absolute right-0 top-0 h-10 w-10 bg-gradient-to-l from-background via-background/80 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${!isCompact && tabsShowRightFade ? 'opacity-100' : 'opacity-0'}`}
+          />
+          <ScrollAreaPrimitive.Root type="hover" className="w-full overflow-hidden">
+            <ScrollAreaPrimitive.Viewport ref={tabsScrollRef} className="w-full">
+              <div className={`flex flex-col pb-1.5 ${isCompact ? 'w-full' : 'w-max'}`}>
+                <TabsList className={`flex p-0 bg-transparent gap-0 rounded-none h-10 ${isCompact ? 'w-full' : 'w-max min-w-full'}`}>
+                  <TooltipProvider>
                 <TabsTrigger
                   value="description"
                   className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
@@ -273,9 +312,38 @@ export const ProblemDescriptionPanel = React.memo(({
                   </>
                 )}
               </TabsTrigger>
-            </TooltipProvider>
-            </TabsList>
-          </div>
+
+              {isBrainstormEnabled && algorithm?.controls?.brainstorm !== false && (
+                <TabsTrigger
+                  value="thinkpad"
+                  className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+                >
+                  {isCompact ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Book className="w-4 h-4" />
+                      </TooltipTrigger>
+                      <TooltipContent>Thinkpad</TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <>
+                      <Book className="w-4 h-4 mr-2 shrink-0" />
+                      Thinkpad
+                    </>
+                  )}
+                </TabsTrigger>
+              )}
+                </TooltipProvider>
+              </TabsList>
+            </div>
+            </ScrollAreaPrimitive.Viewport>
+            <ScrollAreaPrimitive.Scrollbar
+              orientation="horizontal"
+              className="flex h-1.5 touch-none select-none flex-col border-t border-t-transparent p-[1px] transition-colors"
+            >
+              <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-border" />
+            </ScrollAreaPrimitive.Scrollbar>
+          </ScrollAreaPrimitive.Root>
         </div>
 
         <div className="flex-1 overflow-hidden relative">
@@ -394,6 +462,89 @@ export const ProblemDescriptionPanel = React.memo(({
 
                   )}
                 </section>
+
+                {/* Workspace Playgrounds renamed to Helpful Tools to Learn & Understand */}
+                <div className="max-w-[600px] space-y-3.5 my-6">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground/75">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    Helpful Tools to Learn & Understand
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    {/* Visualize Card */}
+                    <div 
+                      onClick={() => setActiveTab("visualizations")}
+                      className="group cursor-pointer flex items-center justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/30 dark:hover:bg-zinc-900/20 hover:border-primary/40 transition-all duration-300 shadow-sm"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-all duration-300 shrink-0 mt-0.5">
+                          <Eye className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                            Visualize Logic
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              Active Simulator
+                            </span>
+                          </h5>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-[400px]">
+                            Watch key visual transitions, pointers, and variables update step-by-step with interactive trace diagrams.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs font-semibold text-foreground/75 group-hover:text-foreground transition-all duration-300 shrink-0 ml-4">
+                        Open <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+
+                    {/* Solutions Card */}
+                    <div 
+                      onClick={() => setActiveTab("solutions")}
+                      className="group cursor-pointer flex items-center justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/30 dark:hover:bg-zinc-900/20 hover:border-primary/40 transition-all duration-300 shadow-sm"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-all duration-300 shrink-0 mt-0.5">
+                          <Flashlight className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-sm text-foreground">
+                            Check Solutions
+                          </h5>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-[400px]">
+                            Read clean, documented implementations across multiple patterns with detailed explanations.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs font-semibold text-foreground/75 group-hover:text-foreground transition-all duration-300 shrink-0 ml-4">
+                        View Code <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+
+                    {/* Thinkpad Card */}
+                    {isBrainstormEnabled && algorithm?.controls?.brainstorm !== false && (
+                      <div 
+                        onClick={() => setActiveTab("thinkpad")}
+                        className="group cursor-pointer flex items-center justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/30 dark:hover:bg-zinc-900/20 hover:border-primary/40 transition-all duration-300 shadow-sm"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-all duration-300 shrink-0 mt-0.5">
+                            <Book className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h5 className="font-semibold text-sm text-foreground">
+                              Thinkpad (Draw & Note)
+                            </h5>
+                            <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-[400px]">
+                              Sketch visual representations on an infinite canvas and draft markdown notes directly inline.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs font-semibold text-foreground/75 group-hover:text-foreground transition-all duration-300 shrink-0 ml-4">
+                          Draw <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 {/* Examples Section */}
                 {algorithm.explanation.io && algorithm.explanation.io.length > 0 && (!algorithm?.controls || algorithm.controls?.description?.examples !== false) && (
@@ -969,6 +1120,24 @@ export const ProblemDescriptionPanel = React.memo(({
               )}
             </div>
           </TabsContent>
+
+          {isBrainstormEnabled && algorithm?.controls?.brainstorm !== false && (
+            <TabsContent value="thinkpad" className="h-full m-0 flex flex-col data-[state=inactive]:hidden bg-background">
+              <AuthGuard
+                fallbackTitle="Sign in to use Thinkpad"
+                fallbackDescription="Create an account or sign in to access drawing boards and notes."
+                disabled={true}
+              >
+                <div className="flex-1 overflow-hidden relative flex flex-col p-0 h-full">
+                  <BrainstormSection
+                    algorithmId={algorithm.id || algorithm.slug || ""}
+                    algorithmTitle={algorithm.title || algorithm.name || ""}
+                    controls={algorithm.controls?.brainstorm}
+                  />
+                </div>
+              </AuthGuard>
+            </TabsContent>
+          )}
 
           {/* Bottom Action Bar - Ultra Slim Capsule (Visible across all tabs) */}
           <div className="absolute bottom-[2px] left-0 right-0 z-10 flex justify-center pointer-events-none px-4">

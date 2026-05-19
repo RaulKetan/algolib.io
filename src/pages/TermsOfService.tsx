@@ -10,7 +10,7 @@ export default function TermsOfService() {
         <title>Terms of Service - Rulcode.com | Usage Terms & Conditions</title>
         <meta
           name="description"
-          content="Rulcode.com Terms of Service - Learn about usage rights, open-source licensing, and service terms for our free algorithm learning platform. Educational content usage policy."
+          content="Rulcode.com Terms of Service - Learn about usage rights, open-source licensing, and service terms for our interactive algorithm learning platform. Educational content usage policy."
         />
         <meta
           name="keywords"

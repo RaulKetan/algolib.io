@@ -69,8 +69,18 @@ export function useUserAlgorithmData({
             return;
         }
 
+        const channelName = `user_algorithm_data_${userId}_${algorithmId}`;
+
+        // If a channel with this name already exists, another component instance owns it.
+        // Skip creating a duplicate — the existing subscription will handle realtime updates,
+        // and this instance already fetched its initial data via the effect above.
+        const alreadySubscribed = supabase.getChannels().some(ch => ch.topic === `realtime:${channelName}`);
+        if (alreadySubscribed) {
+            return;
+        }
+
         const channel = supabase
-            .channel(`user_algorithm_data_${userId}_${algorithmId}`)
+            .channel(channelName)
             .on(
                 'postgres_changes',
                 {
