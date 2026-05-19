@@ -60,8 +60,13 @@ export function Footer() {
 
           {/* Legal */}
           <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Legal</h3>
+            <h3 className="font-semibold text-foreground">Pricing & Legal</h3>
             <ul className="space-y-2">
+              <li>
+                <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Pricing
+                </Link>
+              </li>
               <li>
                 <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Privacy Policy
@@ -86,7 +91,7 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex flex-col items-center sm:items-start gap-2">
               <p className="text-sm text-muted-foreground text-center sm:text-left">
-                © <FooterYear /> RulCode. Open source and free forever.
+                © <FooterYear /> RulCode. Open source.
               </p>
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-3 text-xs text-muted-foreground">
                 <a
