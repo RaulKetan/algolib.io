@@ -477,15 +477,6 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
         brainstormProps={brainstormProps}
         onShortcut={handleShortcut}
       />
-
-      {!user && !isPlatformPreview && (
-        <div className="px-4 pb-2 pt-1 bg-background border-t">
-          <AuthNudge 
-            message="Sign in to execute code" 
-            description="Log in to run and test your solutions against sample test cases."
-          />
-        </div>
-      )}
     </Tabs>
   );
 

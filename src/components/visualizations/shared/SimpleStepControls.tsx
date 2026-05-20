@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Play, Pause, SkipBack, SkipForward, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { useApp } from '@/contexts/AppContext';
+import { toast } from 'sonner';
 
 interface SimpleStepControlsProps {
   currentStep: number;
@@ -14,6 +16,7 @@ export const SimpleStepControls = ({
   totalSteps,
   onStepChange
 }: SimpleStepControlsProps) => {
+  const { user } = useApp();
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
 
@@ -31,11 +34,43 @@ export const SimpleStepControls = ({
     return () => clearInterval(interval);
   }, [isPlaying, speed, totalSteps, onStepChange, currentStep]);
 
+  const requireAuth = (): boolean => {
+    if (!user) {
+      toast.error("Sign in required", {
+        description: "Please sign in to interact with visualizations."
+      });
+      return true;
+    }
+    return false;
+  };
+
   const handlePlay = () => {
+    if (requireAuth()) return;
     if (currentStep >= totalSteps - 1) {
       onStepChange(0);
     }
     setIsPlaying(true);
+  };
+
+  const handleStepBack = () => {
+    if (requireAuth()) return;
+    onStepChange(Math.max(0, currentStep - 1));
+  };
+
+  const handleStepForward = () => {
+    if (requireAuth()) return;
+    onStepChange(Math.min(totalSteps - 1, currentStep + 1));
+  };
+
+  const handleReset = () => {
+    if (requireAuth()) return;
+    onStepChange(0);
+    setIsPlaying(false);
+  };
+
+  const handlePause = () => {
+    if (requireAuth()) return;
+    setIsPlaying(false);
   };
 
   return (
@@ -43,7 +78,7 @@ export const SimpleStepControls = ({
       {/* Playback Controls */}
       <div className="flex items-center gap-2">
         <Button
-          onClick={() => onStepChange(Math.max(0, currentStep - 1))}
+          onClick={handleStepBack}
           disabled={currentStep === 0 || isPlaying}
           variant="outline"
           size="icon"
@@ -52,7 +87,7 @@ export const SimpleStepControls = ({
         </Button>
         
         {isPlaying ? (
-          <Button onClick={() => setIsPlaying(false)} size="icon">
+          <Button onClick={handlePause} size="icon">
             <Pause className="h-4 w-4" />
           </Button>
         ) : (
@@ -62,7 +97,7 @@ export const SimpleStepControls = ({
         )}
         
         <Button
-          onClick={() => onStepChange(Math.min(totalSteps - 1, currentStep + 1))}
+          onClick={handleStepForward}
           disabled={currentStep >= totalSteps - 1 || isPlaying}
           variant="outline"
           size="icon"
@@ -70,7 +105,7 @@ export const SimpleStepControls = ({
           <SkipForward className="h-4 w-4" />
         </Button>
         
-        <Button onClick={() => { onStepChange(0); setIsPlaying(false); }} variant="outline" size="icon">
+        <Button onClick={handleReset} variant="outline" size="icon">
           <RotateCcw className="h-4 w-4" />
         </Button>
       </div>
@@ -87,7 +122,15 @@ export const SimpleStepControls = ({
         </span>
         <Slider
           value={[speed]}
-          onValueChange={(values) => setSpeed(values[0])}
+          onValueChange={(values) => {
+            if (!user) {
+              toast.error("Sign in required", {
+                description: "Please sign in to interact with visualizations."
+              });
+              return;
+            }
+            setSpeed(values[0]);
+          }}
           min={0.5}
           max={3}
           step={0.5}

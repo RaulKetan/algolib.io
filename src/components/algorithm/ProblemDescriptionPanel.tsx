@@ -889,7 +889,7 @@ export const ProblemDescriptionPanel = React.memo(({
                                 ))}
                               </div>
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <ProOverlay className="rounded-none border-0 h-full p-2" />
+                                <ProOverlay className="rounded-none border-0 h-full p-2" variant="compact" />
                               </div>
                             </div>
                           )}
@@ -1006,11 +1006,6 @@ export const ProblemDescriptionPanel = React.memo(({
                         <div className="flex-1 overflow-auto no-scrollbar">
                           {renderVisualization()}
                         </div>
-                        {!user && (
-                          <div className="px-4 pb-4 pt-2">
-                            <AuthNudge />
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>

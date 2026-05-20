@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
 import posthog from 'posthog-js';
@@ -17,24 +17,26 @@ import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import PostHogIdentify from "./PostHogIdentify";
 
+// Initialize PostHog synchronously at module load (client-side only).
+// This ensures the SDK is ready before any component mounts and tries to
+// capture events — eliminates the race condition when init was in useEffect.
+if (typeof window !== 'undefined') {
+  const isProduction =
+    window.location.hostname === "rulcode.com" ||
+    window.location.hostname === "www.rulcode.com";
+
+  if (isProduction && !posthog.__loaded) {
+    console.log("Posthog init");
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_TOKEN || '', {
+      api_host: `${window.location.origin}/ingest`,
+      person_profiles: 'identified_only',
+      ui_host: 'https://app.posthog.com',
+      capture_pageview: false, // Next.js handles this via PostHogPageView
+    });
+  }
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    // Initialize PostHog only on the client and only in production
-    const isProduction =
-      window.location.hostname === "rulcode.com" ||
-      window.location.hostname === "www.rulcode.com";
-
-    if (isProduction && !posthog.has_opted_out_capturing()) {
-      console.log("Posthog init")
-      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_TOKEN || '', {
-        api_host: `${window.location.origin}/ingest`,
-        person_profiles: 'identified_only',
-        ui_host: 'https://app.posthog.com',
-        capture_pageview: false // Next.js handles this better with its own router events
-      });
-    }
-  }, []);
 
   return (
     <PostHogProvider client={posthog}>
