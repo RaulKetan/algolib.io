@@ -6,7 +6,7 @@ export function VisualPatternsSection() {
         <section className="py-24 bg-[#FAFAFA] dark:bg-[#050505]">
             <div className="w-full max-w-[1600px] mx-auto px-4">
                 <div className="mb-16">
-                    <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-6 text-gray-900 dark:text-white max-w-2xl">
+                    <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-6 text-gray-900 dark:text-white max-w-2xl">
                         Master algorithms with visual patterns
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg max-w-2xl font-medium">

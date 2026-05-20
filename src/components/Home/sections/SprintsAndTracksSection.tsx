@@ -50,28 +50,25 @@ export function SprintsAndTracksSection() {
   };
 
   return (
-    <section className="py-20 bg-white dark:bg-black text-zinc-900 dark:text-white relative overflow-hidden">
+    <section className="py-36 lg:py-48 bg-white dark:bg-black text-zinc-900 dark:text-white relative overflow-hidden">
       {/* Background glowing orb */}
       <div className="absolute bottom-1/4 right-10 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[150px] pointer-events-none"></div>
 
-      <div className="w-full max-w-[1500px] mx-auto px-6 relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full max-w-[1500px] mx-auto px-6 relative z-10"
+      >
         
-        {/* SECTION HEADER - Sleek Typography */}
-        <div className="text-center mb-16 max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EAFF96]/10 border border-[#EAFF96]/20 text-xs font-bold text-primary dark:text-[#EAFF96] mb-6 tracking-wide uppercase"
-          >
-            <Flame className="w-3.5 h-3.5 fill-[#EAFF96] animate-pulse" /> Sprints & Categories
-          </motion.div>
-          
-          <h2 className="text-4xl md:text-6xl font-medium tracking-tight mb-6 leading-none">
-            Launch Your <span className="bg-gradient-to-r from-primary via-[#EAFF96] to-[#A3E635] bg-clip-text text-transparent">DSA Mastery</span>
+        {/* SECTION HEADER - Sleek Typography - Left Aligned with inline icon */}
+        <div className="max-w-[1400px] mx-auto mb-14 text-left">
+          <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mb-4 leading-[1.1] flex items-center gap-3">
+            <Flame className="w-[1em] h-[1em] fill-primary text-primary shrink-0" />
+            <span>Launch Your <span className="bg-gradient-to-r from-primary via-[#EAFF96] to-[#A3E635] bg-clip-text text-transparent">DSA Mastery</span></span>
           </h2>
-          
-          <p className="text-zinc-500 dark:text-zinc-400 text-base md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
+          <p className="text-zinc-500 dark:text-zinc-400 text-base md:text-lg font-medium leading-relaxed max-w-2xl">
             Experience high-octane interview sprints, targeted corporate practice maps, and connected roadmaps designed to wow modern developers.
           </p>
         </div>
@@ -90,7 +87,7 @@ export function SprintsAndTracksSection() {
             {/* Glowing active outline */}
             <div className="absolute -inset-[1.5px] bg-gradient-to-r from-primary/30 via-[#EAFF96]/20 to-transparent rounded-xl blur-[2px] opacity-10 dark:opacity-30 group-hover:opacity-100 transition-all duration-700"></div>
             
-            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
+            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden">
               
               {/* Internal Halo */}
               <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-500 pointer-events-none"></div>
@@ -109,7 +106,7 @@ export function SprintsAndTracksSection() {
                   </div>
                   
                   <span className="px-3.5 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(239,68,68,0.05)]">
-                    <Flame className="w-3 h-3 fill-red-400" /> High Yield
+                    <Flame className="w-3.5 h-3.5 fill-red-400" /> High Yield
                   </span>
                 </div>
 
@@ -157,12 +154,10 @@ export function SprintsAndTracksSection() {
                 </div>
               </div>
 
-              {/* Action Button */}
               <div className="mt-4">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="w-full rounded-lg py-6 text-base border-zinc-300 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-medium"
+                  className="rounded-lg py-6 text-base bg-zinc-950 dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black font-medium tracking-tight transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-xl flex items-center justify-center gap-2 group/btn w-full sm:w-fit px-8"
                   asChild
                 >
                   <Link
@@ -187,7 +182,7 @@ export function SprintsAndTracksSection() {
           >
             <div className="absolute -inset-[1.5px] bg-gradient-to-r from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900 rounded-xl blur-[1px] opacity-10 dark:opacity-30 group-hover:opacity-80 transition-all duration-700"></div>
             
-            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
+            <div className="relative h-full bg-zinc-50/50 dark:bg-[#080808]/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden">
               
               <div className="absolute -top-24 -right-24 w-64 h-64 bg-zinc-900/30 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -234,12 +229,10 @@ export function SprintsAndTracksSection() {
                 </div>
               </div>
 
-              {/* Action Button */}
               <div className="mt-4">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="w-full rounded-lg py-6 text-base border-zinc-300 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-medium"
+                  className="rounded-lg py-6 text-base bg-zinc-950 dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black font-medium tracking-tight transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-xl flex items-center justify-center gap-2 group/btn w-full sm:w-fit px-8"
                   asChild
                 >
                   <Link
@@ -256,7 +249,7 @@ export function SprintsAndTracksSection() {
           
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

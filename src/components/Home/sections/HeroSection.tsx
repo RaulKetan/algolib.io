@@ -11,7 +11,7 @@ export function HeroSection() {
     const posthog = usePostHog();
 
     return (
-        <div className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+        <div className="relative pt-24 pb-24 lg:pt-36 lg:pb-36 overflow-hidden">
             <div className="w-full max-w-[1600px] mx-auto px-4 relative z-10">
                 <div className="md:max-w-[80%] mx-auto animate-in fade-in slide-in-from-bottom duration-1000">
                     <h1 className="hero-title mb-8 text-[#1A1A1A] dark:text-white">

@@ -11,11 +11,11 @@ const COMMUNITY_LINKS = [
 
 export function CommunitySection() {
     return (
-        <section className="py-24 bg-white dark:bg-black">
+        <section className="py-36 lg:py-48 bg-white dark:bg-black">
             <div className="w-full max-w-[1600px] mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-32">
                     <div>
-                        <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.1]">
+                        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.1]">
                             Join our growing community
                         </h2>
                         <p className="text-gray-500 dark:text-gray-400 text-lg md:text-xl font-medium leading-relaxed">

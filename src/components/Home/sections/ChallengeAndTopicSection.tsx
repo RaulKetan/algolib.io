@@ -233,7 +233,7 @@ export function ChallengeAndTopicSection() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#111_1px,transparent_1px),linear-gradient(to_bottom,#111_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40"></div>
 
       <div className="w-full max-w-[1500px] mx-auto px-6 relative z-10">
-        
+
         {/* SECTION HEADER - Sleek Typography */}
         <div className="text-center mb-24 max-w-3xl mx-auto">
           <motion.div
@@ -244,11 +244,11 @@ export function ChallengeAndTopicSection() {
           >
             <Flame className="w-3.5 h-3.5 fill-[#EAFF96] animate-pulse" /> Sprints & Categories
           </motion.div>
-          
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-none">
+
+          <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mb-6 leading-[1.1]">
             Launch Your <span className="bg-gradient-to-r from-primary via-[#EAFF96] to-[#A3E635] bg-clip-text text-transparent">DSA Mastery</span>
           </h2>
-          
+
           <p className="text-zinc-400 text-base md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
             Experience high-octane interview sprints, targeted corporate practice maps, and connected roadmaps designed to wow modern developers.
           </p>
@@ -256,7 +256,7 @@ export function ChallengeAndTopicSection() {
 
         {/* 2-COLUMN PREMIUM CHALLENGES ROW */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-32 max-w-[1400px] mx-auto">
-          
+
           {/* CARD A: 7-DAY BLIND 75 SPRINT (HIGH VISUAL DASHBOARD) */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -267,9 +267,9 @@ export function ChallengeAndTopicSection() {
           >
             {/* Glowing active outline */}
             <div className="absolute -inset-[1.5px] bg-gradient-to-r from-primary/30 via-[#EAFF96]/20 to-transparent rounded-[32px] blur-[2px] opacity-30 group-hover:opacity-100 transition-all duration-700"></div>
-            
-            <div className="relative h-full bg-[#080808]/90 backdrop-blur-xl border border-zinc-800/80 rounded-[30px] p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
-              
+
+            <div className="relative h-full bg-[#080808]/90 backdrop-blur-xl border border-zinc-800/80 rounded-[30px] p-8 sm:p-10 flex flex-col justify-between overflow-hidden">
+
               {/* Internal Halo */}
               <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-500 pointer-events-none"></div>
 
@@ -285,16 +285,16 @@ export function ChallengeAndTopicSection() {
                       <h3 className="text-lg font-extrabold tracking-tight">7-Day Bootcamp</h3>
                     </div>
                   </div>
-                  
+
                   <span className="px-3.5 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(239,68,68,0.05)]">
                     <Flame className="w-3 h-3 fill-red-400" /> High Yield
                   </span>
                 </div>
 
-                <h4 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-4">
+                <h4 className="text-2xl sm:text-3xl font-medium tracking-tight text-white mb-4">
                   7-Day Blind 75 Sprint
                 </h4>
-                
+
                 <p className="text-zinc-400 text-sm sm:text-base mb-10 leading-relaxed font-medium">
                   Have an interview next week? Master the 75 most essential, high-frequency DSA questions in exactly 7 structured, gamified days. Complete 10-11 questions daily with active, step-by-step pointers.
                 </p>
@@ -304,25 +304,24 @@ export function ChallengeAndTopicSection() {
                   <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block mb-4">
                     Weekly Syllabus Schedule
                   </span>
-                  
+
                   <div className="flex items-center justify-between relative">
                     {/* Connecting line */}
                     <div className="absolute top-4 left-4 right-4 h-[2px] bg-zinc-800 z-0"></div>
                     {/* Active completed path progress line */}
                     <div className="absolute top-4 left-4 w-[33%] h-[2px] bg-primary z-0"></div>
-                    
+
                     {BOOTCAMP_DAYS.map((day, idx) => {
                       const isActive = day.status === "active";
                       const isCompleted = day.status === "completed";
                       return (
                         <div key={idx} className="relative z-10 flex flex-col items-center group/day cursor-pointer">
-                          <div className={`w-8.5 h-8.5 rounded-full flex items-center justify-center font-bold text-xs border transition-all duration-300 ${
-                            isCompleted
+                          <div className={`w-8.5 h-8.5 rounded-full flex items-center justify-center font-bold text-xs border transition-all duration-300 ${isCompleted
                               ? "bg-primary border-primary text-black"
                               : isActive
-                              ? "bg-black border-primary text-primary shadow-[0_0_15px_rgba(132,204,22,0.4)] animate-pulse scale-110"
-                              : "bg-zinc-900 border-zinc-800 text-zinc-500"
-                          }`}>
+                                ? "bg-black border-primary text-primary shadow-[0_0_15px_rgba(132,204,22,0.4)] animate-pulse scale-110"
+                                : "bg-zinc-900 border-zinc-800 text-zinc-500"
+                            }`}>
                             {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3px]" /> : isActive ? <Flame className="w-3.5 h-3.5 fill-primary" /> : day.day}
                           </div>
                           <span className={`text-[9px] mt-2 font-bold tracking-tight ${isActive ? "text-primary font-black" : "text-zinc-500"} hidden sm:block truncate max-w-[64px]`}>
@@ -335,12 +334,10 @@ export function ChallengeAndTopicSection() {
                 </div>
               </div>
 
-              {/* Action Button - Neon shadow glow */}
               <div className="mt-4">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="w-full rounded-2xl py-6 text-base border-zinc-800 bg-transparent text-white hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-extrabold"
+                  className="w-full rounded-lg py-6 text-base bg-zinc-950 dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black font-medium tracking-tight transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-xl flex items-center justify-center gap-2 group/btn w-full sm:w-fit px-8"
                   asChild
                 >
                   <Link
@@ -364,9 +361,9 @@ export function ChallengeAndTopicSection() {
             className="lg:col-span-6 group relative"
           >
             <div className="absolute -inset-[1.5px] bg-gradient-to-r from-zinc-800 to-zinc-900 rounded-[32px] blur-[1px] opacity-30 group-hover:opacity-80 transition-all duration-700"></div>
-            
-            <div className="relative h-full bg-[#080808]/90 backdrop-blur-xl border border-zinc-800/80 rounded-[30px] p-8 sm:p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
-              
+
+            <div className="relative h-full bg-[#080808]/90 backdrop-blur-xl border border-zinc-800/80 rounded-[30px] p-8 sm:p-10 flex flex-col justify-between overflow-hidden">
+
               <div className="absolute -top-24 -right-24 w-64 h-64 bg-zinc-900/30 rounded-full blur-3xl pointer-events-none"></div>
 
               <div>
@@ -382,10 +379,10 @@ export function ChallengeAndTopicSection() {
                   </div>
                 </div>
 
-                <h4 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
+                <h4 className="text-2xl sm:text-3xl font-medium tracking-tight mb-4">
                   Corporate Tracks
                 </h4>
-                
+
                 <p className="text-zinc-400 text-sm sm:text-base mb-10 leading-relaxed font-medium">
                   Direct your practice straight towards the target firms. Access frequency-based algorithm problems sourced from real, verified developer interview feedback.
                 </p>
@@ -412,12 +409,10 @@ export function ChallengeAndTopicSection() {
                 </div>
               </div>
 
-              {/* Action Button - Elegant dark border style */}
               <div className="mt-4">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="w-full rounded-2xl py-6 text-base border-zinc-800 bg-transparent text-white hover:bg-zinc-900 transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group/btn font-extrabold"
+                  className="w-full rounded-lg py-6 text-base bg-zinc-950 dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black font-medium tracking-tight transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-xl flex items-center justify-center gap-2 group/btn w-full sm:w-fit px-8"
                   asChild
                 >
                   <Link
@@ -431,15 +426,15 @@ export function ChallengeAndTopicSection() {
               </div>
             </div>
           </motion.div>
-          
+
         </div>
 
         {/* INTERACTIVE DSA TOPIC CANVAS (Visual learning roadmap graph) */}
         <div className="max-w-[1400px] mx-auto border border-zinc-900 bg-[#060606]/80 backdrop-blur-xl rounded-[36px] p-8 sm:p-14 relative overflow-hidden shadow-2xl">
-          
+
           {/* Subtle dotted canvas style overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(#1c1c1c_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] pointer-events-none opacity-45"></div>
-          
+
           <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-[#EAFF96]/5 rounded-full blur-3xl pointer-events-none"></div>
 
           {/* Heading with navigation actions */}
@@ -448,16 +443,16 @@ export function ChallengeAndTopicSection() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary mb-4 tracking-wide uppercase">
                 <LayoutGrid className="w-3.5 h-3.5" /> Interactive Roadmap Canvas
               </div>
-              
-              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-4">
+
+              <h3 className="text-2xl sm:text-3xl font-medium tracking-tight text-white mb-4">
                 Start Your Journey Topic-Wise
               </h3>
-              
+
               <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-medium leading-relaxed">
                 Click on any category cell inside our visual learning map to load high-impact problem nodes. Master arrays, pointers, trees, and dynamic graphs connected dynamically.
               </p>
             </div>
-            
+
             {/* Quick paths selector */}
             <div className="flex flex-wrap items-center gap-3.5 shrink-0">
               <Button variant="outline" size="sm" className="rounded-xl font-bold border-zinc-800 text-xs h-10 hover:bg-zinc-900" asChild>
@@ -483,7 +478,7 @@ export function ChallengeAndTopicSection() {
             {TOPIC_NODES.map((topic, index) => {
               const Icon = topic.icon;
               const isHovered = hoveredNode === index;
-              
+
               return (
                 <motion.div
                   key={index}
@@ -541,7 +536,7 @@ export function ChallengeAndTopicSection() {
             <span className="text-sm font-semibold text-zinc-500">
               Not sure where to begin? We recommend starting with our
             </span>
-            
+
             <Link
               href="/dsa/core"
               onClick={() => handleCtaClick("Banner bottom - Core Patterns", "/dsa/core", "canvas_bottom_banner")}

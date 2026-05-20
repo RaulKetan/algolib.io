@@ -5,6 +5,7 @@ import { SimpleStepControls } from '../shared/SimpleStepControls';
 import { VariablePanel } from '../shared/VariablePanel';
 import { VisualizationLayout } from '../shared/VisualizationLayout';
 import { Card } from '@/components/ui/card';
+import { Flame, Play, Search, RefreshCcw, PlusCircle, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
 
 interface Step {
   array: number[];
@@ -169,6 +170,160 @@ export const MaximumSubarrayVisualization = () => {
 
   const currentStep = steps[currentStepIndex] || steps[0];
 
+  // Determine phase-specific styles and labels
+  const phaseDetails = useMemo(() => {
+    if (currentStep.isMaxUpdate) {
+      return {
+        label: 'New Max Subarray!',
+        icon: Flame,
+        color: 'text-amber-400',
+        bgColor: 'bg-amber-500/10',
+        borderColor: 'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)]',
+        glowColor: 'from-amber-500/15 via-orange-500/5 to-transparent',
+        accentBg: 'bg-gradient-to-b from-amber-400 via-orange-500 to-amber-600 shadow-[0_0_12px_rgba(245,158,11,0.4)]',
+        dotColor: 'bg-amber-400'
+      };
+    }
+    switch (currentStep.phase) {
+      case 'init':
+        return {
+          label: 'System Initialization',
+          icon: Play,
+          color: 'text-blue-400',
+          bgColor: 'bg-blue-500/10',
+          borderColor: 'border-blue-500/20',
+          glowColor: 'from-blue-500/10 via-transparent to-transparent',
+          accentBg: 'bg-blue-500',
+          dotColor: 'bg-blue-400'
+        };
+      case 'loop':
+        return {
+          label: 'Scanning Element',
+          icon: Search,
+          color: 'text-indigo-400',
+          bgColor: 'bg-indigo-500/10',
+          borderColor: 'border-indigo-500/20',
+          glowColor: 'from-indigo-500/10 via-transparent to-transparent',
+          accentBg: 'bg-indigo-500',
+          dotColor: 'bg-indigo-400'
+        };
+      case 'check':
+        return {
+          label: 'Reset Check',
+          icon: RefreshCcw,
+          color: 'text-rose-400',
+          bgColor: 'bg-rose-500/10',
+          borderColor: 'border-rose-500/20',
+          glowColor: 'from-rose-500/10 via-transparent to-transparent',
+          accentBg: 'bg-rose-500',
+          dotColor: 'bg-rose-400'
+        };
+      case 'update':
+        return {
+          label: 'Running Sum Update',
+          icon: PlusCircle,
+          color: 'text-violet-400',
+          bgColor: 'bg-violet-500/10',
+          borderColor: 'border-violet-500/20',
+          glowColor: 'from-violet-500/10 via-transparent to-transparent',
+          accentBg: 'bg-violet-500',
+          dotColor: 'bg-violet-400'
+        };
+      case 'done':
+        return {
+          label: 'Search Complete',
+          icon: CheckCircle2,
+          color: 'text-emerald-400',
+          bgColor: 'bg-emerald-500/10',
+          borderColor: 'border-emerald-500/20',
+          glowColor: 'from-emerald-500/10 via-transparent to-transparent',
+          accentBg: 'bg-emerald-500',
+          dotColor: 'bg-emerald-400'
+        };
+      default:
+        return {
+          label: 'Algorithm Steps',
+          icon: Sparkles,
+          color: 'text-zinc-400',
+          bgColor: 'bg-zinc-500/10',
+          borderColor: 'border-zinc-500/20',
+          glowColor: 'from-zinc-500/10 via-transparent to-transparent',
+          accentBg: 'bg-zinc-500',
+          dotColor: 'bg-zinc-400'
+        };
+    }
+  }, [currentStep.phase, currentStep.isMaxUpdate]);
+
+  const IconComponent = phaseDetails.icon;
+
+  // Track state changes
+  const stateMutations = useMemo(() => {
+    if (currentStepIndex === 0) return null;
+    const prev = steps[currentStepIndex - 1];
+    const mutations = [];
+    
+    if (prev.curSum !== currentStep.curSum) {
+      mutations.push({
+        name: 'curSum',
+        old: prev.curSum,
+        new: currentStep.curSum,
+        color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20'
+      });
+    }
+    if (prev.maxSub !== currentStep.maxSub) {
+      mutations.push({
+        name: 'maxSub',
+        old: prev.maxSub,
+        new: currentStep.maxSub,
+        color: 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+      });
+    }
+    if (prev.i !== currentStep.i) {
+      mutations.push({
+        name: 'i (index)',
+        old: prev.i === -1 ? 'init' : prev.i,
+        new: currentStep.i === currentStep.array.length ? 'done' : currentStep.i,
+        color: 'text-sky-400 bg-sky-500/10 border-sky-500/20'
+      });
+    }
+    return mutations;
+  }, [currentStepIndex, steps, currentStep]);
+
+  const formatMessageText = (msg: string) => {
+    const parts = msg.split(/(\bcurSum\b|\bmaxSub\b|\[\d+\.\.\.\d+\]|index \d+|idx \d+)/g);
+    return parts.map((part, idx) => {
+      if (part === 'curSum') {
+        return (
+          <code key={idx} className="mx-1 px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-400 font-mono text-[13px] font-semibold border border-indigo-500/20 animate-pulse">
+            curSum
+          </code>
+        );
+      }
+      if (part === 'maxSub') {
+        return (
+          <code key={idx} className="mx-1 px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono text-[13px] font-semibold border border-amber-500/20 animate-pulse">
+            maxSub
+          </code>
+        );
+      }
+      if (part.startsWith('[') && part.endsWith(']')) {
+        return (
+          <span key={idx} className="mx-1 font-mono text-xs bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700/50">
+            {part}
+          </span>
+        );
+      }
+      if (part.startsWith('index') || part.startsWith('idx')) {
+        return (
+          <span key={idx} className="font-semibold text-primary">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <VisualizationLayout
       leftContent={
@@ -285,22 +440,83 @@ export const MaximumSubarrayVisualization = () => {
             </div>
           </Card>
 
-          <Card className="p-6 bg-accent border-primary/20 relative overflow-hidden transition-all duration-300 shadow-sm">
-            <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-primary/20 rounded-lg text-primary">
-                <motion.div
-                  animate={currentStep.isMaxUpdate ? { rotate: [0, 20, -20, 0] } : {}}
+          <Card className="p-6 bg-card/50 backdrop-blur-sm border-primary/20 relative overflow-hidden transition-all duration-300 shadow-sm">
+            <div className="space-y-4">
+              {/* Header: Phase Title, Pulsing Indicator, and Step Progress */}
+              <div className="flex items-center justify-between pb-3 border-b border-border/40">
+                <div className="flex items-center gap-2">
+                  {/* Status Indicator Dot */}
+                  <span className="relative flex h-2 w-2">
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${phaseDetails.dotColor}`} />
+                    <span className={`relative inline-flex rounded-full h-2 w-2 ${phaseDetails.dotColor}`} />
+                  </span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+                    {phaseDetails.label}
+                  </span>
+                </div>
+                
+                {/* Step counter */}
+                <div className="font-mono text-[10px] tracking-tight bg-muted/60 text-muted-foreground px-2 py-0.5 rounded-full border border-border/40">
+                  Step {currentStepIndex + 1} of {steps.length}
+                </div>
+              </div>
+
+              {/* Main Content Layout */}
+              <div className="flex items-start gap-4">
+                {/* Left Side: Icon Container */}
+                <motion.div 
+                  key={currentStepIndex}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className={`p-3 rounded-xl ${phaseDetails.bgColor} border border-border/20 flex items-center justify-center shrink-0 shadow-sm`}
                 >
-                  {currentStep.isMaxUpdate ? '🚀' : '💡'}
+                  <IconComponent className={`w-5 h-5 ${phaseDetails.color}`} />
                 </motion.div>
+
+                {/* Right Side: Title & Commentary Text */}
+                <div className="space-y-2 flex-1 min-w-0">
+                  <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary/70">
+                    Algorithm commentary
+                  </h4>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentStepIndex}
+                      initial={{ y: 5, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -5, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-[14px] font-medium leading-[1.6] text-foreground/90 select-none animate-in fade-in duration-200"
+                    >
+                      {formatMessageText(currentStep.message)}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
-              <div className="space-y-1">
-                <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary/70">Algorithm commentary</h4>
-                <p className="text-[15px] font-medium leading-[1.6] text-foreground/90">
-                  {currentStep.message}
-                </p>
-              </div>
+
+              {/* State Mutations Sub-Panel */}
+              {stateMutations && stateMutations.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                  className="mt-4 pt-3 border-t border-border/40 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 animate-in slide-in-from-bottom-2 duration-300"
+                >
+                  {stateMutations.map((mutation, idx) => (
+                    <div 
+                      key={idx} 
+                      className={`flex items-center justify-between px-3 py-1.5 rounded-lg border text-xs font-mono font-medium ${mutation.color}`}
+                    >
+                      <span className="opacity-75">{mutation.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="line-through opacity-50">{mutation.old}</span>
+                        <ArrowRight className="w-3.5 h-3.5 opacity-60" />
+                        <span className="font-bold">{mutation.new}</span>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
             </div>
           </Card>
         </div>
