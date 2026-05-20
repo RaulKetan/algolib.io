@@ -69,7 +69,10 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
 
   const { user, profile, hasPremiumAccess, activeListType, setActiveListType, progressMap } = useApp();
   const { data: algorithmsData } = useAlgorithms();
-  const allAlgorithms = algorithmsData?.algorithms || [];
+  const allAlgorithms = useMemo(() => 
+    (algorithmsData?.algorithms || []).filter(algo => algo.problemType === 'dsa'),
+    [algorithmsData]
+  );
   const isPaywallEnabled = useFeatureFlag('paywall_enabled');
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -94,7 +97,7 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
     if (!activeListType || activeListType === 'all') return allAlgorithms;
 
     return allAlgorithms.filter(algo => {
-      const algoListType = (algo.list_type || (algo as any).listType || 'core').toLowerCase();
+      const algoListType = (algo.listType || '').toLowerCase();
       const currentListType = activeListType.toLowerCase();
 
       if (currentListType === 'core') {

@@ -21,7 +21,10 @@ const GetStartedClient = () => {
   const [activeTab, setActiveTab] = useState("all");
   const isMobile = useIsMobile();
 
-  const allAlgorithms = data?.algorithms ?? [];
+  const allAlgorithms = useMemo(() => 
+    (data?.algorithms ?? []).filter(algo => algo.problemType === 'dsa'),
+    [data]
+  );
   
   const coreAlgorithms = useMemo(() => 
     allAlgorithms.filter(algo => algo.listType === ListType.Core || algo.listType === ListType.CoreAndBlind75),
