@@ -106,7 +106,11 @@ export const ProblemsList = ({
     }
 
     if (selectedTopics.length > 0) {
-      result = result.filter(algo => selectedTopics.includes(normalizeCategory(algo.category)));
+      result = result.filter(algo => {
+        if (!algo.category) return false;
+        const cats = algo.category.split(',').map((c: string) => normalizeCategory(c.trim()));
+        return cats.some(cat => selectedTopics.includes(cat));
+      });
     }
 
     if (selectedCompanies.length > 0) {
@@ -213,7 +217,10 @@ export const ProblemsList = ({
   };
 
   const allTopics = useMemo(() => {
-    const categories = algorithms.map(algo => normalizeCategory(algo.category)).filter(Boolean);
+    const categories = algorithms.flatMap(algo => {
+      if (!algo.category) return [];
+      return algo.category.split(',').map((c: string) => normalizeCategory(c.trim()));
+    }).filter(Boolean);
     return Array.from(new Set(categories)).sort();
   }, [algorithms]);
 

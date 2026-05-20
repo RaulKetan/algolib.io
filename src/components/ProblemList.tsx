@@ -97,7 +97,9 @@ export const ProblemList = ({
 
   // Extract unique categories
   const categories = useMemo(() => {
-    const cats = new Set(algorithms.map(a => a.category).filter(Boolean));
+    const cats = new Set(algorithms.flatMap(a => 
+      a.category ? a.category.split(',').map((c: string) => c.trim()) : []
+    ).filter(Boolean));
     return Array.from(cats).sort();
   }, [algorithms]);
 
@@ -114,12 +116,12 @@ export const ProblemList = ({
         algo.displayTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
         algo.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesCategory = !selectedCategory || algo.category === selectedCategory;
+      const matchesCategory = !selectedCategory || (algo.category && algo.category.split(',').map((c: string) => c.trim()).includes(selectedCategory));
       const matchesDifficulty = !selectedDifficulty || algo.mappedDifficulty === selectedDifficulty;
 
 
-      // Normalize algo list type (default to Core if missing) and selection
-      let algoListType = (algo.listType || ListType.Core).toLowerCase();
+      // Normalize algo list type and selection
+      let algoListType = (algo.listType || '').toLowerCase();
       if (algoListType === 'corealgo') algoListType = ListType.Core.toLowerCase();
       const selectedType = selectedListType?.toLowerCase();
 

@@ -57,10 +57,17 @@ export const getGroupedByCategory = (algos: any[], searchQuery?: string) => {
     }
 
     filtered.forEach(algo => {
-      let cat = algo.category || 'Other';
-      if (CATEGORY_MAP[cat]) cat = CATEGORY_MAP[cat];
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(algo);
+      const cats = algo.category 
+        ? algo.category.split(',').map((c: string) => c.trim()) 
+        : ['Other'];
+
+      cats.forEach((rawCat: string) => {
+        let cat = CATEGORY_MAP[rawCat] || rawCat;
+        if (!groups[cat]) groups[cat] = [];
+        if (!groups[cat].some(a => a.id === algo.id)) {
+          groups[cat].push(algo);
+        }
+      });
     });
 
     return Object.entries(groups).sort(([a], [b]) => {

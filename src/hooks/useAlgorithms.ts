@@ -36,7 +36,11 @@ export const useAlgorithms = (
         }
 
         if (category && category !== 'all') {
-            filtered = filtered.filter(item => item.category === category);
+            filtered = filtered.filter(item => {
+                if (!item.category) return false;
+                const cats = item.category.split(',').map((c: string) => c.trim());
+                return cats.includes(category);
+            });
         }
 
         return {
@@ -67,7 +71,13 @@ export const useCategories = () => {
 
             if (error) throw error;
             // Unique categories
-            const uniqueCats = Array.from(new Set(data.map((d: any) => d.category))).sort();
+            const uniqueCats = Array.from(
+                new Set(
+                    data.flatMap((d: any) => 
+                        d.category ? d.category.split(',').map((c: string) => c.trim()) : []
+                    )
+                )
+            ).sort();
             return uniqueCats;
         },
         staleTime: 1000 * 60 * 60, // 1 hour

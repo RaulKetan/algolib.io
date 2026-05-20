@@ -41,6 +41,7 @@ export interface AlgorithmListItem {
     spaceComplexity?: string;
     companies?: string[];
     listType?: string;
+    problemType?: string;
     is_premium?: boolean;
     serial_no?: number;
     metadata?: any;
@@ -64,6 +65,7 @@ export interface Algorithm {
     metadata: any;
     controls: any;
     list_type?: string;
+    problemType?: string;
     is_premium?: boolean;
     serial_no?: number;
     timeComplexity?: string;

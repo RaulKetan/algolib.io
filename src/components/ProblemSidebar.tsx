@@ -40,7 +40,9 @@ export const ProblemSidebar = ({
     });
 
     const categories = useMemo(() => {
-        const cats = new Set(algorithms.map(a => a.category).filter(Boolean));
+        const cats = new Set(algorithms.flatMap(a => 
+            a.category ? a.category.split(',').map((c: string) => c.trim()) : []
+        ).filter(Boolean));
         return Array.from(cats).sort();
     }, [algorithms]);
 
@@ -57,7 +59,9 @@ export const ProblemSidebar = ({
             const filterDifficulty = filters.difficulty.toLowerCase();
             const matchesDifficulty = filterDifficulty === 'all' || algoDifficulty === filterDifficulty;
 
-            const matchesTopic = filters.topics.length === 0 || filters.topics.includes('all') || filters.topics.includes(algo.category?.toLowerCase());
+            const matchesTopic = filters.topics.length === 0 || 
+                filters.topics.includes('all') || 
+                (algo.category && algo.category.split(',').some((c: string) => filters.topics.includes(c.trim().toLowerCase())));
 
             return matchesSearch && matchesStatus && matchesDifficulty && matchesTopic;
         });

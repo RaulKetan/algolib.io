@@ -33,10 +33,13 @@ const ProblemsClient = ({
   const topicFilter = searchParams.get('topic');
   const companyFilter = searchParams.get('company');
 
-  const allAlgorithms = data?.algorithms ?? [];
+  const allAlgorithms = useMemo(() => 
+    (data?.algorithms ?? []).filter(algo => algo.problemType === 'dsa'),
+    [data]
+  );
 
   const coreAlgorithms = useMemo(() => 
-    allAlgorithms.filter(algo => !algo.listType || algo.listType === ListType.Core || algo.listType === ListType.CoreAndBlind75),
+    allAlgorithms.filter(algo => algo.listType === ListType.Core || algo.listType === ListType.CoreAndBlind75),
     [allAlgorithms]
   );
 
