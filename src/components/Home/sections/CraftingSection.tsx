@@ -2,9 +2,9 @@ import React from "react";
 
 export function CraftingSection() {
     return (
-        <div className="py-32 bg-white dark:bg-black border-y border-gray-100 dark:border-zinc-900">
+        <div className="py-36 lg:py-48 bg-[#FAFAFA] dark:bg-[#050505]">
             <div className="w-full max-w-[1600px] mx-auto px-4 text-center">
-                <h2 className="text-2xl md:text-3xl font-medium font-black mb-20 text-gray-900 dark:text-white leading-[1.1] tracking-tight">
+                <h2 className="text-xl md:text-2xl font-medium mb-20 text-gray-900 dark:text-white leading-[1.1] tracking-tight">
                     We're crafting <span className="inline-block px-4 py-1 bg-[#EAFF96] text-black">rulcode.com</span> with<br className="hidden md:block" />passion, precision and quality.
                 </h2>
 

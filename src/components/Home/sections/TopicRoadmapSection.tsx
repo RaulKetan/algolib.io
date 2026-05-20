@@ -194,120 +194,178 @@ export function TopicRoadmapSection() {
   };
 
   return (
-    <section className="pt-20 pb-28 lg:pb-36 bg-white dark:bg-black text-zinc-900 dark:text-white relative overflow-hidden">
+    <section className="py-36 lg:py-48 bg-[#FAFAFA] dark:bg-[#050505] text-zinc-900 dark:text-white relative overflow-hidden">
       {/* Grid Canvas Overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#f3f4f6_1px,transparent_1px),linear-gradient(to_bottom,#f3f4f6_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#111_1px,transparent_1px),linear-gradient(to_bottom,#111_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40"></div>
 
-      <div className="w-full max-w-[1500px] mx-auto px-6 relative z-10">
-        
-        {/* INTERACTIVE DSA TOPIC CANVAS */}
-        <div className="max-w-[1400px] mx-auto border border-zinc-200 dark:border-zinc-900 bg-zinc-50/80 dark:bg-[#060606]/80 backdrop-blur-xl rounded-xl p-8 sm:p-12 relative overflow-hidden shadow-2xl">
-          
-          {/* Subtle dotted canvas style overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1c1c1c_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] pointer-events-none opacity-45"></div>
-          
-          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-[#EAFF96]/5 rounded-full blur-3xl pointer-events-none"></div>
+      {/* Subtle dotted canvas style overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1c1c1c_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] pointer-events-none opacity-45"></div>
 
-          {/* Heading with navigation actions */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 relative z-10 border-b border-zinc-200 dark:border-zinc-900 pb-6 text-center lg:text-left">
-            <div className="flex flex-col items-center lg:items-start w-full lg:w-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary mb-4 tracking-wide uppercase">
-                <LayoutGrid className="w-3.5 h-3.5" /> Interactive Roadmap Canvas
-              </div>
-              
-              <h3 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-3">
-                Start Your Journey Topic-Wise
-              </h3>
-              
-              <p className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-base max-w-2xl font-medium leading-relaxed">
-                Click on any category cell inside our visual learning map to load high-impact problem nodes. Master arrays, pointers, trees, and dynamic graphs connected dynamically.
-              </p>
-            </div>
-            
-            {/* Quick paths selector */}
-            <div className="flex flex-wrap items-center justify-center gap-3.5 shrink-0 w-full lg:w-auto">
-              <Button variant="outline" size="sm" className="rounded-xl font-medium border-zinc-200 dark:border-zinc-800 text-xs h-10 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-300" asChild>
-                <Link href="/dsa/problems" onClick={() => handleCtaClick("Canvas - All Problems", "/dsa/problems", "canvas_header_quicklinks")}>
-                  DSA Library
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" className="rounded-xl font-medium border-zinc-200 dark:border-zinc-800 text-xs h-10 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-300" asChild>
-                <Link href="/dsa/core" onClick={() => handleCtaClick("Canvas - Core Patterns", "/dsa/core", "canvas_header_quicklinks")}>
-                  Core Patterns
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" className="rounded-xl font-medium border-zinc-200 dark:border-zinc-800 text-xs h-10 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-300" asChild>
-                <Link href="/dsa/blind-75" onClick={() => handleCtaClick("Canvas - Blind 75", "/dsa/blind-75", "canvas_header_quicklinks")}>
-                  Blind 75
-                </Link>
-              </Button>
-            </div>
+      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-[#EAFF96]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full max-w-[1500px] mx-auto px-6 relative z-10"
+      >
+
+        {/* Heading with navigation actions - Now left-aligned and outside */}
+        <div className="max-w-[1400px] mx-auto mb-14 flex flex-col lg:flex-row lg:items-end justify-between gap-6 relative z-10 text-left">
+          <div className="w-full lg:w-auto">
+            <h3 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-4 leading-[1.1] flex items-center gap-3">
+              <LayoutGrid className="w-[1em] h-[1em] text-primary shrink-0" />
+              <span>Start Your Journey Topic-Wise</span>
+            </h3>
+
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-base max-w-2xl font-medium leading-relaxed">
+              Click on any category cell inside our visual learning map to load high-impact problem nodes. Master arrays, pointers, trees, and dynamic graphs connected dynamically.
+            </p>
           </div>
 
-          {/* Accordion List Layout - Flat Design mimicking native DSA accordions */}
-          <div className="max-w-[950px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-3.5 relative z-10">
-            {TOPIC_NODES.map((topic, index) => {
-              const Icon = topic.icon;
-              
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: index * 0.015 }}
-                >
-                  <Link
-                    href={`/dsa/query?topic=${encodeURIComponent(topic.name)}`}
-                    onClick={() => handleCtaClick(topic.name, `/dsa/query?topic=${encodeURIComponent(topic.name)}`, "learning_canvas_node")}
-                    className="group block"
-                  >
-                    <Card
-                      className="flex items-center justify-between p-4 bg-white dark:bg-[#080808] border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-zinc-950/20 transition-all duration-200 rounded-xl"
-                    >
-                      {/* Left Block: Icon & Title info */}
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-primary/10 dark:bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
-                          <Icon className="w-6 h-6 text-primary" />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <h4 className="text-sm sm:text-base font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-primary transition-colors leading-tight">
-                            {topic.name}
-                          </h4>
-                          <span className="text-xs text-zinc-500 mt-1">
-                            {topic.count} essential problems
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Right Block: Chevron Indicator */}
-                      <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500 group-hover:translate-x-0.5 group-hover:text-primary transition-all shrink-0" />
-                    </Card>
-                  </Link>
-                </motion.div>
-              );
-            })}
+          {/* Quick paths selector */}
+          <div className="flex flex-wrap items-center justify-start gap-3.5 shrink-0 w-full lg:w-auto">
+            <Button variant="outline" size="sm" className="rounded-xl font-medium border-zinc-200 dark:border-zinc-800 text-xs h-10 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-300" asChild>
+              <Link href="/dsa/problems" onClick={() => handleCtaClick("Canvas - All Problems", "/dsa/problems", "canvas_header_quicklinks")}>
+                DSA Library
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" className="rounded-xl font-medium border-zinc-200 dark:border-zinc-800 text-xs h-10 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-300" asChild>
+              <Link href="/dsa/core" onClick={() => handleCtaClick("Canvas - Core Patterns", "/dsa/core", "canvas_header_quicklinks")}>
+                Core Patterns
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" className="rounded-xl font-medium border-zinc-200 dark:border-zinc-800 text-xs h-10 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-300" asChild>
+              <Link href="/dsa/blind-75" onClick={() => handleCtaClick("Canvas - Blind 75", "/dsa/blind-75", "canvas_header_quicklinks")}>
+                Blind 75
+              </Link>
+            </Button>
           </div>
+        </div>
 
-          {/* Connected banner guide at bottom */}
-          <div className="mt-12 text-center border-t border-zinc-200 dark:border-zinc-900 pt-6 relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <span className="text-xs sm:text-sm font-semibold text-zinc-400 dark:text-zinc-500">
-              Not sure where to begin? We recommend starting with our
-            </span>
-            
+        {/* TOPIC PARENT CARD CONTAINER */}
+        <div className="max-w-[1400px] mx-auto border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/30 dark:bg-[#080808]/40 backdrop-blur-xl rounded-xl p-6 sm:p-10 relative overflow-hidden z-10">
+
+          {/* Featured Core Patterns & Blind 75 Cards inside */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <Link
               href="/dsa/core"
-              onClick={() => handleCtaClick("Banner bottom - Core Patterns", "/dsa/core", "canvas_bottom_banner")}
-              className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-primary hover:underline underline-offset-4 group/bottom"
+              onClick={() => handleCtaClick("Core Patterns - Parent Card", "/dsa/core", "featured_parent_cards")}
+              className="group block"
             >
-              15 Core Patterns Track
-              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/bottom:translate-x-1" />
+              <Card className="flex items-center justify-between p-5 bg-white dark:bg-[#0c0c0c] border border-zinc-200 dark:border-zinc-800/80 hover:border-primary/50 dark:hover:border-primary/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/10 transition-all duration-200 rounded-xl shadow-none">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                    <Zap className="w-6 h-6 text-primary fill-primary" />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <h4 className="text-base font-bold text-zinc-900 dark:text-white group-hover:text-primary transition-colors leading-tight">
+                      Core Patterns
+                    </h4>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
+                      15 essential templates forming technical interview foundations
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-zinc-400 dark:text-zinc-500 group-hover:translate-x-0.5 group-hover:text-primary transition-all shrink-0" />
+              </Card>
             </Link>
+
+            <Link
+              href="/dsa/blind-75"
+              onClick={() => handleCtaClick("Blind 75 - Parent Card", "/dsa/blind-75", "featured_parent_cards")}
+              className="group block"
+            >
+              <Card className="flex items-center justify-between p-5 bg-white dark:bg-[#0c0c0c] border border-zinc-200 dark:border-zinc-800/80 hover:border-primary/50 dark:hover:border-primary/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/10 transition-all duration-200 rounded-xl shadow-none">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                    <Trophy className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <h4 className="text-base font-bold text-zinc-900 dark:text-white group-hover:text-primary transition-colors leading-tight">
+                      Blind 75
+                    </h4>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
+                      75 high-frequency problems curated for FAANG preparation
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-zinc-400 dark:text-zinc-500 group-hover:translate-x-0.5 group-hover:text-primary transition-all shrink-0" />
+              </Card>
+            </Link>
+          </div>
+
+          <div className="pt-4">
+            <h4 className="text-xs font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-widest mb-6">
+              Topic-Wise Categories
+            </h4>
+
+            {/* Accordion List Layout - Flat Design mimicking native DSA accordions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {TOPIC_NODES.map((topic, index) => {
+                const Icon = topic.icon;
+
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.3, delay: index * 0.015 }}
+                  >
+                    <Link
+                      href={`/dsa/query?topic=${encodeURIComponent(topic.name)}`}
+                      onClick={() => handleCtaClick(topic.name, `/dsa/query?topic=${encodeURIComponent(topic.name)}`, "learning_canvas_node")}
+                      className="group block"
+                    >
+                      <Card
+                        className="flex items-center justify-between p-4 bg-white dark:bg-[#080808] border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-zinc-950/20 transition-all duration-200 rounded-xl shadow-none"
+                      >
+                        {/* Left Block: Icon & Title info */}
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-lg bg-primary/10 dark:bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
+                            <Icon className="w-6 h-6 text-primary" />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <h4 className="text-sm sm:text-base font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-primary transition-colors leading-tight">
+                              {topic.name}
+                            </h4>
+                            <span className="text-xs text-zinc-500 mt-1">
+                              {topic.count} essential problems
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Right Block: Chevron Indicator */}
+                        <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500 group-hover:translate-x-0.5 group-hover:text-primary transition-all shrink-0" />
+                      </Card>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
 
         </div>
 
-      </div>
+        {/* Connected banner guide at bottom */}
+        <div className="mt-12 text-center  relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <span className="text-xs sm:text-sm font-semibold text-zinc-400 dark:text-zinc-500">
+            Not sure where to begin? We recommend starting with our
+          </span>
+
+          <Link
+            href="/dsa/core"
+            onClick={() => handleCtaClick("Banner bottom - Core Patterns", "/dsa/core", "canvas_bottom_banner")}
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-primary hover:underline underline-offset-4 group/bottom"
+          >
+            15 Core Patterns Track
+            <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/bottom:translate-x-1" />
+          </Link>
+        </div>
+
+      </motion.div>
     </section>
   );
 }

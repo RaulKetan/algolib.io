@@ -2,10 +2,10 @@ import React from "react";
 
 export function WorkspaceSection() {
     return (
-        <section className="py-24 bg-white dark:bg-black">
+        <section className="py-36 lg:py-48 bg-[#FAFAFA] dark:bg-[#050505] relative overflow-hidden">
             <div className="w-full max-w-[1600px] mx-auto px-4">
                 <div className="mb-16">
-                    <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-6 text-gray-900 dark:text-white max-w-2xl">
+                    <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-6 text-gray-900 dark:text-white max-w-2xl">
                         Interactive Coding Workspace
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg max-w-2xl font-medium">

@@ -52,6 +52,7 @@ import {
 import { useApp } from "@/contexts/AppContext";
 import { usePostHog } from '@posthog/react';
 import { trackEvent } from '@/lib/analytics';
+import { motion } from 'framer-motion';
 
 const PlatformPreview = dynamic(() => import("@/components/Home/PlatformPreview"), { ssr: false });
 
@@ -70,8 +71,27 @@ export default function HomeClient({ type = 'all' }: HomeClientProps) {
   return (
     <>
       {(type === 'all' || type === 'platform-preview') && (
-        <section className="mb-16 overflow-hidden">
-          <PlatformPreview />
+        <section className="py-36 lg:py-48 bg-white dark:bg-black text-zinc-900 dark:text-white relative overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full max-w-[1500px] mx-auto px-6 relative z-10"
+          >
+            {/* SECTION HEADER - Left Aligned with inline icon */}
+            <div className="max-w-[1400px] mx-auto mb-14 text-left">
+              <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mb-4 leading-[1.1] flex items-center gap-3">
+                <Terminal className="w-[0.85em] h-[0.85em] text-primary shrink-0" />
+                <span>Interactive Code Playground</span>
+              </h2>
+              <p className="text-zinc-500 dark:text-zinc-400 text-base md:text-lg font-medium leading-relaxed max-w-2xl">
+                Experiment with algorithmic structures and step-by-step visualizations in real time directly from your browser.
+              </p>
+            </div>
+            
+            <PlatformPreview />
+          </motion.div>
         </section>
       )}
 

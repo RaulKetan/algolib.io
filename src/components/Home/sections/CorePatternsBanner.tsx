@@ -33,7 +33,7 @@ export function CorePatternsBanner() {
                 <Sparkles className="w-3.5 h-3.5" /> Don&apos;t Memorize Answers
               </div>
               
-              <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-6 leading-[1.1]">
+              <h3 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-6 leading-[1.1]">
                 Master the 15 Core Patterns
               </h3>
               
