@@ -68,11 +68,8 @@ export const ProblemList = ({
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [selectedListType, setSelectedListType] = useState<string | null>(defaultListType === 'all' ? null : defaultListType);
   const [sortBy, setSortBy] = useState<string>('serial-asc');
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => {
-    if (initialViewMode) return initialViewMode;
-    const savedMode = localStorage.getItem('problem-list-view-mode');
-    return (savedMode === 'list' || savedMode === 'grid') ? savedMode : 'grid';
-  });
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(initialViewMode || 'grid');
+  const [mounted, setMounted] = useState(false);
   const { hasPremiumAccess, activeListType, setActiveListType, progressMap, user } = useApp();
   const isPaywallEnabled = useFeatureFlag('paywall_enabled');
   const posthog = usePostHog();
@@ -83,9 +80,21 @@ export const ProblemList = ({
 
   // Persist view mode to localStorage
   useEffect(() => {
-    localStorage.setItem('problem-list-view-mode', viewMode);
-    trackEvent(posthog, 'problem_view_mode_changed', { mode: viewMode });
-  }, [viewMode]);
+    setMounted(true);
+    if (!initialViewMode) {
+      const savedMode = localStorage.getItem('problem-list-view-mode');
+      if (savedMode === 'list' || savedMode === 'grid') {
+        setViewMode(savedMode);
+      }
+    }
+  }, [initialViewMode]);
+
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('problem-list-view-mode', viewMode);
+      trackEvent(posthog, 'problem_view_mode_changed', { mode: viewMode });
+    }
+  }, [viewMode, mounted, posthog]);
 
   // Sync global list context when this component is the primary list for a page
   useEffect(() => {
@@ -189,6 +198,12 @@ export const ProblemList = ({
     });
   }, [posthog, filteredAndSortedAlgorithms.length]);
 
+  const handleCategoryClick = useCallback((cat: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleCategoryChange(selectedCategory === cat ? null : cat);
+  }, [selectedCategory, handleCategoryChange]);
+
   const handleDifficultyChange = useCallback((val: string | null) => {
     setSelectedDifficulty(val);
     trackEvent(posthog, 'problem_filter_applied', {
@@ -222,7 +237,7 @@ export const ProblemList = ({
     <div className={isSidebar ? "space-y-4" : "space-y-6"}>
 
       {/* Single Container Table */}
-      {isLoading || !algorithms ? (
+      {!mounted || isLoading || !algorithms ? (
         <ProblemListSkeleton />
       ) : (
         <div className="space-y-4">
@@ -353,6 +368,7 @@ export const ProblemList = ({
                       isSidebar={isSidebar}
                       hasPremiumAccess={hasPremiumAccess}
                       isPaywallEnabled={isPaywallEnabled}
+                      onCategoryClick={handleCategoryClick}
                     />
                   );
                 })}

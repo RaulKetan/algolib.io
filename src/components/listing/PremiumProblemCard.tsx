@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check, ArrowRight, Lock, Flame, FileCode2, Layout } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AlgorithmListItem } from "@/types/algorithm";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface PremiumProblemCardProps {
     algorithm: AlgorithmListItem;
@@ -11,6 +12,7 @@ interface PremiumProblemCardProps {
     isFirst?: boolean;
     isLast?: boolean;
     disableRounding?: boolean;
+    onCategoryClick?: (category: string, e: React.MouseEvent) => void;
 }
 
 const difficultyColors: Record<string, string> = {
@@ -37,14 +39,16 @@ const StatusIcon = ({ status, isPremium }: { status: string; isPremium?: boolean
     );
 };
 
-export const PremiumProblemCard = ({ algorithm, status, isPremium: isPremiumProp, index, isFirst, isLast, disableRounding }: PremiumProblemCardProps) => {
+export const PremiumProblemCard = ({ algorithm, status, isPremium: isPremiumProp, index, isFirst, isLast, disableRounding, onCategoryClick }: PremiumProblemCardProps) => {
     const isPremium = isPremiumProp ?? (algorithm.is_premium || algorithm.is_pro || algorithm.metadata?.is_pro);
     const difficulty = algorithm.difficulty?.charAt(0).toUpperCase() + algorithm.difficulty?.slice(1).toLowerCase() || 'Medium';
     const displayDifficulty = ['Easy', 'Medium', 'Hard'].includes(difficulty) ? difficulty : 'Medium';
 
+    const isLockedLink = algorithm.id === 'locked' || algorithm.slug === 'locked';
+
     return (
         <Link
-            href={algorithm.slug ? `/problem/${algorithm.slug}` : `/problem/${algorithm.id}`}
+            href={isLockedLink ? '/pricing' : (algorithm.slug ? `/problem/${algorithm.slug}` : `/problem/${algorithm.id}`)}
             className="group block relative w-full break-words"
         >
             <div className={cn(
@@ -84,13 +88,81 @@ export const PremiumProblemCard = ({ algorithm, status, isPremium: isPremiumProp
 
                     <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-8 gap-y-2 text-[11px] sm:text-xs font-normal pt-1">
                         {/* Category */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground/70">
-                            {algorithm.category.toLowerCase().includes('ui') || algorithm.category.toLowerCase().includes('css') ? (
-                                <Layout className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                            {algorithm.category?.toLowerCase().includes('ui') || algorithm.category?.toLowerCase().includes('css') ? (
+                                <Layout className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-muted-foreground/50 shrink-0" />
                             ) : (
-                                <FileCode2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                                <FileCode2 className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-muted-foreground/50 shrink-0" />
                             )}
-                            <span className="text-[11px] sm:text-[12px]">{algorithm.category}</span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                                {(() => {
+                                    const categories = (algorithm.category || '').split(',').map(c => c.trim()).filter(Boolean);
+                                    const visibleCats = categories.slice(0, 3);
+                                    const hiddenCats = categories.slice(3);
+
+                                    return (
+                                        <>
+                                            {visibleCats.map((cat) => (
+                                                <button
+                                                    key={cat}
+                                                    onClick={(e) => {
+                                                        if (onCategoryClick) {
+                                                            onCategoryClick(cat, e);
+                                                        } else {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                        }
+                                                    }}
+                                                    className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-medium bg-muted/60 text-muted-foreground/90 hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-border/30 hover:border-primary/20 shrink-0 select-none z-10"
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                            {hiddenCats.length > 0 && (
+                                                <span
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                    }}
+                                                >
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 border border-primary/20 shrink-0 z-10"
+                                                            >
+                                                                +{hiddenCats.length}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent 
+                                                            className="w-48 p-2 bg-popover border border-border/60 shadow-xl rounded-xl z-50"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                            }}
+                                                        >
+                                                            <div className="flex flex-col gap-1.5">
+                                                                {hiddenCats.map((cat) => (
+                                                                    <button
+                                                                        key={cat}
+                                                                        onClick={(e) => {
+                                                                            if (onCategoryClick) {
+                                                                                onCategoryClick(cat, e);
+                                                                            }
+                                                                        }}
+                                                                        className="w-full text-left px-2.5 py-1.5 rounded-lg text-[11px] sm:text-[12px] font-medium hover:bg-accent hover:text-accent-foreground transition-colors duration-200 select-none"
+                                                                    >
+                                                                        {cat}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                </span>
+                                            )}
+                                        </>
+                                    );
+                                })()}
+                            </div>
                         </div>
 
                         {/* Difficulty */}

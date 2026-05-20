@@ -9,6 +9,7 @@ import { Brain, Target } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ProgressStats } from "@/components/profile/ProgressStats";
 import { cn } from "@/lib/utils";
+import { ProOverlay } from "@/components/ProOverlay";
 
 interface ProblemsListProps {
   algorithms: any[];
@@ -55,19 +56,24 @@ export const ProblemsList = ({
   const [sortBy, setSortBy] = useState('serial-asc');
   const [selectedTopics, setSelectedTopics] = useState<string[]>(initialSelectedTopics.map(normalizeCategory));
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>(initialSelectedCompanies);
-  const [isCategoryWise, setIsCategoryWise] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dsa_category_wise');
-      return saved !== null ? JSON.parse(saved) : initialCategoryWise;
-    }
-    return initialCategoryWise;
-  });
+  const [isCategoryWise, setIsCategoryWise] = useState(initialCategoryWise);
+  const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dsa_category_wise');
+      if (saved !== null) {
+        setIsCategoryWise(JSON.parse(saved));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && mounted) {
       localStorage.setItem('dsa_category_wise', JSON.stringify(isCategoryWise));
     }
-  }, [isCategoryWise]);
+  }, [isCategoryWise, mounted]);
 
   const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [hasInitializedExpand, setHasInitializedExpand] = useState(false);
@@ -207,8 +213,13 @@ export const ProblemsList = ({
     setSelectedTopics(prev => prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]);
   };
 
+  const handleCategoryClick = (cat: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleTopicToggle(normalizeCategory(cat));
+  };
+
   const handleCompanyToggle = (company: string) => {
-    if (!hasPremiumAccess) return;
     if (company === 'CLEAR_ALL') {
       setSelectedCompanies([]);
       return;
@@ -246,6 +257,8 @@ export const ProblemsList = ({
     return Math.round(mins / 60);
   }, [filteredAndSortedAlgorithms]);
 
+  const showCompanyLock = !hasPremiumAccess && selectedCompanies.length > 0;
+
   return (
     <ListingLayout
       title={title}
@@ -282,11 +295,65 @@ export const ProblemsList = ({
     >
       {headerSlot}
 
-      {isLoading ? (
+      {!mounted || isLoading ? (
         <div className="p-8 space-y-4 max-w-[820px] mx-auto">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="h-32 bg-muted/20 animate-pulse rounded-xl" />
           ))}
+        </div>
+      ) : showCompanyLock && filteredAndSortedAlgorithms.length > 0 ? (
+        <div className="w-full max-w-[820px] mx-auto">
+          <PremiumProblemCard
+            key={filteredAndSortedAlgorithms[0].id}
+            algorithm={filteredAndSortedAlgorithms[0]}
+            status={(progressMap?.[filteredAndSortedAlgorithms[0].id] || 'none') as any}
+            isPremium={filteredAndSortedAlgorithms[0].is_premium}
+            index={0}
+            isFirst={true}
+            isLast={false}
+            onCategoryClick={handleCategoryClick}
+          />
+          <div className="relative w-full mt-2 pb-16">
+            <div className="filter blur-[6px] select-none pointer-events-none opacity-20 space-y-2">
+              {filteredAndSortedAlgorithms.slice(1, 4).map((algo, index) => {
+                const maskedAlgo = {
+                  ...algo,
+                  title: "Premium locked question",
+                  name: "Premium locked question",
+                  slug: "locked",
+                  id: "locked",
+                  description: "Unlock this question and all premium features by purchasing a subscription.",
+                  category: "Locked",
+                  metadata: { ...algo.metadata, companies: [] }
+                };
+                return (
+                  <PremiumProblemCard
+                    key={index}
+                    algorithm={maskedAlgo}
+                    status="none"
+                    index={index + 1}
+                    isPremium={true}
+                    isFirst={false}
+                    isLast={index === 2 || index === filteredAndSortedAlgorithms.length - 2}
+                    onCategoryClick={() => {}}
+                  />
+                );
+              })}
+              {filteredAndSortedAlgorithms.length <= 1 && (
+                <>
+                  <div className="p-6 border border-border/10 rounded-xl bg-card/40 flex justify-between items-center h-24" />
+                  <div className="p-6 border border-border/5 rounded-xl bg-card/20 flex justify-between items-center h-24" />
+                </>
+              )}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center p-4 bg-gradient-to-b from-transparent via-background/80 to-background pt-16 pb-12">
+              <ProOverlay
+                variant="transparent"
+                title="Premium company tags"
+                description="Purchase premium to unlock company tags and all the best materials we have to offer."
+              />
+            </div>
+          </div>
         </div>
       ) : !isCategoryWise ? (
         <div className="w-full max-w-[820px] mx-auto">
@@ -299,6 +366,7 @@ export const ProblemsList = ({
               index={index}
               isFirst={index === 0}
               isLast={index === filteredAndSortedAlgorithms.length - 1}
+              onCategoryClick={handleCategoryClick}
             />
           ))}
           {filteredAndSortedAlgorithms.length === 0 && (
@@ -373,6 +441,7 @@ export const ProblemsList = ({
                           isFirst={index === 0}
                           isLast={index === algos.length - 1}
                           disableRounding={true}
+                          onCategoryClick={handleCategoryClick}
                         />
                       ))}
                     </div>

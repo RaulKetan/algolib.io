@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { AlgorithmListItem } from "@/types/algorithm";
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface AlgorithmCardProps {
     algorithm: AlgorithmListItem;
@@ -12,6 +13,7 @@ interface AlgorithmCardProps {
     isSidebar?: boolean;
     hasPremiumAccess?: boolean;
     isPaywallEnabled?: boolean;
+    onCategoryClick?: (category: string, e: React.MouseEvent) => void;
 }
 
 const difficultyColors: Record<string, string> = {
@@ -20,7 +22,7 @@ const difficultyColors: Record<string, string> = {
     'Hard': 'text-red-500 bg-red-500/10 border-red-500/20',
 };
 
-export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, hasPremiumAccess, isPaywallEnabled }: AlgorithmCardProps) => {
+export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, hasPremiumAccess, isPaywallEnabled, onCategoryClick }: AlgorithmCardProps) => {
     const displayTitle = algorithm.title || algorithm.name || '';
     const serialNo = algorithm.serial_no || (index !== undefined ? index + 1 : null);
 
@@ -74,9 +76,76 @@ export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, 
 
                     {/* Meta Info */}
                     <div className={cn("flex flex-wrap items-center gap-y-2", isSidebar ? "gap-x-3" : "gap-x-5")}>
-                        <div className="flex items-center gap-1.5 text-muted-foreground/60">
-                            <BookOpen className={cn(isSidebar ? "w-3 h-3" : "w-3.5 h-3.5")} />
-                            <span className={cn("font-medium", isSidebar ? "text-[9px]" : "text-xs")}>{algorithm.category}</span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            {!isSidebar && <BookOpen className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />}
+                            {(() => {
+                                const categories = (algorithm.category || '').split(',').map(c => c.trim()).filter(Boolean);
+                                const visibleCatsCount = isSidebar ? 1 : 3;
+                                const visibleCats = categories.slice(0, visibleCatsCount);
+                                const hiddenCats = categories.slice(visibleCatsCount);
+
+                                return (
+                                    <>
+                                        {visibleCats.map((cat) => (
+                                            <button
+                                                key={cat}
+                                                onClick={(e) => {
+                                                    if (onCategoryClick) {
+                                                        onCategoryClick(cat, e);
+                                                    } else {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                    }
+                                                }}
+                                                className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium bg-muted/60 text-muted-foreground/90 hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-border/30 hover:border-primary/20 shrink-0 select-none z-10"
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                        {hiddenCats.length > 0 && (
+                                            <span
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                }}
+                                            >
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <button
+                                                            className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 border border-primary/20 shrink-0 z-10"
+                                                        >
+                                                            +{hiddenCats.length}
+                                                        </button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent 
+                                                        className="w-48 p-2 bg-popover border border-border/60 shadow-xl rounded-xl z-50"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                        }}
+                                                    >
+                                                        <div className="flex flex-col gap-1.5">
+                                                            {hiddenCats.map((cat) => (
+                                                                <button
+                                                                    key={cat}
+                                                                    onClick={(e) => {
+                                                                        if (onCategoryClick) {
+                                                                            onCategoryClick(cat, e);
+                                                                        }
+                                                                    }}
+                                                                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium hover:bg-accent hover:text-accent-foreground transition-colors duration-200 select-none"
+                                                                >
+                                                                    {cat}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </span>
+                                        )}
+                                    </>
+                                );
+                            })()}
                         </div>
 
                         <div className="flex items-center gap-1.5">

@@ -3,11 +3,17 @@
 import React, { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
-import { Check, Info, Calendar, CreditCard, AlertCircle, ArrowRight } from 'lucide-react';
+import { Check, Info, Calendar, CreditCard, AlertCircle, ArrowRight, Sparkles, HelpCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { pricingData } from '@/data/pricing-data';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -273,13 +279,28 @@ const PricingClient = () => {
 
         {/* Header Section */}
         <div className="text-left mb-12">
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight max-w-2xl text-foreground mt-4">
+          <h1 className="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl text-foreground mt-4">
             {isPremium ? "Manage your subscription" : "Save time, ace interviews, and secure high-paying roles"}
           </h1>
         </div>
 
+        {/* Career Investment Message Card */}
+        {!isPremium && (
+          <div className="mb-8 p-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card shadow-sm flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-semibold text-base text-foreground">An Investment in Your Future</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                There is nothing more valuable than preparing yourself to secure a role at a top-tier company. High-quality preparation is the ultimate multiplier for your career—making this purchase a negligible, high-yield investment compared to the career return and growth you will secure.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Subscriptions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+        <div id="pricing-grid" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
           {pricingData.subscriptionPlans.map((plan) => {
             const isCurrentPlan = isPremium && profile?.subscription_duration === plan.productId;
 
@@ -381,6 +402,32 @@ const PricingClient = () => {
           })}
         </div>
 
+        {/* Social Proof Banner */}
+        {!isPremium && (
+          <div className="mb-24 p-8 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/5 to-background text-center flex flex-col items-center gap-4">
+            <div className="bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+              Limited Time Access
+            </div>
+            <h2 className="text-2xl md:text-3xl font-semibold max-w-xl text-foreground">
+              Over 100+ developers have already purchased this course—now it's your turn to ace your interviews!
+            </h2>
+            <p className="text-muted-foreground text-sm max-w-lg">
+              Don't get left behind. Start practicing today with our premium tools, solution explanations, and interactive visualizers.
+            </p>
+            <Button 
+              onClick={() => {
+                const element = document.getElementById('pricing-grid');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              className="mt-2 rounded-full px-8 py-6 font-semibold"
+            >
+              Get Premium Access Now
+            </Button>
+          </div>
+        )}
+
         {/* Features Section */}
         <div className="mb-24">
           <h2 className="text-4xl font-semibold tracking-tight mb-16">{pricingData.featuresSection.title}</h2>
@@ -396,6 +443,83 @@ const PricingClient = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mb-24 border-t border-border pt-16">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-semibold text-center mb-10 flex items-center justify-center gap-2">
+              <HelpCircle className="w-8 h-8 text-primary" />
+              Frequently Asked Questions
+            </h2>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1" className="border-border">
+                <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary text-base">
+                  What is included in the premium subscription?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-sm">
+                  You get unlimited access to all premium coding problems, step-by-step solutions with multiple optimal approaches, interactive visualizers that show algorithm execution step-by-step, structured interview preparation tracks, in-browser compilation/execution, and future content updates.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2" className="border-border">
+                <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary text-base">
+                  What should I do if my payment fails?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-sm">
+                  If your transaction fails or the premium features are not activated immediately after payment, please check your network connection and billing details. If you continue to experience issues, send us an email at{" "}
+                  <a href="mailto:support@rulcode.com" className="text-primary hover:underline font-medium">
+                    support@rulcode.com
+                  </a>{" "}
+                  with your details, and we will activate your premium subscription manually as soon as possible.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3" className="border-border">
+                <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary text-base">
+                  What if I don't have the money to buy?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-sm">
+                  We believe that premium education should be accessible to everyone. If you cannot afford the subscription due to genuine financial constraints, job loss, or regional pricing disparities, please reach out to us at{" "}
+                  <a href="mailto:support@rulcode.com" className="text-primary hover:underline font-medium">
+                    support@rulcode.com
+                  </a>{" "}
+                  explaining your situation, and we will do our best to provide financial aid or discounts.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5" className="border-border">
+                <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary text-base">
+                  Can I cancel my subscription at any time?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-sm">
+                  Yes, absolutely! You can cancel your subscription at any time. If you unsubscribe, you will retain full access to all premium content and features until the end of your current billing period, and no further payments will be charged.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-6" className="border-border">
+                <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary text-base">
+                  Will my subscription renew automatically?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-sm">
+                  Yes, to ensure uninterrupted access, your subscription will automatically renew at the end of each billing cycle (every 3 months, 6 months, or 12 months) depending on the plan you chose. You can easily turn off auto-renewal at any time by cancelling your subscription before the next billing date.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4" className="border-border">
+                <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary text-base">
+                  Have other queries or need more information?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-sm">
+                  We are here to help! For any questions, feedback, partnership opportunities, or billing issues, feel free to email our support team at{" "}
+                  <a href="mailto:support@rulcode.com" className="text-primary hover:underline font-medium">
+                    support@rulcode.com
+                  </a>
+                  . We typically respond within 24 hours.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
 

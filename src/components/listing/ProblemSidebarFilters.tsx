@@ -119,7 +119,7 @@ export const ProblemSidebarFilters = ({
                         onToggle={onCompanyToggle}
                         columns={2}
                         isPremium={true}
-                        isLocked={!hasPremiumAccess}
+                        isLocked={false}
                     />
                 )}
 

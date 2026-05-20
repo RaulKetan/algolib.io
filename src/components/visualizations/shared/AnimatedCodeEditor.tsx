@@ -20,6 +20,11 @@ export const AnimatedCodeEditor = ({
   const colorRef = useRef<HTMLDivElement>(null);
   const [primaryColor, setPrimaryColor] = useState('#84CC16'); // Fallback to the green from index.css
   const [isReady, setIsReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Small delay to ensure styles are applied and we get the correct primary color
@@ -35,7 +40,8 @@ export const AnimatedCodeEditor = ({
     return () => clearTimeout(timer);
   }, [resolvedTheme]);
 
-  const isDark = (resolvedTheme || theme) === 'dark';
+  // Use a stable default during SSR/hydration, then switch to actual theme once mounted
+  const isDark = mounted ? (resolvedTheme || theme) === 'dark' : false;
 
   return (
     <motion.div
