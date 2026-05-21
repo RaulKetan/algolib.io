@@ -1,321 +1,457 @@
 "use client";
-import * as React from "react"
-import { ListTodo, BookOpen, Code2, Play, Search, Folder, MoreHorizontal, LayoutDashboard, Compass, Rocket, ChevronRight, Eye, Code, FileText, PanelLeftClose, PanelLeftOpen, Github, Linkedin, MonitorSmartphone, LogOut, Code as CodeIcon, ThumbsUp, Clock, Layers, Target, Brain } from "lucide-react"
 
+import * as React from "react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarHeader,
-    SidebarFooter,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
-    useSidebar,
-} from "@/components/ui/sidebar"
-import Link from "next/link";
+  BookOpen,
+  Brain,
+  ChevronRight,
+  Clock,
+  Code,
+  Code2,
+  Code as CodeIcon,
+  Compass,
+  Eye,
+  FileText,
+  Folder,
+  Github,
+  Layers,
+  LayoutDashboard,
+  Linkedin,
+  ListTodo,
+  LogOut,
+  MonitorSmartphone,
+  MoreHorizontal,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Play,
+  Rocket,
+  Search,
+  Target,
+  ThumbsUp,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react"
+
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { ChevronDown } from "lucide-react";
+import Link from "next/link";
 import logo from "@/assets/logo.svg";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card"
-import { useTheme } from "next-themes"
-import { supabase } from "@/integrations/supabase/client"
-import { toast } from "sonner"
-import { Badge } from "./ui/badge"
-import { Button } from "./ui/button"
-import { useApp } from "@/contexts/AppContext"
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useApp } from "@/contexts/AppContext";
+import { useTheme } from "next-themes";
 
 // Defined Products Configuration
 const sidebarConfig = {
-    interviews: {
-        title: "Interviews",
-        navMain: [
-            {
-                title: "Dashboard",
-                url: "/dashboard",
-                icon: LayoutDashboard,
-                hasCaret: false,
-            },
-            {
-                title: "DSA",
-                url: "/dsa/get-started",
-                icon: ListTodo,
-                hasCaret: true,
-                isGroup: true,
-                items: [
-                    {
-                        title: "Get started",
-                        url: "/dsa/get-started",
-                        icon: Rocket,
-                        description: "Your personalized roadmap to mastering DSA."
-                    },
-                    {
-                        title: "Core patterns",
-                        url: "/dsa/core",
-                        icon: Target,
-                        description: "Master the essential recurring algorithm patterns."
-                    },
-                    {
-                        title: "Blind 75",
-                        url: "/dsa/blind-75",
-                        icon: Brain,
-                        description: "The curated list of top 75 must-do questions."
-                    },
-                ],
-            },
+  interviews: {
+    title: "Interviews",
+    navMain: [
+      {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+        hasCaret: false,
+      },
+      {
+        title: "DSA",
+        url: "/dsa/get-started",
+        icon: ListTodo,
+        hasCaret: true,
+        isGroup: true,
+        items: [
+          {
+            title: "Get started",
+            url: "/dsa/get-started",
+            icon: Rocket,
+            description: "Your personalized roadmap to mastering DSA.",
+          },
+          {
+            title: "Core patterns",
+            url: "/dsa/core",
+            icon: Target,
+            description: "Master the essential recurring algorithm patterns.",
+          },
+          {
+            title: "Blind 75",
+            url: "/dsa/blind-75",
+            icon: Brain,
+            description: "The curated list of top 75 must-do questions.",
+          },
         ],
-    }
-}
+      },
+    ],
+  },
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const pathname = usePathname()
-    const router = useRouter()
-    const { toggleSidebar, state, isMobile, setOpen, setOpenMobile } = useSidebar()
+  const pathname = usePathname();
+  const router = useRouter();
+  const { toggleSidebar, state, isMobile, setOpen, setOpenMobile } =
+    useSidebar();
 
-    // Close the mobile sheet when a nav link is tapped
-    const closeMobileNav = () => { if (isMobile) setOpenMobile(false); };
-    const { theme, setTheme } = useTheme()
+  // Close the mobile sheet when a nav link is tapped
+  const closeMobileNav = () => {
+    if (isMobile) setOpenMobile(false);
+  };
+  const { theme, setTheme } = useTheme();
 
-    const sidebarRoutes = ['/dsa/problems', '/problems', '/dsa/get-started', '/dsa/blind-75', '/dsa/core', '/dsa/query'];
-    const isSidebarRoute = sidebarRoutes.some(route => pathname?.startsWith(route));
-    const lastPathRef = React.useRef(pathname);
+  const sidebarRoutes = [
+    "/dsa/problems",
+    "/problems",
+    "/dsa/get-started",
+    "/dsa/blind-75",
+    "/dsa/core",
+    "/dsa/query",
+  ];
+  const isSidebarRoute = sidebarRoutes.some((route) =>
+    pathname?.startsWith(route),
+  );
+  const lastPathRef = React.useRef(pathname);
 
-    // Removed auto-expansion logic for DSA routes as per user request
+  // Removed auto-expansion logic for DSA routes as per user request
 
-    const { user, hasPremiumAccess } = useApp();
+  const { user, hasPremiumAccess } = useApp();
 
-    const handleSignOut = async () => {
-        if (!supabase) return;
-        const { error } = await supabase.auth.signOut();
-        if (error) toast.error("Failed to sign out");
-        else {
-            toast.success("Signed out successfully");
-            router.refresh();
-            router.push("/");
-        }
-    };
-
-    const isCollapsed = state === "collapsed";
-
-    // On desktop, only show if it's a sidebar route
-    if (!isMobile && !isSidebarRoute) {
-        return null;
+  const handleSignOut = async () => {
+    if (!supabase) return;
+    const { error } = await supabase.auth.signOut();
+    if (error) toast.error("Failed to sign out");
+    else {
+      toast.success("Signed out successfully");
+      router.refresh();
+      router.push("/");
     }
+  };
 
-    const currentConfig = sidebarConfig.interviews;
+  const isCollapsed = state === "collapsed";
 
-    return (
-        <Sidebar collapsible="icon" className="border-r border-border bg-background" {...props}>
-            <SidebarHeader className="p-4 border-b border-border/50 h-12 flex items-center justify-center">
+  // On desktop, only show if it's a sidebar route
+  if (!isMobile && !isSidebarRoute) {
+    return null;
+  }
 
-                <div className="flex items-center gap-3 w-full">
-                    <Link href="/" className="flex items-center gap-2 shrink-0 group-data-[collapsible=icon]:mx-auto">
-                        <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6 transition-all" />
-                        <span className=" text-lg tracking-wider group-data-[collapsible=icon]:hidden">rulcode</span>
-                    </Link>
-                    <div className="h-4 w-[1px] bg-border/80 group-data-[collapsible=icon]:hidden"></div>
-                    <span className="flex items-center gap-1 text-[13px] text-muted-foreground group-data-[collapsible=icon]:hidden">
-                        {currentConfig.title}
-                    </span>
-                </div>
-            </SidebarHeader>
-            <SidebarContent className="px-3 py-4 gap-0">
-                <SidebarGroup className="p-0">
-                    <SidebarGroupContent>
-                        <SidebarMenu className="gap-1.5">
-                            {currentConfig.navMain.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    {!item.isGroup ? (
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={pathname === item.url}
-                                            tooltip={item.title}
-                                            className="h-8 justify-between hover:bg-muted/50 text-[#666] data-[active=true]:text-foreground data-[active=true]:font-medium"
-                                        >
-                                            <Link href={item.url} onClick={closeMobileNav} className="w-full flex items-center justify-between">
-                                                <div className="flex items-center gap-2.5">
-                                                    {item.icon && <item.icon className="w-4 h-4 opacity-70" />}
-                                                    <span className="text-[13px] group-data-[collapsible=icon]:hidden">{item.title}</span>
-                                                </div>
-                                                {item.hasCaret && <ChevronRight className="w-3.5 h-3.5 opacity-50 group-data-[collapsible=icon]:hidden absolute right-2 top-1/2 -translate-y-1/2" />}
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    ) : (
-                                        <div className="flex flex-col mb-2 mt-2 group relative">
-                                            {/* On mobile, always show inline list. On desktop collapsed, show HoverCard popup. */}
-                                            {isCollapsed && !isMobile ? (
-                                                <HoverCard openDelay={100} closeDelay={100}>
-                                                    <HoverCardTrigger asChild>
-                                                        <SidebarMenuButton className="flex w-full items-center justify-center h-8 text-[#666] hover:bg-muted/50 rounded-md transition-colors px-2 cursor-pointer">
-                                                            {item.icon && <item.icon className="w-4 h-4 opacity-70" />}
-                                                        </SidebarMenuButton>
-                                                    </HoverCardTrigger>
-                                                    <HoverCardContent side="right" align="start" sideOffset={15} className="w-[260px] flex flex-col rounded-xl border border-border bg-popover text-popover-foreground shadow-lg p-1.5 py-2 z-[100]">
-                                                        <div className="text-xs font-medium px-3 py-1 text-foreground border-b border-border/40 mb-1">{item.title}</div>
-                                                        {item.items?.map((subItem) => (
-                                                            <Link key={subItem.title} href={subItem.url} className="flex items-center justify-between gap-3 cursor-pointer rounded-md p-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors group/sub">
-                                                                <div className="flex flex-col gap-0.5">
-                                                                    <div className="flex items-center gap-2 text-foreground">
-                                                                        {subItem.icon && <subItem.icon className="w-4 h-4 opacity-70" />}
-                                                                        <span className="font-medium text-[13px]">{subItem.title}</span>
-                                                                    </div>
-                                                                    {subItem.description && (
-                                                                        <span className="text-[11px] text-muted-foreground pl-6 leading-tight">{subItem.description}</span>
-                                                                    )}
-                                                                </div>
-                                                                <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover/sub:opacity-100 group-hover/sub:translate-x-0 transition-all" />
-                                                            </Link>
-                                                        ))}
-                                                    </HoverCardContent>
-                                                </HoverCard>
-                                            ) : (
-                                                <SidebarMenuButton tooltip={item.title} className="flex w-full items-center justify-between h-8 text-[#666] hover:bg-muted/50 rounded-md transition-colors px-2 relative">
-                                                    <div className="flex items-center gap-2.5">
-                                                        {item.icon && <item.icon className="w-4 h-4 opacity-70" />}
-                                                        <span className="text-[13px] font-medium">{item.title}</span>
-                                                    </div>
-                                                    <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-                                                </SidebarMenuButton>
-                                            )}
+  const currentConfig = sidebarConfig.interviews;
 
-                                            {/* Always show sub-items on mobile; on desktop only when not collapsed */}
-                                            {(isMobile || !isCollapsed) && item.items && (
-                                                <div className="flex flex-col gap-1 mt-1 pl-9">
-                                                    {item.items.map((subItem) => (
-                                                        <Link
-                                                            key={subItem.title}
-                                                            href={subItem.url}
-                                                            onClick={closeMobileNav}
-                                                            className={`flex items-center gap-2 text-[13px] py-1.5 px-2 rounded-md transition-colors ${pathname === subItem.url
-                                                                ? "text-foreground font-medium bg-muted/50"
-                                                                : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                                                                }`}
-                                                        >
-                                                            {subItem.icon && <subItem.icon className="w-3.5 h-3.5 opacity-70" />}
-                                                            {subItem.title}
-                                                        </Link>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
+  return (
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-border bg-background"
+      {...props}
+    >
+      <SidebarHeader className="p-4 border-b border-border/50 h-12 flex items-center justify-center">
+        <div className="flex items-center gap-3 w-full">
+          <Link
+            href="/"
+            className="flex items-center gap-2 shrink-0 group-data-[collapsible=icon]:mx-auto"
+          >
+            <img
+              src={typeof logo === "string" ? logo : (logo as any).src}
+              alt="RulCode Logo"
+              className="w-6 h-6 transition-all"
+            />
+            <span className=" font-medium group-data-[collapsible=icon]:hidden">
+              rulcode
+            </span>
+          </Link>
+          <div className="h-4 w-[1px] bg-border/80 group-data-[collapsible=icon]:hidden"></div>
+          <span className="flex items-center gap-1 text-[13px] text-muted-foreground group-data-[collapsible=icon]:hidden">
+            {currentConfig.title}
+          </span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent className="px-3 py-4 gap-0">
+        <SidebarGroup className="p-0">
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-1.5">
+              {currentConfig.navMain.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  {!item.isGroup ? (
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      tooltip={item.title}
+                      className="h-8 justify-between hover:bg-muted/50 text-[#666] data-[active=true]:text-foreground data-[active=true]:font-medium"
+                    >
+                      <Link
+                        href={item.url}
+                        onClick={closeMobileNav}
+                        className="w-full flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          {item.icon && (
+                            <item.icon className="w-4 h-4 opacity-70" />
+                          )}
+                          <span className="text-[13px] group-data-[collapsible=icon]:hidden">
+                            {item.title}
+                          </span>
+                        </div>
+                        {item.hasCaret && (
+                          <ChevronRight className="w-3.5 h-3.5 opacity-50 group-data-[collapsible=icon]:hidden absolute right-2 top-1/2 -translate-y-1/2" />
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  ) : (
+                    <div className="flex flex-col mb-2 mt-2 group relative">
+                      {/* On mobile, always show inline list. On desktop collapsed, show HoverCard popup. */}
+                      {isCollapsed && !isMobile ? (
+                        <HoverCard openDelay={100} closeDelay={100}>
+                          <HoverCardTrigger asChild>
+                            <SidebarMenuButton className="flex w-full items-center justify-center h-8 text-[#666] hover:bg-muted/50 rounded-md transition-colors px-2 cursor-pointer">
+                              {item.icon && (
+                                <item.icon className="w-4 h-4 opacity-70" />
+                              )}
+                            </SidebarMenuButton>
+                          </HoverCardTrigger>
+                          <HoverCardContent
+                            side="right"
+                            align="start"
+                            sideOffset={15}
+                            className="w-[260px] flex flex-col rounded-xl border border-border bg-popover text-popover-foreground shadow-lg p-1.5 py-2 z-[100]"
+                          >
+                            <div className="text-xs font-medium px-3 py-1 text-foreground border-b border-border/40 mb-1">
+                              {item.title}
+                            </div>
+                            {item.items?.map((subItem) => (
+                              <Link
+                                key={subItem.title}
+                                href={subItem.url}
+                                className="flex items-center justify-between gap-3 cursor-pointer rounded-md p-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors group/sub"
+                              >
+                                <div className="flex flex-col gap-0.5">
+                                  <div className="flex items-center gap-2 text-foreground">
+                                    {subItem.icon && (
+                                      <subItem.icon className="w-4 h-4 opacity-70" />
                                     )}
-                                </SidebarMenuItem>
+                                    <span className="font-medium text-[13px]">
+                                      {subItem.title}
+                                    </span>
+                                  </div>
+                                  {subItem.description && (
+                                    <span className="text-[11px] text-muted-foreground pl-6 leading-tight">
+                                      {subItem.description}
+                                    </span>
+                                  )}
+                                </div>
+                                <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover/sub:opacity-100 group-hover/sub:translate-x-0 transition-all" />
+                              </Link>
                             ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-            </SidebarContent>
-
-            <SidebarFooter className="p-4 mt-auto border-t border-border/50 flex flex-col gap-4">
-                {/* Bottom Action Row */}
-                <div className="flex items-center justify-between w-full">
-                    {/* Socials - hidden when collapsed */}
-                    <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
-                        <Link href="#" className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-transparent shadow-none hover:border-border/50 hover:shadow-sm">
-                            <Github className="w-4 h-4" />
-                        </Link>
-                        <Link href="#" className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-transparent shadow-none hover:border-border/50 hover:shadow-sm">
-                            <Linkedin className="w-4 h-4" />
-                        </Link>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full text-muted-foreground hover:text-foreground">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" side="top" className="w-48">
-                                <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="cursor-pointer text-xs">
-                                    <MonitorSmartphone className="mr-2 h-4 w-4" />
-                                    <span>Theme: {theme === 'dark' ? 'Dark' : 'Light'}</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                {!hasPremiumAccess && (
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/pricing" className="cursor-pointer text-xs">Pricing</Link>
-                                    </DropdownMenuItem>
-                                )}
-                                {user ? (
-                                    <>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive cursor-pointer text-xs">
-                                            <LogOut className="mr-2 h-4 w-4" />
-                                            <span>Sign out</span>
-                                        </DropdownMenuItem>
-                                    </>
-                                ) : (
-                                    <>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild>
-                                            <Link href="/login" className="cursor-pointer text-xs">Log in</Link>
-                                        </DropdownMenuItem>
-                                    </>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-
-                    {/* Standalone More Menu specifically for collapsed state, since the one above is hidden */}
-                    <div className="hidden group-data-[collapsible=icon]:flex flex-col items-center gap-2 w-full justify-center text-muted-foreground">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={toggleSidebar}
-                            className="w-8 h-8 rounded-full hover:text-foreground border border-transparent hover:border-border/50 hover:shadow-sm bg-muted/30"
-                            title="Expand Sidebar"
+                          </HoverCardContent>
+                        </HoverCard>
+                      ) : (
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          className="flex w-full items-center justify-between h-8 text-[#666] hover:bg-muted/50 rounded-md transition-colors px-2 relative"
                         >
-                            <PanelLeftOpen className="w-4 h-4 ml-0.5" />
-                        </Button>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:text-foreground border border-transparent hover:border-border/50 hover:shadow-sm">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" side="right" sideOffset={10} className="w-48">
-                                <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="cursor-pointer text-xs">
-                                    <MonitorSmartphone className="mr-2 h-4 w-4" />
-                                    <span>Theme: {theme === 'dark' ? 'Dark' : 'Light'}</span>
-                                </DropdownMenuItem>
-                                {user ? (
-                                    <>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive cursor-pointer text-xs dark:text-foreground">
-                                            <LogOut className="mr-2 h-4 w-4" />
-                                            <span>Sign out</span>
-                                        </DropdownMenuItem>
-                                    </>
-                                ) : (
-                                    <>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild>
-                                            <Link href="/login" className="cursor-pointer text-xs">Log in</Link>
-                                        </DropdownMenuItem>
-                                    </>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
+                          <div className="flex items-center gap-2.5">
+                            {item.icon && (
+                              <item.icon className="w-4 h-4 opacity-70" />
+                            )}
+                            <span className="text-[13px] font-medium">
+                              {item.title}
+                            </span>
+                          </div>
+                          <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                        </SidebarMenuButton>
+                      )}
 
-                    {/* Expand/Collapse Toggle Button */}
-                    <div className="hidden md:flex ml-auto group-data-[collapsible=icon]:hidden">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={toggleSidebar}
-                            className="w-8 h-8 rounded-full text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 hover:shadow-sm"
-                        >
-                            <PanelLeftClose className="w-4 h-4" />
-                        </Button>
+                      {/* Always show sub-items on mobile; on desktop only when not collapsed */}
+                      {(isMobile || !isCollapsed) && item.items && (
+                        <div className="flex flex-col gap-1 mt-1 pl-9">
+                          {item.items.map((subItem) => (
+                            <Link
+                              key={subItem.title}
+                              href={subItem.url}
+                              onClick={closeMobileNav}
+                              className={`flex items-center gap-2 text-[13px] py-1.5 px-2 rounded-md transition-colors ${
+                                pathname === subItem.url
+                                  ? "text-foreground font-medium bg-muted/50"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                              }`}
+                            >
+                              {subItem.icon && (
+                                <subItem.icon className="w-3.5 h-3.5 opacity-70" />
+                              )}
+                              {subItem.title}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                </div>
-            </SidebarFooter>
-        </Sidebar>
-    )
+                  )}
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="p-4 mt-auto border-t border-border/50 flex flex-col gap-4">
+        {/* Bottom Action Row */}
+        <div className="flex items-center justify-between w-full">
+          {/* Socials - hidden when collapsed */}
+          <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
+            <Link
+              href="#"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-transparent shadow-none hover:border-border/50 hover:shadow-sm"
+            >
+              <Github className="w-4 h-4" />
+            </Link>
+            <Link
+              href="#"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-transparent shadow-none hover:border-border/50 hover:shadow-sm"
+            >
+              <Linkedin className="w-4 h-4" />
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8 rounded-full text-muted-foreground hover:text-foreground"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="top" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="cursor-pointer text-xs"
+                >
+                  <MonitorSmartphone className="mr-2 h-4 w-4" />
+                  <span>Theme: {theme === "dark" ? "Dark" : "Light"}</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {!hasPremiumAccess && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/pricing" className="cursor-pointer text-xs">
+                      Pricing
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {user ? (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="text-destructive focus:text-destructive cursor-pointer text-xs"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign out</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/login" className="cursor-pointer text-xs">
+                        Log in
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Standalone More Menu specifically for collapsed state, since the one above is hidden */}
+          <div className="hidden group-data-[collapsible=icon]:flex flex-col items-center gap-2 w-full justify-center text-muted-foreground">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="w-8 h-8 rounded-full hover:text-foreground border border-transparent hover:border-border/50 hover:shadow-sm bg-muted/30"
+              title="Expand Sidebar"
+            >
+              <PanelLeftOpen className="w-4 h-4 ml-0.5" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8 rounded-full hover:text-foreground border border-transparent hover:border-border/50 hover:shadow-sm"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                side="right"
+                sideOffset={10}
+                className="w-48"
+              >
+                <DropdownMenuItem
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="cursor-pointer text-xs"
+                >
+                  <MonitorSmartphone className="mr-2 h-4 w-4" />
+                  <span>Theme: {theme === "dark" ? "Dark" : "Light"}</span>
+                </DropdownMenuItem>
+                {user ? (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="text-destructive focus:text-destructive cursor-pointer text-xs dark:text-foreground"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign out</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/login" className="cursor-pointer text-xs">
+                        Log in
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Expand/Collapse Toggle Button */}
+          <div className="hidden md:flex ml-auto group-data-[collapsible=icon]:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="w-8 h-8 rounded-full text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 hover:shadow-sm"
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </SidebarFooter>
+    </Sidebar>
+  );
 }

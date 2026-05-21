@@ -14,14 +14,14 @@ import AdminViewToggle from "@/admin/components/AdminViewToggle";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Rulcode - Master 200+ Algorithms with Interactive Visualizations & Open Source",
-  description: "Rulcode.com is a open-source algorithm library for developers and competitive programmers. Learn, visualize, and master 72+ algorithms with step-by-step explanations, pro tips, and code snippets in Python, Java, C++, and TypeScript.",
+  title: "Rulcode: Master Algorithms Visually & Open Source",
+  description: "Master 200+ algorithms visually with interactive animations, pro tips, and code snippets in Python, C++, Java, and TypeScript.",
   keywords: ["algorithms", "open source", "data structures", "competitive programming", "coding interviews", "algorithm visualization", "code snippets", "python", "java", "c++", "typescript", "Rulcode.com"],
   authors: [{ name: "Rulcode.com Team" }],
   robots: "index, follow",
   openGraph: {
-    title: "Rulcode.com - Master 200+ Algorithms with Interactive Visualizations  & Open Source",
-    description: "Open-source algorithm library for competitive programming. Learn and visualize algorithms with step-by-step guides and code snippets in multiple languages.",
+    title: "Rulcode: Master Algorithms Visually & Open Source",
+    description: "Master 200+ algorithms visually with interactive animations, pro tips, and code snippets in Python, C++, Java, and TypeScript.",
     type: "website",
     url: "https://rulcode.com/",
     images: ["https://rulcode.com/og-image.png"],
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@rulcode_com",
-    title: "Rulcode.com - Master 200+ Algorithms with Interactive Visualizations & Open Source",
-    description: "Open-source algorithm library for competitive programming. Learn and visualize algorithms with step-by-step guides and code snippets in multiple languages.",
+    title: "Rulcode: Master Algorithms Visually & Open Source",
+    description: "Master 200+ algorithms visually with interactive animations, pro tips, and code snippets in Python, C++, Java, and TypeScript.",
     images: ["https://rulcode.com/og-image.png"],
   },
 };

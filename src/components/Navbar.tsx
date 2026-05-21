@@ -1,6 +1,44 @@
 "use client";
 
 import {
+  BookOpen,
+  Brain,
+  Bug,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsUpDown,
+  Code2,
+  CreditCard,
+  Crown,
+  Github,
+  Languages,
+  Layers,
+  Lightbulb,
+  List as ListIcon,
+  ListTodo,
+  Loader2,
+  Menu,
+  Menu as MenuIcon,
+  MessageSquare,
+  Monitor,
+  MoreHorizontal,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Pause,
+  PenTool,
+  Play,
+  Rocket,
+  RotateCcw,
+  Send,
+  Share2,
+  ShieldCheck,
+  Shuffle,
+  Target,
+  Timer,
+  User,
+} from "lucide-react";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -8,73 +46,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LIST_TYPE_LABELS, ListType } from "@/types/algorithm";
 import {
-  Github,
-  Menu as MenuIcon,
-  MessageSquare,
-  ShieldCheck,
-  User,
-  ChevronDown,
-  ChevronRight,
-  Languages,
-  PenTool,
-  CreditCard,
-  BookOpen,
-  Code2,
-  ListTodo,
-  Rocket,
-  Layers,
-  Target,
-  Brain,
-  PanelLeftClose,
-  PanelLeftOpen,
-  ChevronLeft,
-  Shuffle,
-  Menu,
-  Share2,
-  Bug,
-  Monitor,
-  Timer,
-  Pause,
-  Play,
-  RotateCcw,
-  MoreHorizontal,
-  Send,
-  Loader2,
-  List as ListIcon,
-  Crown,
-  Lightbulb,
-  ChevronsUpDown,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef, useMemo } from "react";
-import { useAppSelector } from "@/store/hooks";
-
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./ThemeToggle";
-import logo from "@/assets/logo.svg";
-
-import { useApp } from "@/contexts/AppContext";
-import { Badge } from "./ui/badge";
-import { useSidebar } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import UserMenu from "./UserMenu";
-import { usePostHog } from '@posthog/react';
-import { trackEvent } from '@/lib/analytics';
-import { ListType, LIST_TYPE_LABELS } from "@/types/algorithm";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import { Badge } from "./ui/badge";
+import { Button } from "@/components/ui/button";
 import { FeatureGuard } from "@/components/FeatureGuard";
+import Link from "next/link";
+import { ThemeToggle } from "./ThemeToggle";
+import UserMenu from "./UserMenu";
+import { cn } from "@/lib/utils";
+import logo from "@/assets/logo.svg";
+import { trackEvent } from "@/lib/analytics";
+import { useApp } from "@/contexts/AppContext";
+import { useAppSelector } from "@/store/hooks";
+import { usePathname } from "next/navigation";
+import { usePostHog } from "@posthog/react";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface NavbarProps {
   isProblemMode?: boolean;
@@ -122,30 +121,41 @@ const Navbar = ({
   const { setOpenMobile, toggleSidebar, state } = useSidebar();
   const pathname = usePathname();
   const posthog = usePostHog();
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
 
   useEffect(() => {
     setMounted(true);
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const [isInterviewsOpen, setIsInterviewsOpen] = useState(false);
   const [isPrepareOpen, setIsPrepareOpen] = useState(false);
-  const [activePrepareTab, setActivePrepareTab] = useState<'dsa_practice' | 'dsa_strategy' | 'blogs'>('dsa_practice');
+  const [activePrepareTab, setActivePrepareTab] = useState<
+    "dsa_practice" | "dsa_strategy" | "blogs"
+  >("dsa_practice");
 
   const interviewsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const prepareTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+  const currentPath =
+    pathname || (typeof window !== "undefined" ? window.location.pathname : "");
   const isAuthPage = currentPath === "/login";
-  const algorithms = useAppSelector(state => state.algorithms.items);
+  const algorithms = useAppSelector((state) => state.algorithms.items);
 
   // We use a broad check to ensure we hide the global navbar on any problem-related page
-  const isDsaProblemPage = currentPath?.includes('/problem/') ||
-    currentPath?.startsWith('/dsa/') ||
-    ['/dsa/problems', '/dsa/get-started', '/dsa/core', '/dsa/blind-75'].includes(currentPath);
+  const isDsaProblemPage =
+    currentPath?.includes("/problem/") ||
+    currentPath?.startsWith("/dsa/") ||
+    [
+      "/dsa/problems",
+      "/dsa/get-started",
+      "/dsa/core",
+      "/dsa/blind-75",
+    ].includes(currentPath);
 
   // Hide Navbar on valid DSA and Problem pages as they have their own implementation
   // EXCEPT if we are explicitly in problem mode (passed as prop by the page itself)
@@ -154,12 +164,14 @@ const Navbar = ({
   }
 
   const showCondensedMenu = windowWidth < 778;
-  const listLabel = activeListType && activeListType !== 'all'
-    ? LIST_TYPE_LABELS[activeListType as ListType] || activeListType
-    : 'All Problems';
+  const listLabel =
+    activeListType && activeListType !== "all"
+      ? LIST_TYPE_LABELS[activeListType as ListType] || activeListType
+      : "All Problems";
 
   const handleInterviewsMouseEnter = () => {
-    if (interviewsTimeoutRef.current) clearTimeout(interviewsTimeoutRef.current);
+    if (interviewsTimeoutRef.current)
+      clearTimeout(interviewsTimeoutRef.current);
     setIsInterviewsOpen(true);
   };
 
@@ -182,18 +194,21 @@ const Navbar = ({
 
   // Close menus instantly on click
   const closeMenus = () => {
-    if (interviewsTimeoutRef.current) clearTimeout(interviewsTimeoutRef.current);
+    if (interviewsTimeoutRef.current)
+      clearTimeout(interviewsTimeoutRef.current);
     if (prepareTimeoutRef.current) clearTimeout(prepareTimeoutRef.current);
     setIsInterviewsOpen(false);
     setIsPrepareOpen(false);
   };
 
   return (
-    <nav className={cn(
-      "sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md",
-      !isProblemMode && "border-b border-border/50",
-      className
-    )}>
+    <nav
+      className={cn(
+        "sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md",
+        !isProblemMode && "border-b border-border/50",
+        className,
+      )}
+    >
       <div className="w-full px-4 md:px-6 lg:px-8">
         <div className="flex h-12 items-center justify-between">
           {/* Logo */}
@@ -204,8 +219,14 @@ const Navbar = ({
                 className="flex items-center gap-2 hover:opacity-80 transition-opacity shutter-click"
                 onClick={closeMenus}
               >
-                <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
-                <span className="hidden md:inline-block  text-lg tracking-wider">rulcode</span>
+                <img
+                  src={typeof logo === "string" ? logo : (logo as any).src}
+                  alt="RulCode Logo"
+                  className="w-6 h-6"
+                />
+                <span className="hidden md:inline-block  font-medium ">
+                  rulcode
+                </span>
               </Link>
             ) : (
               <>
@@ -214,10 +235,14 @@ const Navbar = ({
                   variant="ghost"
                   size="icon"
                   className="hidden data-[show=true]:md:flex h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all rounded-full"
-                  data-show={pathname?.startsWith('/dsa/') || pathname?.startsWith('/problems') || pathname?.startsWith('/dashboard')}
+                  data-show={
+                    pathname?.startsWith("/dsa/") ||
+                    pathname?.startsWith("/problems") ||
+                    pathname?.startsWith("/dashboard")
+                  }
                   onClick={toggleSidebar}
                 >
-                  {(!mounted || state === "collapsed") ? (
+                  {!mounted || state === "collapsed" ? (
                     <PanelLeftOpen className="w-4 h-4" />
                   ) : (
                     <PanelLeftClose className="w-4 h-4" />
@@ -228,8 +253,12 @@ const Navbar = ({
                   className="flex items-center gap-2 hover:opacity-80 transition-opacity shutter-click"
                   onClick={closeMenus}
                 >
-                  <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-6 h-6" />
-                  <span className=" text-lg tracking-wider ">rulcode</span>
+                  <img
+                    src={typeof logo === "string" ? logo : (logo as any).src}
+                    alt="RulCode Logo"
+                    className="w-6 h-6"
+                  />
+                  <span className=" font-medium ">rulcode</span>
                 </Link>
               </>
             )}
@@ -244,7 +273,11 @@ const Navbar = ({
                   onMouseEnter={handleInterviewsMouseEnter}
                   onMouseLeave={handleInterviewsMouseLeave}
                 >
-                  <DropdownMenu open={isInterviewsOpen} onOpenChange={setIsInterviewsOpen} modal={false}>
+                  <DropdownMenu
+                    open={isInterviewsOpen}
+                    onOpenChange={setIsInterviewsOpen}
+                    modal={false}
+                  >
                     <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-colors outline-none relative font-normal shutter-click">
                       <span>Interviews</span>
                       <span className="absolute -top-1 -right-2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
@@ -257,23 +290,59 @@ const Navbar = ({
                       onMouseLeave={handleInterviewsMouseLeave}
                       sideOffset={4}
                     >
-                      <div className="text-xs text-muted-foreground mb-3 font-normal">Products</div>
+                      <div className="text-xs text-muted-foreground mb-3 font-normal">
+                        Products
+                      </div>
                       <div className="flex flex-col gap-1 mb-4">
                         <Link
                           href="/"
                           className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors shutter-click"
                         >
-                          <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
-                          <span className="font-medium text-sm">rulcode <span className="text-muted-foreground font-normal ml-1">Interviews</span></span>
+                          <img
+                            src={
+                              typeof logo === "string"
+                                ? logo
+                                : (logo as any).src
+                            }
+                            alt="RulCode Logo"
+                            className="w-5 h-5"
+                          />
+                          <span className="font-medium text-sm">
+                            rulcode{" "}
+                            <span className="text-muted-foreground font-normal ml-1">
+                              Interviews
+                            </span>
+                          </span>
                         </Link>
                         <div className="flex items-center gap-3 hover:bg-muted p-2 rounded-md transition-colors cursor-not-allowed opacity-80">
-                          <img src={typeof logo === 'string' ? logo : (logo as any).src} alt="RulCode Logo" className="w-5 h-5" />
-                          <span className="font-medium text-sm flex items-center gap-2">rulcode <span className="text-muted-foreground font-normal ml-1">Projects</span><div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div></span>
-                          <Badge variant="secondary" className="bg-[#E5FF7F] text-black hover:bg-[#d6f555] border-transparent ml-auto text-[10px] h-5 py-0 whitespace-nowrap">Coming soon</Badge>
+                          <img
+                            src={
+                              typeof logo === "string"
+                                ? logo
+                                : (logo as any).src
+                            }
+                            alt="RulCode Logo"
+                            className="w-5 h-5"
+                          />
+                          <span className="font-medium text-sm flex items-center gap-2">
+                            rulcode{" "}
+                            <span className="text-muted-foreground font-normal ml-1">
+                              Projects
+                            </span>
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                          </span>
+                          <Badge
+                            variant="secondary"
+                            className="bg-[#E5FF7F] text-black hover:bg-[#d6f555] border-transparent ml-auto text-[10px] h-5 py-0 whitespace-nowrap"
+                          >
+                            Coming soon
+                          </Badge>
                         </div>
                       </div>
 
-                      <div className="text-xs text-muted-foreground mb-3 font-normal">Resources</div>
+                      <div className="text-xs text-muted-foreground mb-3 font-normal">
+                        Resources
+                      </div>
                       <div className="flex flex-col gap-1">
                         <Link
                           href="/blog"
@@ -292,7 +361,11 @@ const Navbar = ({
               <div className="h-4 w-[1px] bg-border/60 mx-1"></div>
 
               <Link
-                href={profile?.username ? `/profile/${profile.username}` : "/profile"}
+                href={
+                  profile?.username
+                    ? `/profile/${profile.username}`
+                    : "/profile"
+                }
                 className="font-normal hover:text-primary transition-colors shutter-click"
                 onClick={closeMenus}
               >
@@ -303,7 +376,11 @@ const Navbar = ({
                 onMouseEnter={handlePrepareMouseEnter}
                 onMouseLeave={handlePrepareMouseLeave}
               >
-                <DropdownMenu open={isPrepareOpen} onOpenChange={setIsPrepareOpen} modal={false}>
+                <DropdownMenu
+                  open={isPrepareOpen}
+                  onOpenChange={setIsPrepareOpen}
+                  modal={false}
+                >
                   <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-colors outline-none font-normal shutter-click">
                     <span>Prepare</span>
                     <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-1" />
@@ -317,37 +394,37 @@ const Navbar = ({
                   >
                     <div className="w-[240px] bg-muted/30 p-4 border-r border-border flex flex-col gap-1.5">
                       <div
-                        onClick={() => setActivePrepareTab('dsa_practice')}
-                        className={`px-4 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200 shutter-click ${activePrepareTab === 'dsa_practice' ? 'bg-background shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] text-foreground' : 'text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground'}`}
+                        onClick={() => setActivePrepareTab("dsa_practice")}
+                        className={`px-4 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200 shutter-click ${activePrepareTab === "dsa_practice" ? "bg-background shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] text-foreground" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground"}`}
                       >
                         DSA
                       </div>
                       <div
-                        onClick={() => setActivePrepareTab('dsa_strategy')}
-                        className={`px-4 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200 shutter-click ${activePrepareTab === 'dsa_strategy' ? 'bg-background shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] text-foreground' : 'text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground'}`}
+                        onClick={() => setActivePrepareTab("dsa_strategy")}
+                        className={`px-4 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200 shutter-click ${activePrepareTab === "dsa_strategy" ? "bg-background shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] text-foreground" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground"}`}
                       >
                         Recommended strategy
                       </div>
                       <div
-                        onClick={() => setActivePrepareTab('blogs')}
-                        className={`px-4 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200 shutter-click ${activePrepareTab === 'blogs' ? 'bg-background shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] text-foreground' : 'text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground'}`}
+                        onClick={() => setActivePrepareTab("blogs")}
+                        className={`px-4 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200 shutter-click ${activePrepareTab === "blogs" ? "bg-background shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] text-foreground" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground"}`}
                       >
                         Guides
                       </div>
                     </div>
 
                     <div className="flex-1 p-8 flex flex-col gap-8 bg-background overflow-y-auto max-h-[500px]">
-                      {activePrepareTab === 'dsa_practice' && (
+                      {activePrepareTab === "dsa_practice" && (
                         <div className="flex flex-col gap-8">
                           <Link
                             href="/dsa/get-started"
                             className="group flex items-start gap-5 relative shutter-click"
                             onClick={() => {
                               closeMenus();
-                              trackEvent(posthog, 'home_cta_clicked', {
-                                cta_label: 'Get Started',
-                                destination: '/dsa/get-started',
-                                section: 'navbar_prepare'
+                              trackEvent(posthog, "home_cta_clicked", {
+                                cta_label: "Get Started",
+                                destination: "/dsa/get-started",
+                                section: "navbar_prepare",
                               });
                             }}
                           >
@@ -355,11 +432,26 @@ const Navbar = ({
                               <Rocket className="w-5 h-5 text-foreground group-hover:text-primary" />
                             </div>
                             <div className="flex-1 pr-8">
-                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">Get Started</h4>
-                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">Master DSA with our curated roadmaps and guided paths</p>
+                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                Get Started
+                              </h4>
+                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">
+                                Master DSA with our curated roadmaps and guided
+                                paths
+                              </p>
                               <div className="flex flex-wrap gap-2">
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Guided</Badge>
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Roadmap</Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Guided
+                                </Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Roadmap
+                                </Badge>
                               </div>
                             </div>
                             <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
@@ -370,10 +462,10 @@ const Navbar = ({
                             className="group flex items-start gap-5 relative shutter-click"
                             onClick={() => {
                               closeMenus();
-                              trackEvent(posthog, 'home_cta_clicked', {
-                                cta_label: 'All practice questions',
-                                destination: '/dsa/problems',
-                                section: 'navbar_prepare'
+                              trackEvent(posthog, "home_cta_clicked", {
+                                cta_label: "All practice questions",
+                                destination: "/dsa/problems",
+                                section: "navbar_prepare",
                               });
                             }}
                           >
@@ -381,12 +473,32 @@ const Navbar = ({
                               <Layers className="w-5 h-5 text-foreground group-hover:text-primary" />
                             </div>
                             <div className="flex-1 pr-8">
-                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">All practice questions</h4>
-                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">The largest question bank of 150+ practice questions for DSA interviews</p>
+                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                All practice questions
+                              </h4>
+                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">
+                                The largest question bank of 150+ practice
+                                questions for DSA interviews
+                              </p>
                               <div className="flex flex-wrap gap-2">
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Coding</Badge>
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Data Structures</Badge>
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Algorithms</Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Coding
+                                </Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Data Structures
+                                </Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Algorithms
+                                </Badge>
                               </div>
                             </div>
                             <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
@@ -397,10 +509,10 @@ const Navbar = ({
                             className="group flex items-start gap-5 relative shutter-click"
                             onClick={() => {
                               closeMenus();
-                              trackEvent(posthog, 'home_cta_clicked', {
-                                cta_label: 'Core patterns',
-                                destination: '/dsa/core',
-                                section: 'navbar_prepare'
+                              trackEvent(posthog, "home_cta_clicked", {
+                                cta_label: "Core patterns",
+                                destination: "/dsa/core",
+                                section: "navbar_prepare",
                               });
                             }}
                           >
@@ -408,12 +520,32 @@ const Navbar = ({
                               <Target className="w-5 h-5 text-foreground group-hover:text-primary" />
                             </div>
                             <div className="flex-1 pr-8">
-                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">Core patterns</h4>
-                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">Targeted practice in specific problem-solving patterns and algorithms</p>
+                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                Core patterns
+                              </h4>
+                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">
+                                Targeted practice in specific problem-solving
+                                patterns and algorithms
+                              </p>
                               <div className="flex flex-wrap gap-2">
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Two Pointers</Badge>
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Sliding Window</Badge>
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">DP</Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Two Pointers
+                                </Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Sliding Window
+                                </Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  DP
+                                </Badge>
                               </div>
                             </div>
                             <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
@@ -424,10 +556,10 @@ const Navbar = ({
                             className="group flex items-start gap-5 relative shutter-click"
                             onClick={() => {
                               closeMenus();
-                              trackEvent(posthog, 'home_cta_clicked', {
-                                cta_label: 'Blind 75 list',
-                                destination: '/dsa/blind-75',
-                                section: 'navbar_prepare'
+                              trackEvent(posthog, "home_cta_clicked", {
+                                cta_label: "Blind 75 list",
+                                destination: "/dsa/blind-75",
+                                section: "navbar_prepare",
                               });
                             }}
                           >
@@ -436,17 +568,28 @@ const Navbar = ({
                             </div>
                             <div className="flex-1 pr-8">
                               <div className="flex items-center gap-2 mb-1.5">
-                                <h4 className="text-[15px] font-bold text-foreground group-hover:text-primary transition-colors tracking-tight">Blind 75 list</h4>
-                                <Badge variant="secondary" className="bg-primary/10 text-primary border-transparent text-[9px] hover:bg-primary/20 h-4 px-1.5 uppercase font-bold tracking-wider">Top Pick</Badge>
+                                <h4 className="text-[15px] font-bold text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                  Blind 75 list
+                                </h4>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-primary/10 text-primary border-transparent text-[9px] hover:bg-primary/20 h-4 px-1.5 uppercase font-bold tracking-wider"
+                                >
+                                  Top Pick
+                                </Badge>
                               </div>
-                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">The essential 75 problems for interviews. Perfect if you have less than 2 weeks to prepare.</p>
+                              <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">
+                                The essential 75 problems for interviews.
+                                Perfect if you have less than 2 weeks to
+                                prepare.
+                              </p>
                             </div>
                             <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
                           </Link>
                         </div>
                       )}
 
-                      {activePrepareTab === 'dsa_strategy' && (
+                      {activePrepareTab === "dsa_strategy" && (
                         <Link
                           href="/dsa/blind-75"
                           className="group flex items-start gap-5 relative shutter-click"
@@ -456,20 +599,37 @@ const Navbar = ({
                             <Code2 className="w-5 h-5 text-foreground group-hover:text-primary" />
                           </div>
                           <div className="flex-1 pr-8">
-                            <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">Blind 75 list</h4>
-                            <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">The essential 75 problems for interviews. Perfect if you have less than 2 weeks to prepare.</p>
+                            <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                              Blind 75 list
+                            </h4>
+                            <p className="text-[13px] text-muted-foreground mb-3 leading-relaxed max-w-[320px]">
+                              The essential 75 problems for interviews. Perfect
+                              if you have less than 2 weeks to prepare.
+                            </p>
                             <div className="flex flex-wrap gap-2">
-                              <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Curated</Badge>
-                              <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Time-saver</Badge>
+                              <Badge
+                                variant="secondary"
+                                className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                              >
+                                Curated
+                              </Badge>
+                              <Badge
+                                variant="secondary"
+                                className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                              >
+                                Time-saver
+                              </Badge>
                             </div>
                           </div>
                           <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
                         </Link>
                       )}
 
-                      {activePrepareTab === 'blogs' && (
+                      {activePrepareTab === "blogs" && (
                         <div className="flex flex-col gap-8">
-                          <div className="text-xs font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Guides</div>
+                          <div className="text-xs font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">
+                            Guides
+                          </div>
 
                           <Link
                             href="/blog"
@@ -480,10 +640,22 @@ const Navbar = ({
                               <PenTool className="w-5 h-5 text-foreground group-hover:text-primary" />
                             </div>
                             <div className="flex-1 pr-8">
-                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">Engineering Blogs</h4>
+                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                Engineering Blogs
+                              </h4>
                               <div className="flex flex-wrap gap-2">
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Guides</Badge>
-                                <Badge variant="secondary" className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5">Insights</Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Guides
+                                </Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
+                                >
+                                  Insights
+                                </Badge>
                               </div>
                             </div>
                             <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
@@ -507,7 +679,8 @@ const Navbar = ({
                 >
                   <ChevronsUpDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden xs:inline-block text-[11px] sm:text-[13px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors tracking-tight">
-                    {listLabel.charAt(0).toUpperCase() + listLabel.slice(1).toLowerCase()}
+                    {listLabel.charAt(0).toUpperCase() +
+                      listLabel.slice(1).toLowerCase()}
                   </span>
                 </button>
 
@@ -579,7 +752,13 @@ const Navbar = ({
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem asChild>
-                        <Link href={profile?.username ? `/profile/${profile.username}` : "/profile"}>
+                        <Link
+                          href={
+                            profile?.username
+                              ? `/profile/${profile.username}`
+                              : "/profile"
+                          }
+                        >
                           <User className="mr-2 h-4 w-4" />
                           <span>Profile</span>
                         </Link>
@@ -589,7 +768,11 @@ const Navbar = ({
                       <FeatureGuard flag="interview_mode">
                         <DropdownMenuItem onClick={toggleInterviewMode}>
                           <Monitor className="mr-2 h-4 w-4" />
-                          <span>{isInterviewMode ? "Exit Interview Mode" : "Interview Mode"}</span>
+                          <span>
+                            {isInterviewMode
+                              ? "Exit Interview Mode"
+                              : "Interview Mode"}
+                          </span>
                         </DropdownMenuItem>
                       </FeatureGuard>
 
@@ -598,13 +781,36 @@ const Navbar = ({
                         <div className="p-2 flex items-center justify-between">
                           <div className="flex items-center gap-2 text-sm">
                             <Timer className="h-4 w-4" />
-                            <span className="font-mono">{formatTime(timerSeconds)}</span>
+                            <span className="font-mono">
+                              {formatTime(timerSeconds)}
+                            </span>
                           </div>
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setIsTimerRunning?.(!isTimerRunning); }}>
-                              {isTimerRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsTimerRunning?.(!isTimerRunning);
+                              }}
+                            >
+                              {isTimerRunning ? (
+                                <Pause className="h-3 w-3" />
+                              ) : (
+                                <Play className="h-3 w-3" />
+                              )}
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setTimerSeconds?.(0); setIsTimerRunning?.(false); }}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTimerSeconds?.(0);
+                                setIsTimerRunning?.(false);
+                              }}
+                            >
                               <RotateCcw className="h-3 w-3" />
                             </Button>
                           </div>
@@ -615,51 +821,78 @@ const Navbar = ({
                 )}
 
                 {/* Desktop Actions - Show only if NOT condensed menu */}
-                {!hideShare && !showCondensedMenu && (!algorithm?.controls || algorithm.controls?.social?.share !== false) && handleShare && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShare}>
-                          <Share2 className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">Share</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                {!hideShare &&
+                  !showCondensedMenu &&
+                  (!algorithm?.controls ||
+                    algorithm.controls?.social?.share !== false) &&
+                  handleShare && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={handleShare}
+                          >
+                            <Share2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">Share</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
 
-                {!showCondensedMenu && (!algorithm?.controls || algorithm.controls?.header?.timer !== false) && formatTime && (
-                  <TooltipProvider>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant={isTimerRunning ? "secondary" : "ghost"}
-                          size="sm"
-                          className="gap-2 font-mono h-8 text-xs"
-                        >
-                          <Timer className="h-4 w-4" />
-                          {formatTime(timerSeconds)}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-48">
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center justify-between">
-                            <span className="font-mono text-lg">{formatTime(timerSeconds)}</span>
-                            <Button variant="ghost" size="icon" onClick={() => setTimerSeconds?.(0)}>
-                              <RotateCcw className="h-4 w-4" />
-                            </Button>
+                {!showCondensedMenu &&
+                  (!algorithm?.controls ||
+                    algorithm.controls?.header?.timer !== false) &&
+                  formatTime && (
+                    <TooltipProvider>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={isTimerRunning ? "secondary" : "ghost"}
+                            size="sm"
+                            className="gap-2 font-mono h-8 text-xs"
+                          >
+                            <Timer className="h-4 w-4" />
+                            {formatTime(timerSeconds)}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-48">
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono text-lg">
+                                {formatTime(timerSeconds)}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setTimerSeconds?.(0)}
+                              >
+                                <RotateCcw className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                className="flex-1"
+                                onClick={() =>
+                                  setIsTimerRunning?.(!isTimerRunning)
+                                }
+                              >
+                                {isTimerRunning ? (
+                                  <Pause className="h-4 w-4 mr-2" />
+                                ) : (
+                                  <Play className="h-4 w-4 mr-2" />
+                                )}
+                                {isTimerRunning ? "Pause" : "Start"}
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Button className="flex-1" onClick={() => setIsTimerRunning?.(!isTimerRunning)}>
-                              {isTimerRunning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
-                              {isTimerRunning ? "Pause" : "Start"}
-                            </Button>
-                          </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </TooltipProvider>
-                )}
+                        </PopoverContent>
+                      </Popover>
+                    </TooltipProvider>
+                  )}
 
                 <div className="h-4 w-px bg-border mx-1" />
 
@@ -674,9 +907,9 @@ const Navbar = ({
                     href="/pricing"
                     className="text-sm font-normal hover:text-primary transition-colors hidden md:block mr-2"
                     onClick={() =>
-                      trackEvent(posthog, 'navbar_cta_clicked', {
-                        cta_label: 'Pricing',
-                        destination: '/pricing',
+                      trackEvent(posthog, "navbar_cta_clicked", {
+                        cta_label: "Pricing",
+                        destination: "/pricing",
                       })
                     }
                   >
@@ -707,4 +940,3 @@ const Navbar = ({
 };
 
 export default Navbar;
-

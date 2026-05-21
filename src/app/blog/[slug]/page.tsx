@@ -21,16 +21,22 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   
   if (!post) return { title: 'Post Not Found' };
 
+  const baseTitle = `${post.title} | Rulcode Blog`;
+  const cleanTitle = baseTitle.length > 60 ? (post.title.length > 57 ? `${post.title.substring(0, 57)}...` : post.title) : baseTitle;
+
+  const baseDesc = post.description;
+  const cleanDesc = baseDesc.length > 155 ? `${baseDesc.substring(0, 152)}...` : baseDesc;
+
   return {
-    title: `${post.title} | Rulcode Blog`,
-    description: post.description,
+    title: cleanTitle,
+    description: cleanDesc,
     keywords: `${post.category}, algorithms, ${post.title}, coding tutorial, DSA, competitive programming`,
     alternates: {
       canonical: `https://rulcode.com/blog/${post.slug}`,
     },
     openGraph: {
-      title: `${post.title} | Rulcode Blog`,
-      description: post.description,
+      title: cleanTitle,
+      description: cleanDesc,
       type: 'article',
       url: `https://rulcode.com/blog/${post.slug}`,
       images: [post.image || 'https://rulcode.com/og-image.png'],
@@ -40,8 +46,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.description,
+      title: cleanTitle,
+      description: cleanDesc,
       images: [post.image || 'https://rulcode.com/og-image.png'],
     },
   };
@@ -174,6 +180,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Blog Content */}
           <BlogContent content={post.content} />
+
+          {/* Author Bio Section */}
+          <div className="mt-12 p-6 rounded-xl border bg-muted/20 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0 border border-primary/20">
+              {post.author.charAt(0)}
+            </div>
+            <div className="space-y-2 text-center sm:text-left">
+              <h4 className="font-semibold text-foreground">About the Author: {post.author}</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                The Rulcode Team is passionate about computer science, competitive coding, and interactive education. We build tools and write guides to help developers master complex algorithms and ace technical interviews.
+              </p>
+            </div>
+          </div>
         </article>
       </div>
 
