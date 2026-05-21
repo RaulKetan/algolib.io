@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { supabase } from '@/integrations/supabase/client';
 import ProblemDetailClient from './ProblemDetailClient';
+import Script from 'next/script';
 
 interface ProblemPageProps {
   params: Promise<{ slug: string }>;
@@ -93,13 +94,19 @@ export async function generateMetadata({ params }: ProblemPageProps): Promise<Me
     };
   }
 
+  const baseTitle = `${algorithm.name} Visualizer & Solution | Rulcode`;
+  const cleanTitle = baseTitle.length > 60 ? `${algorithm.name} | Rulcode` : baseTitle;
+
+  const baseDesc = algorithm.description || `Learn and visualize ${algorithm.name} with interactive examples and code solutions.`;
+  const cleanDesc = baseDesc.length > 155 ? `${baseDesc.substring(0, 152)}...` : baseDesc;
+
   return {
-    title: `${algorithm.name} - Algorithm Visualization & Solution | Rulcode`,
-    description: algorithm.description || `Learn and visualize ${algorithm.name} with interactive examples and code solutions.`,
+    title: cleanTitle,
+    description: cleanDesc,
     keywords: `${algorithm.category || ''}, algorithms, ${algorithm.name}, coding interview, visualization`,
     openGraph: {
-      title: `${algorithm.name} | Rulcode`,
-      description: algorithm.description,
+      title: cleanTitle,
+      description: cleanDesc,
       images: [algorithm.image || 'https://rulcode.com/og-image.png'],
     },
   };
@@ -113,10 +120,107 @@ export default async function ProblemPage({ params }: ProblemPageProps) {
     notFound();
   }
 
+  // Generate dynamic BreadcrumbList Schema
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://rulcode.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Algorithms",
+        "item": "https://rulcode.com/dsa/problems"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": algorithm.name,
+        "item": `https://rulcode.com/problem/${algorithm.id}`
+      }
+    ]
+  };
+
+  // Extract source code implementations for SoftwareSourceCode Schema
+  const codeSnippets: any[] = [];
+  if (Array.isArray(algorithm.implementations)) {
+    algorithm.implementations.forEach((impl: any) => {
+      const lang = impl?.lang || '';
+      if (Array.isArray(impl?.code)) {
+        impl.code.forEach((codeObj: any) => {
+          if (codeObj?.code) {
+            codeSnippets.push({
+              "@context": "https://schema.org",
+              "@type": "SoftwareSourceCode",
+              "programmingLanguage": lang,
+              "codeSampleType": codeObj.codeType || "Optimal Solution",
+              "text": codeObj.code,
+              "description": codeObj.explanationBefore || `${algorithm.name} implementation in ${lang}`
+            });
+          }
+        });
+      }
+    });
+  }
+
+  // Generate dynamic TechArticle Schema
+  const techArticleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": `${algorithm.name} Algorithm - Visualization & Solution`,
+    "description": algorithm.description || `Learn and visualize ${algorithm.name} algorithm step-by-step with interactive visualizations.`,
+    "image": algorithm.image || 'https://rulcode.com/og-image.png',
+    "inLanguage": "en",
+    "datePublished": algorithm.created_at || "2026-01-01T00:00:00Z",
+    "dateModified": algorithm.updated_at || algorithm.created_at || "2026-01-01T00:00:00Z",
+    "category": algorithm.category || "Data Structures & Algorithms",
+    "author": {
+      "@type": "Organization",
+      "name": "Rulcode.com Team",
+      "url": "https://rulcode.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Rulcode.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://rulcode.com/android-chrome-512x512.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://rulcode.com/problem/${algorithm.id}`
+    },
+    "about": {
+      "@type": "Thing",
+      "name": algorithm.name,
+      "description": algorithm.description
+    },
+    "proficiencyLevel": algorithm.difficulty || "Medium",
+    "hasPart": codeSnippets.length > 0 ? codeSnippets : undefined
+  };
+
   return (
-    <ProblemDetailClient 
-      initialAlgorithm={algorithm} 
-      slug={slug} 
-    />
+    <>
+      <Script
+        id={`problem-breadcrumb-json-ld-${algorithm.id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Script
+        id={`problem-article-json-ld-${algorithm.id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
+      />
+      <ProblemDetailClient 
+        initialAlgorithm={algorithm} 
+        slug={slug} 
+      />
+    </>
   );
 }
