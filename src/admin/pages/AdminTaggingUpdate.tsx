@@ -2,6 +2,8 @@
 import { useState, useMemo } from 'react';
 import { useAlgorithms, useBulkUpdateAlgorithms, useBatchStagedUpdates } from '@/hooks/useAlgorithms';
 import { TOP_COMPANIES, CompanyTag } from '@/constants/companies';
+import { CATEGORY_ORDER } from '@/constants/categories';
+import { ListType, LIST_TYPE_LABELS } from '@/types/algorithm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -36,17 +38,53 @@ import { useRouter } from 'next/navigation';
 export function AdminTaggingUpdate() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [customCategoryInputs, setCustomCategoryInputs] = useState<Record<string, string>>({});
 
   const { data, isLoading } = useAlgorithms(searchQuery, '');
   const algorithms = data?.algorithms ?? [];
 
   const stagedUpdatesMutation = useBatchStagedUpdates();
-  const [stagedEdits, setStagedEdits] = useState<Record<string, { is_pro?: boolean, companies?: string[] }>>({});
+  const [stagedEdits, setStagedEdits] = useState<Record<string, { 
+    is_pro?: boolean, 
+    companies?: string[], 
+    categories?: string[], 
+    list_types?: string[] 
+  }>>({});
 
   const handleToggleProInline = (algoId: string, isNowPro: boolean) => {
     setStagedEdits(prev => {
       const current = prev[algoId] || {};
       return { ...prev, [algoId]: { ...current, is_pro: isNowPro } };
+    });
+  };
+
+  const handleCategoryToggleInline = (algo: any, cat: string, isAdding: boolean) => {
+    const originalCategories = algo.categories || (algo.category ? algo.category.split(',').map((c: string) => c.trim()) : []);
+    setStagedEdits(prev => {
+      const current = prev[algo.id] || {};
+      const currentCategories = current.categories ?? originalCategories;
+      const newCategories = isAdding
+        ? [...currentCategories, cat]
+        : currentCategories.filter((c: string) => c !== cat);
+
+      if (isAdding && currentCategories.includes(cat)) return prev;
+
+      return { ...prev, [algo.id]: { ...current, categories: newCategories } };
+    });
+  };
+
+  const handleListTypeToggleInline = (algo: any, type: string, isAdding: boolean) => {
+    const originalListTypes = algo.listTypes || (algo.list_type ? [algo.list_type] : []);
+    setStagedEdits(prev => {
+      const current = prev[algo.id] || {};
+      const currentListTypes = current.list_types ?? originalListTypes;
+      const newListTypes = isAdding
+        ? [...currentListTypes, type]
+        : currentListTypes.filter((t: string) => t !== type);
+
+      if (isAdding && currentListTypes.includes(type)) return prev;
+
+      return { ...prev, [algo.id]: { ...current, list_types: newListTypes } };
     });
   };
 
@@ -77,6 +115,7 @@ export function AdminTaggingUpdate() {
       await stagedUpdatesMutation.mutateAsync(updatesArray);
       toast.success(`Successfully saved updates for ${updatesArray.length} algorithms!`);
       setStagedEdits({});
+      setCustomCategoryInputs({});
     } catch (e: any) {
       toast.error(`Failed to save changes: ${e.message}`);
     }
@@ -141,15 +180,17 @@ export function AdminTaggingUpdate() {
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-[80px]">ID / Serial</TableHead>
-                <TableHead>Title & Category</TableHead>
-                <TableHead className="w-[300px]">Companies (Metadata)</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead className="w-[200px]">Category</TableHead>
+                <TableHead className="w-[220px]">List Types</TableHead>
+                <TableHead className="w-[260px]">Companies (Metadata)</TableHead>
                 <TableHead className="w-[100px] text-center">PRO</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {algorithms.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No algorithms found matching search
                   </TableCell>
                 </TableRow>
@@ -157,6 +198,8 @@ export function AdminTaggingUpdate() {
                 algorithms.map((algo) => {
                   const algoCompanies = stagedEdits[algo.id]?.companies ?? (algo.metadata?.companies || []);
                   const isPro = stagedEdits[algo.id]?.is_pro ?? (algo.metadata?.is_pro || false);
+                  const categories = stagedEdits[algo.id]?.categories ?? algo.categories ?? (algo.category ? algo.category.split(',').map((c: string) => c.trim()) : []);
+                  const listTypes = stagedEdits[algo.id]?.list_types ?? algo.listTypes ?? (algo.list_type ? [algo.list_type] : ['core']);
                   const isModified = !!stagedEdits[algo.id];
 
                   return (
@@ -170,7 +213,102 @@ export function AdminTaggingUpdate() {
                       </TableCell>
                       <TableCell>
                         <div className="font-semibold text-sm">{algo.title}</div>
-                        <div className="text-xs text-muted-foreground uppercase mt-1 tracking-wider">{algo.category}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-auto min-h-[28px] max-w-[180px] text-xs bg-background hover:bg-muted font-medium py-1 px-2 flex flex-wrap gap-1">
+                              {categories.length === 0 ? (
+                                <span className="text-muted-foreground">Select...</span>
+                              ) : (
+                                categories.map((cat: string) => (
+                                  <Badge key={cat} variant="secondary" className="text-[9px] px-1 py-0 capitalize flex items-center gap-0.5">
+                                    {cat}
+                                    <X className="w-2 h-2 opacity-50 hover:opacity-100 cursor-pointer" onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCategoryToggleInline(algo, cat, false);
+                                    }} />
+                                  </Badge>
+                                ))
+                              )}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0" align="start">
+                            <Command>
+                              <CommandInput placeholder="Search categories..." className="h-8" />
+                              <CommandList className="max-h-[300px]">
+                                <CommandEmpty>No category found.</CommandEmpty>
+                                <CommandGroup className="overflow-auto max-h-[220px]">
+                                  {CATEGORY_ORDER.map((cat) => {
+                                    const isSelected = categories.includes(cat);
+                                    return (
+                                      <CommandItem
+                                        key={cat}
+                                        value={cat}
+                                        onSelect={() => {
+                                          handleCategoryToggleInline(algo, cat, !isSelected);
+                                        }}
+                                        className="cursor-pointer text-xs flex justify-between items-center"
+                                      >
+                                        <span className="capitalize">{cat}</span>
+                                        {isSelected && <Check className="w-3 h-3 text-primary opacity-80" />}
+                                      </CommandItem>
+                                    );
+                                  })}
+                                </CommandGroup>
+                                <div className="border-t p-2 flex gap-1.5 items-center">
+                                  <Input
+                                    placeholder="Custom..."
+                                    value={customCategoryInputs[algo.id] || ""}
+                                    onChange={(e) => setCustomCategoryInputs(prev => ({ ...prev, [algo.id]: e.target.value }))}
+                                    className="h-7 text-xs flex-1"
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' && customCategoryInputs[algo.id]?.trim()) {
+                                        handleCategoryToggleInline(algo, customCategoryInputs[algo.id].trim(), true);
+                                        setCustomCategoryInputs(prev => ({ ...prev, [algo.id]: "" }));
+                                      }
+                                    }}
+                                  />
+                                  <Button 
+                                    size="sm" 
+                                    className="h-7 text-xs px-2"
+                                    onClick={() => {
+                                      if (customCategoryInputs[algo.id]?.trim()) {
+                                        handleCategoryToggleInline(algo, customCategoryInputs[algo.id].trim(), true);
+                                        setCustomCategoryInputs(prev => ({ ...prev, [algo.id]: "" }));
+                                      }
+                                    }}
+                                  >
+                                    Add
+                                  </Button>
+                                </div>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {Object.entries(LIST_TYPE_LABELS)
+                            .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
+                            .map(([value, label]) => {
+                              const isSelected = listTypes.includes(value);
+                              return (
+                                <Badge
+                                  key={value}
+                                  variant={isSelected ? "default" : "outline"}
+                                  className={`text-[9px] px-1.5 py-0.5 cursor-pointer select-none transition-colors ${
+                                    isSelected 
+                                      ? "bg-primary hover:bg-primary/80 text-primary-foreground border-transparent" 
+                                      : "hover:bg-muted text-muted-foreground border-muted-foreground/30"
+                                  }`}
+                                  onClick={() => handleListTypeToggleInline(algo, value, !isSelected)}
+                                >
+                                  {label}
+                                </Badge>
+                              );
+                            })}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap items-center gap-1.5">

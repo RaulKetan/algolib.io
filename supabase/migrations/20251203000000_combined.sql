@@ -1,3 +1,21 @@
+-- --- START OF 20251203_add_user_progress_fields.sql ---
+-- Add code and is_favorite columns to user_progress table
+ALTER TABLE public.user_progress 
+ADD COLUMN IF NOT EXISTS code TEXT,
+ADD COLUMN IF NOT EXISTS is_favorite BOOLEAN DEFAULT FALSE;
+
+-- Create index for is_favorite for faster queries
+CREATE INDEX IF NOT EXISTS idx_user_progress_is_favorite ON public.user_progress(is_favorite);
+
+-- Add missing DELETE policy for user_progress
+DROP POLICY IF EXISTS "Users can delete own progress" ON public.user_progress;
+CREATE POLICY "Users can delete own progress"
+  ON public.user_progress FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- --- END OF 20251203_add_user_progress_fields.sql ---
+
+-- --- START OF 20251203_create_user_algorithm_data.sql ---
 -- Create user_algorithm_data table to consolidate all user-specific algorithm data
 -- This replaces and extends the user_progress table
 
@@ -108,3 +126,6 @@ CREATE TRIGGER update_user_algorithm_data_updated_at
 
 -- Add comment to table for documentation
 COMMENT ON TABLE public.user_algorithm_data IS 'Stores all user-specific algorithm data including progress, code, notes, whiteboard, and social interactions';
+
+-- --- END OF 20251203_create_user_algorithm_data.sql ---
+

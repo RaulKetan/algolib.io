@@ -39,12 +39,26 @@ const ProblemsClient = ({
   );
 
   const coreAlgorithms = useMemo(() => 
-    allAlgorithms.filter(algo => algo.listType === ListType.Core || algo.listType === ListType.CoreAndBlind75),
+    allAlgorithms.filter(algo => {
+      const types = algo.listTypes || (algo.list_type ? [algo.list_type] : ['core']);
+      return types.includes(ListType.Core);
+    }),
     [allAlgorithms]
   );
 
   const blindAlgorithms = useMemo(() => 
-    allAlgorithms.filter(algo => algo.listType === ListType.Blind75 || algo.listType === ListType.CoreAndBlind75),
+    allAlgorithms.filter(algo => {
+      const types = algo.listTypes || (algo.list_type ? [algo.list_type] : ['core']);
+      return types.includes(ListType.Blind75);
+    }),
+    [allAlgorithms]
+  );
+
+  const blind150Algorithms = useMemo(() => 
+    allAlgorithms.filter(algo => {
+      const types = algo.listTypes || (algo.list_type ? [algo.list_type] : ['core']);
+      return types.includes(ListType.Blind150);
+    }),
     [allAlgorithms]
   );
 
@@ -52,6 +66,7 @@ const ProblemsClient = ({
     let result = allAlgorithms;
     if (listMode === 'core') result = coreAlgorithms;
     else if (listMode === 'blind') result = blindAlgorithms;
+    else if (listMode === 'blind150') result = blind150Algorithms;
 
     if (companyFilter) {
       result = result.filter(algo => {
@@ -61,7 +76,7 @@ const ProblemsClient = ({
     }
 
     return result;
-  }, [listMode, coreAlgorithms, blindAlgorithms, allAlgorithms, companyFilter]);
+  }, [listMode, coreAlgorithms, blindAlgorithms, blind150Algorithms, allAlgorithms, companyFilter]);
 
   const updateParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -78,6 +93,7 @@ const ProblemsClient = ({
     if (companyFilter) return `${companyFilter} Interview Questions`;
     if (listMode === 'core') return "Core Patterns";
     if (listMode === 'blind') return "Blind 75";
+    if (listMode === 'blind150') return "Blind 150";
     return "All Practice Questions";
   };
 
@@ -87,6 +103,7 @@ const ProblemsClient = ({
     if (companyFilter) return `Prepare for your ${companyFilter} interview with these frequency-based problems. Practice the patterns and algorithms commonly asked in their technical assessments.`;
     if (listMode === 'core') return "Master the 20% of patterns that solve 80% of interview questions. Focus on high-impact techniques like Sliding Window, Two Pointers, and Backtracking to develop a deep, pattern-based intuition for problem-solving.";
     if (listMode === 'blind') return "The definitive list of 75 essential problems designed to maximize your preparation in minimal time. Focus on the most frequent FAANG interview questions to ensure you're ready for the highest-level technical assessments.";
+    if (listMode === 'blind150') return "A comprehensive collection of 150 critical problems expanding upon Blind 75, providing thorough coverage across all standard algorithm sub-patterns and topics.";
     return "Explore our comprehensive collection of 150+ problems covering all major data structures and algorithms. Master everything from basic arrays to advanced dynamic programming through hands-on practice and step-by-step visualizations.";
   };
 
@@ -96,6 +113,7 @@ const ProblemsClient = ({
     if (companyFilter) return `${companyFilter} Prep Progress`;
     if (listMode === 'core') return "Pattern Progress";
     if (listMode === 'blind') return "Blind 75 Progress";
+    if (listMode === 'blind150') return "Blind 150 Progress";
     return "Overall Progress";
   };
 
@@ -138,7 +156,15 @@ const ProblemsClient = ({
             className="rounded-xl h-10 font-medium transition-all w-fit px-5"
           >
             <Brain className="w-4 h-4" />
-            Blind
+            Blind 75
+          </Button>
+          <Button
+            variant={listMode === 'blind150' ? 'default' : 'outline'}
+            onClick={() => updateParams({ mode: 'blind150' })}
+            className="rounded-xl h-10 font-medium transition-all w-fit px-5"
+          >
+            <Brain className="w-4 h-4" />
+            Blind 150
           </Button>
         </div>
       ) : undefined}

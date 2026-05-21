@@ -33,7 +33,7 @@ export const fetchAllAlgorithms = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase.from("algorithms").select(`
-          id, name, title, difficulty, category, list_type, description, time_complexity, space_complexity, serial_no, metadata, problem_type
+          id, name, title, difficulty, category, categories, list_type, list_types, published, description, time_complexity, space_complexity, serial_no, metadata, problem_type
       `).order("serial_no", { ascending: true, nullsFirst: false });
 
       if (error) throw error;
@@ -43,12 +43,15 @@ export const fetchAllAlgorithms = createAsyncThunk(
         title: algo.title || algo.name,
         name: algo.name,
         category: algo.category,
+        categories: algo.categories || (algo.category ? algo.category.split(',').map((c: string) => c.trim()) : []),
         difficulty: algo.difficulty,
         description: algo.description,
         timeComplexity: algo.time_complexity,
         spaceComplexity: algo.space_complexity,
         slug: algo.id,
-        listType: algo.list_type || (typeof algo.metadata === 'string' ? JSON.parse(algo.metadata || '{}')?.listType : algo.metadata?.listType),
+        listType: algo.list_type || (algo.list_types?.[0]) || 'core',
+        listTypes: algo.list_types || (algo.list_type ? [algo.list_type] : ['core']),
+        published: algo.published,
         problemType: algo.problem_type,
         serial_no: algo.serial_no,
         metadata: algo.metadata,

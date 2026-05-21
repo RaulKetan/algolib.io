@@ -50,13 +50,22 @@ async function generateSitemap() {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const { data: algorithms, error } = await supabase
+  let { data: algorithms, error } = await supabase
     .from('algorithms')
-    .select('id, list_type, metadata');
+    .select('id, list_type, metadata')
+    .eq('published', true);
 
   if (error) {
-    console.error('Error fetching algorithms:', error);
-    process.exit(1);
+    console.warn('Failed to query with published = true, falling back to selecting all:', error.message);
+    const { data: fallbackAlgos, error: fallbackError } = await supabase
+      .from('algorithms')
+      .select('id, list_type, metadata');
+    
+    if (fallbackError) {
+      console.error('Error fetching algorithms fallback:', fallbackError);
+      process.exit(1);
+    }
+    algorithms = fallbackAlgos;
   }
 
   // All algorithms now use unified /problem/ route

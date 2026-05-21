@@ -69,9 +69,13 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
 
   const { user, profile, hasPremiumAccess, activeListType, setActiveListType, progressMap } = useApp();
   const { data: algorithmsData } = useAlgorithms();
+  const isUserAdmin = profile?.role === 'admin';
+  
   const allAlgorithms = useMemo(() => 
-    (algorithmsData?.algorithms || []).filter(algo => algo.problemType === 'dsa'),
-    [algorithmsData]
+    (algorithmsData?.algorithms || [])
+      .filter(algo => algo.problemType === 'dsa')
+      .filter(algo => algo.published !== false || isUserAdmin),
+    [algorithmsData, isUserAdmin]
   );
   const isPaywallEnabled = useFeatureFlag('paywall_enabled');
 
@@ -96,18 +100,11 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
     if (!allAlgorithms) return [];
     if (!activeListType || activeListType === 'all') return allAlgorithms;
 
+    const currentListType = activeListType.toLowerCase();
     return allAlgorithms.filter(algo => {
-      const algoListType = (algo.listType || '').toLowerCase();
-      const currentListType = activeListType.toLowerCase();
-
-      if (currentListType === 'core') {
-        return algoListType === 'core' || algoListType === 'core+blind75';
-      } else if (currentListType === 'blind75') {
-        return algoListType === 'blind75' || algoListType === 'core+blind75';
-      } else if (currentListType === 'core+blind75') {
-        return algoListType === 'core+blind75';
-      }
-      return true;
+      const listTypes = algo.listTypes || (algo.list_type ? [algo.list_type] : []);
+      const normalizedListTypes = listTypes.map((t: string) => t.toLowerCase() === 'corealgo' ? 'core' : t.toLowerCase());
+      return normalizedListTypes.includes(currentListType);
     });
   }, [allAlgorithms, activeListType]);
 
@@ -267,6 +264,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
   const showHorizontalScroll = false;
   const isMobileView = layout.windowWidth < 768;
 
+  const isUnpublished = activeAlgorithm?.published === false;
+
   return (
     <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
       <style dangerouslySetInnerHTML={{ __html: '.global-nav { display: none !important; }' }} />
@@ -288,6 +287,13 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
           onToggleSidebar={() => setIsSidebarOpen(true)}
           activeListType={activeListType}
         />
+
+        {isUnpublished && (
+          <div className="bg-yellow-500/20 border-b border-yellow-500/30 px-4 py-1.5 text-center text-xs font-medium text-yellow-200 flex items-center justify-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+            <span>Admin Preview: This problem is a draft (unpublished) and not visible to regular users.</span>
+          </div>
+        )}
 
         <div className={`flex-1 relative ${showHorizontalScroll ? 'overflow-x-auto overflow-y-hidden' : 'overflow-hidden'}`}>
           {(activeAlgorithm?.controls as any)?.maintenance_mode ? (

@@ -8,13 +8,48 @@ interface ProblemPageProps {
 }
 
 async function getAlgorithm(slug: string) {
-  const { data, error } = await supabase
+  let client = supabase;
+  try {
+    const { createClient } = await import('@/utils/supabase/server');
+    client = await createClient();
+  } catch (e) {
+    // Falls back to browser client during build / static parameter generation
+  }
+
+  const { data, error } = await client
     .from('algorithms')
     .select('*')
     .eq('id', slug) // Existing logic uses ID as slug
     .maybeSingle();
 
   if (error || !data) return null;
+
+  // Enforce published check on server side.
+  // RLS might filter it, but we add an explicit check to be extremely robust.
+  if (data.published === false) {
+    let isAdmin = false;
+    try {
+      const { createClient } = await import('@/utils/supabase/server');
+      const supabaseServer = await createClient();
+      const { data: { user } } = await supabaseServer.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabaseServer
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (profile?.role === 'admin') {
+          isAdmin = true;
+        }
+      }
+    } catch (e) {
+      // Build time or failed session retrieval
+    }
+
+    if (!isAdmin) {
+      return null;
+    }
+  }
 
   const metadata = data.metadata || {};
   const metadataObj = (typeof metadata === 'object' && metadata !== null ? metadata : {}) as Record<string, any>;
@@ -28,9 +63,18 @@ async function getAlgorithm(slug: string) {
 }
 
 export async function generateStaticParams() {
-  const { data: algorithms } = await supabase
+  let { data: algorithms, error } = await supabase
     .from('algorithms')
-    .select('id');
+    .select('id')
+    .eq('published', true);
+
+  if (error) {
+    console.warn('Failed to query static parameters with published = true, falling back to selecting all:', error.message);
+    const { data: fallbackAlgos } = await supabase
+      .from('algorithms')
+      .select('id');
+    algorithms = fallbackAlgos;
+  }
 
   if (!algorithms) return [];
 
