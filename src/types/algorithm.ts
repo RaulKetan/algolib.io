@@ -3,13 +3,14 @@ export type Language = 'cpp' | 'java' | 'python' | 'typescript' | 'javascript' |
 export enum ListType {
     Core = 'core',
     Blind75 = 'blind75',
-    CoreAndBlind75 = 'core+blind75',
+    Blind150 = 'blind150',
 }
 
 export const LIST_TYPE_LABELS: Record<string, string> = {
     'all': 'All Problems',
     [ListType.Core]: 'Core',
     [ListType.Blind75]: 'Blind 75',
+    [ListType.Blind150]: 'Blind 150',
 };
 
 export const DIFFICULTY_MAP: Record<string, string> = {
@@ -41,10 +42,13 @@ export interface AlgorithmListItem {
     spaceComplexity?: string;
     companies?: string[];
     listType?: string;
+    listTypes?: string[];
+    categories?: string[];
     problemType?: string;
     is_premium?: boolean;
     serial_no?: number;
     metadata?: any;
+    published?: boolean;
     [key: string]: any;
 }
 
@@ -54,6 +58,7 @@ export interface Algorithm {
     title: string;
     slug?: string;
     category: string;
+    categories?: string[];
     difficulty: string;
     description: string;
     explanation: any; // JSON or string
@@ -65,12 +70,14 @@ export interface Algorithm {
     metadata: any;
     controls: any;
     list_type?: string;
+    list_types?: string[];
     problemType?: string;
     is_premium?: boolean;
     serial_no?: number;
     timeComplexity?: string;
     spaceComplexity?: string;
     company_tags?: string[];
+    published?: boolean;
     created_at?: string;
     updated_at?: string;
     [key: string]: any;

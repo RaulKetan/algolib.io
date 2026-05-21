@@ -4,7 +4,8 @@ import { AlgorithmListItem } from "@/types/algorithm";
 import { getAllUserAlgorithmData } from "@/utils/userAlgorithmDataHelpers";
 
 import { useMemo } from 'react';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { fetchAllAlgorithms } from "@/store/slices/algorithmsSlice";
 
 export interface PaginatedAlgorithmsResult {
     algorithms: AlgorithmListItem[];
@@ -91,6 +92,7 @@ export type ProgressStatus = 'solved' | 'attempted' | 'none';
 
 export const useDeleteAlgorithm = () => {
     const queryClient = useQueryClient();
+    const dispatch = useAppDispatch();
     return useMutation({
         mutationFn: async (id: string) => {
             const { error } = await supabase.from("algorithms").delete().eq("id", id);
@@ -98,12 +100,14 @@ export const useDeleteAlgorithm = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["algorithms"] });
+            dispatch(fetchAllAlgorithms());
         },
     });
 };
 
 export const useCreateAlgorithm = () => {
     const queryClient = useQueryClient();
+    const dispatch = useAppDispatch();
     return useMutation({
         mutationFn: async (newAlgorithm: any) => {
             const { error } = await supabase.from("algorithms").insert(newAlgorithm);
@@ -112,12 +116,14 @@ export const useCreateAlgorithm = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["algorithms"] });
             queryClient.invalidateQueries({ queryKey: ["categories"] });
+            dispatch(fetchAllAlgorithms());
         },
     });
 };
 
 export const useUpdateAlgorithm = () => {
     const queryClient = useQueryClient();
+    const dispatch = useAppDispatch();
     return useMutation({
         mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
             const { error } = await supabase
@@ -130,12 +136,14 @@ export const useUpdateAlgorithm = () => {
             queryClient.invalidateQueries({ queryKey: ["algorithms"] });
             queryClient.invalidateQueries({ queryKey: ["algorithm", variables.id] });
             queryClient.invalidateQueries({ queryKey: ["categories"] });
+            dispatch(fetchAllAlgorithms());
         },
     });
 };
 
 export const useBulkUpdateAlgorithms = () => {
     const queryClient = useQueryClient();
+    const dispatch = useAppDispatch();
     return useMutation({
         mutationFn: async ({ ids, is_pro, companies }: { ids: string[]; is_pro?: boolean; companies?: string[] }) => {
             // First precisely query active algorithms resolving complex JSONB metadata scopes dynamically
@@ -182,14 +190,24 @@ export const useBulkUpdateAlgorithms = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["algorithms"] });
+            dispatch(fetchAllAlgorithms());
         },
     });
 };
 
 export const useBatchStagedUpdates = () => {
     const queryClient = useQueryClient();
+    const dispatch = useAppDispatch();
     return useMutation({
-        mutationFn: async (stagedUpdates: { id: string; is_pro?: boolean; companies?: string[] }[]) => {
+        mutationFn: async (stagedUpdates: { 
+            id: string; 
+            is_pro?: boolean; 
+            companies?: string[]; 
+            category?: string; 
+            categories?: string[]; 
+            list_types?: string[]; 
+            published?: boolean; 
+        }[]) => {
             if (stagedUpdates.length === 0) return;
             const ids = stagedUpdates.map(u => u.id);
             const { data, error: fetchError } = await supabase
@@ -222,6 +240,23 @@ export const useBatchStagedUpdates = () => {
                 
                 if (metadataChanged) {
                     updates.metadata = patchedMetadata;
+                }
+
+                // Add direct column updates
+                if (updateState.category !== undefined) {
+                    updates.category = updateState.category;
+                }
+                if (updateState.categories !== undefined) {
+                    updates.categories = updateState.categories;
+                }
+                if (updateState.list_types !== undefined) {
+                    updates.list_types = updateState.list_types;
+                }
+                if (updateState.published !== undefined) {
+                    updates.published = updateState.published;
+                }
+
+                if (Object.keys(updates).length > 0) {
                     const { error } = await supabase.from('algorithms').update(updates).eq('id', algo.id);
                     if (error) throw error;
                 }
@@ -231,6 +266,8 @@ export const useBatchStagedUpdates = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["algorithms"] });
+            queryClient.invalidateQueries({ queryKey: ["categories"] });
+            dispatch(fetchAllAlgorithms());
         },
     });
 };

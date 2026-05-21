@@ -3,6 +3,8 @@ import {
   useUpdateAlgorithm,
 } from "@/hooks/useAlgorithms";
 import { Algorithm, LIST_TYPE_LABELS } from "@/types/algorithm";
+import { CATEGORY_ORDER } from "@/constants/categories";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -17,7 +19,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -36,7 +38,10 @@ export function AlgorithmForm({
 }: AlgorithmFormProps) {
   const [activeTab, setActiveTab] = useState("basic");
   const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
-  const [listType, setListType] = useState("core");
+  const [listTypes, setListTypes] = useState<string[]>(["core"]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [customCategory, setCustomCategory] = useState("");
+  const [published, setPublished] = useState(true);
   const [unordered, setUnordered] = useState(false);
 
   const [multiExpected, setMultiExpected] = useState(false);
@@ -78,9 +83,34 @@ export function AlgorithmForm({
         ? JSON.parse(algorithm.metadata)
         : algorithm.metadata;
 
-      let initialListType = algorithm.listType || algorithm.list_type || metadataObj?.listType || "core";
-      if (initialListType === "coreAlgo") initialListType = "core";
-      setListType(initialListType);
+      let initialListTypes = algorithm.listTypes || algorithm.list_types;
+      if (!initialListTypes && algorithm.list_type) {
+        initialListTypes = [algorithm.list_type];
+      }
+      if (!initialListTypes || initialListTypes.length === 0) {
+        const metaListType = metadataObj?.listType || metadataObj?.list_types;
+        if (metaListType) {
+          initialListTypes = Array.isArray(metaListType) ? metaListType : [metaListType];
+        }
+      }
+      if (!initialListTypes || initialListTypes.length === 0) {
+        initialListTypes = ["core"];
+      }
+      // sanitize
+      initialListTypes = initialListTypes.map((t: string) => t === "coreAlgo" ? "core" : t);
+      
+      setListTypes(initialListTypes);
+      
+      let initialCategories = algorithm.categories;
+      if (!initialCategories && algorithm.category) {
+        initialCategories = algorithm.category.split(',').map((c: string) => c.trim()).filter(Boolean);
+      }
+      if (!initialCategories) {
+        initialCategories = [];
+      }
+      setCategories(initialCategories);
+
+      setPublished(algorithm.published !== false);
       setUnordered(!!metadataObj?.unordered);
 
       setMultiExpected(!!metadataObj?.multi_expected);
@@ -120,7 +150,8 @@ export function AlgorithmForm({
       });
 
     } else {
-      setListType("core");
+      setListTypes(["core"]);
+      setPublished(false); // default to false (draft) for new algorithms
       setUnordered(false);
 
       setMultiExpected(false);
@@ -189,10 +220,19 @@ export function AlgorithmForm({
       return;
     }
 
+    if (categories.length === 0) {
+      toast.error("At least one category is required");
+      return;
+    }
+
     // Parse JSON fields
     const parsedData = {
       ...data,
-      list_type: listType,
+      categories: categories,
+      category: categories.join(', '),
+      list_type: listTypes[0] || "core",
+      list_types: listTypes,
+      published: published,
       explanation: JSON.parse(data.explanation),
       implementations: JSON.parse(data.implementations),
       problems_to_solve: JSON.parse(data.problems_to_solve),
@@ -201,7 +241,8 @@ export function AlgorithmForm({
       tutorials: JSON.parse(data.tutorials),
       metadata: {
         ...JSON.parse(data.metadata),
-        listType: listType, // Include listType from state
+        listType: listTypes[0] || "core", // Include listType from state
+        listTypes: listTypes,
         unordered: unordered,
         multi_expected: multiExpected,
         return_modified_input: returnModifiedInput,
@@ -296,20 +337,73 @@ export function AlgorithmForm({
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="category">Category *</Label>
-                <Input
-                  id="category"
-                  {...register("category", {
-                    required: "Category is required",
-                  })}
-                  placeholder="e.g., Arrays & Strings"
-                />
-                {errors.category && (
-                  <p className="text-sm text-destructive">
-                    {errors.category.message}
-                  </p>
-                )}
+              <div className="space-y-2 flex flex-col">
+                <Label>Categories *</Label>
+                <div className="flex flex-wrap gap-2 min-h-[38px] p-2 border rounded-md bg-background">
+                  {categories.length === 0 ? (
+                    <span className="text-sm text-muted-foreground">No categories selected</span>
+                  ) : (
+                    categories.map((cat: string) => (
+                      <Badge key={cat} variant="secondary" className="capitalize flex items-center gap-1">
+                        {cat}
+                        <X className="w-3.5 h-3.5 opacity-60 hover:opacity-100 cursor-pointer" onClick={() => {
+                          setCategories(prev => prev.filter(c => c !== cat));
+                        }} />
+                      </Badge>
+                    ))
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Select
+                    value=""
+                    onValueChange={(val) => {
+                      if (val && !categories.includes(val)) {
+                        setCategories(prev => [...prev, val]);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="Add category..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORY_ORDER.filter(c => !categories.includes(c)).map(cat => (
+                        <SelectItem key={cat} value={cat} className="capitalize">
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <div className="flex gap-1 flex-1">
+                    <Input
+                      placeholder="Or type custom category..."
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (customCategory.trim() && !categories.includes(customCategory.trim())) {
+                            setCategories(prev => [...prev, customCategory.trim()]);
+                            setCustomCategory("");
+                          }
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (customCategory.trim() && !categories.includes(customCategory.trim())) {
+                          setCategories(prev => [...prev, customCategory.trim()]);
+                          setCustomCategory("");
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -329,32 +423,51 @@ export function AlgorithmForm({
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="list_type">List Type *</Label>
-                <Select
-                  value={listType}
-                  onValueChange={(value) => setListType(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(LIST_TYPE_LABELS)
-                      .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
-                      .map(([value, label]) => (
-                        <SelectItem key={value} value={value}>{label}</SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+              <div className="space-y-2 col-span-2">
+                <Label className="block mb-2">List Types *</Label>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {Object.entries(LIST_TYPE_LABELS)
+                    .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
+                    .map(([value, label]) => {
+                      const isSelected = listTypes.includes(value);
+                      return (
+                        <Button
+                          key={value}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          className="h-8 rounded-full transition-all"
+                          onClick={() => {
+                            if (isSelected) {
+                              setListTypes(listTypes.filter((t) => t !== value));
+                            } else {
+                              setListTypes([...listTypes, value]);
+                            }
+                          }}
+                        >
+                          {label}
+                        </Button>
+                      );
+                    })}
+                </div>
               </div>
 
-              <div className="flex items-center space-x-2 pt-8">
+              <div className="flex items-center space-x-2 pt-4">
                 <Switch
                   id="premium-toggle"
                   checked={watch("is_premium")}
                   onCheckedChange={(checked) => setValue("is_premium", checked)}
                 />
                 <Label htmlFor="premium-toggle" className="font-semibold cursor-pointer">Mark as Premium (Pro)</Label>
+              </div>
+
+              <div className="flex items-center space-x-2 pt-4">
+                <Switch
+                  id="published-toggle"
+                  checked={published}
+                  onCheckedChange={setPublished}
+                />
+                <Label htmlFor="published-toggle" className="font-semibold cursor-pointer">Published (Visible to Users)</Label>
               </div>
             </div>
 

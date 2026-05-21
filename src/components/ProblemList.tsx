@@ -57,7 +57,7 @@ export const ProblemList = ({
   algorithms,
   emptyMessage = "No algorithms found.",
   defaultListType = "all",
-  availableListTypes = ["all", ListType.Core, ListType.Blind75, ListType.CoreAndBlind75],
+  availableListTypes = ["all", ListType.Core, ListType.Blind75, ListType.Blind150],
   hideListSelection = false,
   isLoading = false,
   variant = 'default',
@@ -129,21 +129,12 @@ export const ProblemList = ({
       const matchesDifficulty = !selectedDifficulty || algo.mappedDifficulty === selectedDifficulty;
 
 
-      // Normalize algo list type and selection
-      let algoListType = (algo.listType || '').toLowerCase();
-      if (algoListType === 'corealgo') algoListType = ListType.Core.toLowerCase();
+      // Normalize selection and matching
       const selectedType = selectedListType?.toLowerCase();
-
       let matchesListType = true;
-      if (selectedListType === ListType.Core) {
-        // "Core" selection shows Core AND overlap
-        matchesListType = algoListType === ListType.Core.toLowerCase() || algoListType === ListType.CoreAndBlind75.toLowerCase();
-      } else if (selectedListType === ListType.Blind75) {
-        // "Blind 75" selection shows Blind75 AND overlap
-        matchesListType = algoListType === ListType.Blind75.toLowerCase() || algoListType === ListType.CoreAndBlind75.toLowerCase();
-      } else if (selectedListType === ListType.CoreAndBlind75) {
-        // "Core + Blind 75" selection shows ONLY overlap
-        matchesListType = algoListType === ListType.CoreAndBlind75.toLowerCase();
+      if (selectedType) {
+        const listTypes = algo.listTypes || (algo.list_type ? [algo.list_type] : ['core']);
+        matchesListType = listTypes.some((t: string) => t.toLowerCase() === selectedType);
       }
 
       return matchesSearch && matchesCategory && matchesDifficulty && matchesListType;
@@ -269,7 +260,7 @@ export const ProblemList = ({
                         {availableListTypes.includes("all") && <SelectItem value="all">All Lists</SelectItem>}
                         {availableListTypes.includes(ListType.Core) && <SelectItem value={ListType.Core}>{LIST_TYPE_LABELS[ListType.Core]}</SelectItem>}
                         {availableListTypes.includes(ListType.Blind75) && <SelectItem value={ListType.Blind75}>{LIST_TYPE_LABELS[ListType.Blind75]}</SelectItem>}
-                        {availableListTypes.includes(ListType.CoreAndBlind75) && <SelectItem value={ListType.CoreAndBlind75}>{LIST_TYPE_LABELS[ListType.CoreAndBlind75]}</SelectItem>}
+                        {availableListTypes.includes(ListType.Blind150) && <SelectItem value={ListType.Blind150}>{LIST_TYPE_LABELS[ListType.Blind150]}</SelectItem>}
                       </SelectContent>
                     </Select>
                   )}

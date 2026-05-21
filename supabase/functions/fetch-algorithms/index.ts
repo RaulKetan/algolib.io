@@ -30,7 +30,10 @@ Deno.serve(async (req) => {
         title,
         difficulty,
         category,
+        categories,
         list_type,
+        list_types,
+        published,
         description,
         time_complexity,
         space_complexity,
@@ -43,7 +46,8 @@ Deno.serve(async (req) => {
       query = query.or(`title.ilike.%${search}%,name.ilike.%${search}%`);
     }
     if (category) {
-      query = query.eq("category", category);
+      // Filter by checking if categories array contains the category
+      query = query.contains("categories", [category]);
     }
 
     // Order by serial_no
@@ -64,12 +68,15 @@ Deno.serve(async (req) => {
       title: algo.title || algo.name,
       name: algo.name,
       category: algo.category,
+      categories: algo.categories || (algo.category ? algo.category.split(',').map((c: string) => c.trim()) : []),
       difficulty: algo.difficulty,
       description: algo.description,
       timeComplexity: algo.time_complexity,
       spaceComplexity: algo.space_complexity,
       slug: algo.id,
       listType: algo.list_type,
+      listTypes: algo.list_types || (algo.list_type ? [algo.list_type] : ['core']),
+      published: algo.published,
       serial_no: algo.serial_no,
       metadata: algo.metadata,
     }));

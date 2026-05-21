@@ -35,7 +35,7 @@ interface SmartFillDialogProps {
 }
 
 const FIELD_GROUPS = [
-  { id: "basic", label: "Basic Info (Title, Category, Difficulty, etc.)", keys: ["title", "name", "category", "difficulty", "description", "serial_no", "list_type", "id"] },
+  { id: "basic", label: "Basic Info (Title, Category, Difficulty, etc.)", keys: ["title", "name", "category", "difficulty", "description", "serial_no", "list_type", "list_types", "published", "id"] },
   { id: "problem", label: "Problem Details (Statement, Steps, Use Cases, Tips, Table)", keys: ["explanation"] },
   { id: "code", label: "Code Implementations", keys: ["implementations"] },
   { id: "tests", label: "Test Cases & Schema", keys: ["test_cases", "input_schema"] },

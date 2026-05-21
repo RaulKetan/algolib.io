@@ -27,12 +27,18 @@ const GetStartedClient = () => {
   );
   
   const coreAlgorithms = useMemo(() => 
-    allAlgorithms.filter(algo => algo.listType === ListType.Core || algo.listType === ListType.CoreAndBlind75),
+    allAlgorithms.filter(algo => {
+      const types = algo.listTypes || (algo.list_type ? [algo.list_type] : ['core']);
+      return types.includes(ListType.Core);
+    }),
     [allAlgorithms]
   );
 
   const blind75Algorithms = useMemo(() => 
-    allAlgorithms.filter(algo => algo.listType === ListType.Blind75 || algo.listType === ListType.CoreAndBlind75),
+    allAlgorithms.filter(algo => {
+      const types = algo.listTypes || (algo.list_type ? [algo.list_type] : ['core']);
+      return types.includes(ListType.Blind75);
+    }),
     [allAlgorithms]
   );
 

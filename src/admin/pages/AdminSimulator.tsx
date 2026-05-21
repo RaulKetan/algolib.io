@@ -157,7 +157,7 @@ const AdminSimulator: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('algorithms')
-        .select('id, title, category, difficulty, serial_no, list_type')
+        .select('id, title, category, difficulty, serial_no, list_type, list_types, published')
         .order('serial_no', { ascending: true })
         .limit(1000);
       if (error) throw error;
@@ -659,7 +659,8 @@ const AdminSimulator: React.FC = () => {
   const filteredAlgorithms = algorithms?.filter(a => {
     const matchesSearch = a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       a.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesListType = listTypeFilter === 'all' || (a.list_type || 'core') === listTypeFilter;
+    const matchesListType = listTypeFilter === 'all' || 
+      (a.list_types || (a.list_type ? [a.list_type] : ['core'])).includes(listTypeFilter);
     return matchesSearch && matchesListType;
   });
 
@@ -715,11 +716,11 @@ const AdminSimulator: React.FC = () => {
                 Blind 75
               </Badge>
               <Badge
-                variant={listTypeFilter === 'core+blind75' ? 'default' : 'outline'}
+                variant={listTypeFilter === 'blind150' ? 'default' : 'outline'}
                 className="cursor-pointer text-[10px] px-1.5 py-0"
-                onClick={() => setListTypeFilter('core+blind75')}
+                onClick={() => setListTypeFilter('blind150')}
               >
-                C+B75
+                Blind 150
               </Badge>
             </div>
           </div>

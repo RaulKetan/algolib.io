@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Loader2, Save, X } from "lucide-react";
 import { toast } from "sonner";
+import { CATEGORY_ORDER } from "@/constants/categories";
+import { Badge } from "@/components/ui/badge";
 
 import dynamic from "next/dynamic";
 
@@ -53,7 +55,10 @@ export function AlgorithmFormBuilder({
   onSuccess,
 }: AlgorithmFormBuilderProps) {
   const [activeTab, setActiveTab] = useState("basic");
-  const [listType, setListType] = useState("coreAlgo");
+  const [listTypes, setListTypes] = useState<string[]>(["core"]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [customCategory, setCustomCategory] = useState("");
+  const [published, setPublished] = useState(true);
   const router = useRouter();
 
   const createMutation = useCreateAlgorithm();
@@ -107,7 +112,35 @@ export function AlgorithmFormBuilder({
         typeof algorithm.metadata === "string"
           ? JSON.parse(algorithm.metadata)
           : algorithm.metadata;
-      setListType(algorithm.list_type || metadataObj?.listType || "coreAlgo");
+
+      let initialListTypes = algorithm.listTypes || algorithm.list_types;
+      if (!initialListTypes && algorithm.list_type) {
+        initialListTypes = [algorithm.list_type];
+      }
+      if (!initialListTypes || initialListTypes.length === 0) {
+        const metaListType = metadataObj?.listType || metadataObj?.list_types;
+        if (metaListType) {
+          initialListTypes = Array.isArray(metaListType) ? metaListType : [metaListType];
+        }
+      }
+      if (!initialListTypes || initialListTypes.length === 0) {
+        initialListTypes = ["core"];
+      }
+      // sanitize
+      initialListTypes = initialListTypes.map((t: string) => t === "coreAlgo" ? "core" : t);
+      
+      setListTypes(initialListTypes);
+      
+      let initialCategories = algorithm.categories;
+      if (!initialCategories && algorithm.category) {
+        initialCategories = algorithm.category.split(',').map((c: string) => c.trim()).filter(Boolean);
+      }
+      if (!initialCategories) {
+        initialCategories = [];
+      }
+      setCategories(initialCategories);
+
+      setPublished(algorithm.published !== false);
 
       setFormData({
         id: algorithm.id,
@@ -144,6 +177,9 @@ export function AlgorithmFormBuilder({
             : algorithm.tutorials,
         controls: algorithm.controls || DEFAULT_CONTROLS,
       });
+    } else {
+      setListTypes(["core"]);
+      setPublished(false); // default to false (draft) for new algorithms
     }
   }, [algorithm]);
 
@@ -154,17 +190,23 @@ export function AlgorithmFormBuilder({
       return;
     }
 
+    if (categories.length === 0) {
+      toast.error("At least one category is required");
+      return;
+    }
+
     const payload = {
       ...formData,
-      list_type: listType,
+      categories: categories,
+      category: categories.join(', '),
+      list_type: listTypes[0] || "core",
+      list_types: listTypes,
+      published: published,
       serial_no: formData.serial_no ? parseInt(formData.serial_no) : null,
       metadata: {
         ...formData.metadata,
-        // We can keep listType in metadata for backward compatibility if needed, 
-        // but user requested "direct column instead of meta data".
-        // Let's remove it from metadata if we want to be strict, or just ignore it.
-        // For now, I'll update it to match just in case.
-        listType: listType,
+        listType: listTypes[0] || "core",
+        listTypes: listTypes,
       },
     };
 
@@ -453,15 +495,73 @@ export function AlgorithmFormBuilder({
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label>Category *</Label>
-                        <Input
-                          value={formData.category}
-                          onChange={(e) =>
-                            setFormData({ ...formData, category: e.target.value })
-                          }
-                          placeholder="e.g., Arrays & Strings"
-                        />
+                      <div className="space-y-2 flex flex-col">
+                        <Label>Categories *</Label>
+                        <div className="flex flex-wrap gap-2 min-h-[38px] p-2 border rounded-md bg-background">
+                          {categories.length === 0 ? (
+                            <span className="text-sm text-muted-foreground">No categories selected</span>
+                          ) : (
+                            categories.map((cat: string) => (
+                              <Badge key={cat} variant="secondary" className="capitalize flex items-center gap-1">
+                                {cat}
+                                <X className="w-3.5 h-3.5 opacity-60 hover:opacity-100 cursor-pointer" onClick={() => {
+                                  setCategories(prev => prev.filter(c => c !== cat));
+                                }} />
+                              </Badge>
+                            ))
+                          )}
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Select
+                            value=""
+                            onValueChange={(val) => {
+                              if (val && !categories.includes(val)) {
+                                setCategories(prev => [...prev, val]);
+                              }
+                            }}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Add category..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {CATEGORY_ORDER.filter(c => !categories.includes(c)).map(cat => (
+                                <SelectItem key={cat} value={cat} className="capitalize">
+                                  {cat}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          <div className="flex gap-1 flex-1">
+                            <Input
+                              placeholder="Or type custom category..."
+                              value={customCategory}
+                              onChange={(e) => setCustomCategory(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  if (customCategory.trim() && !categories.includes(customCategory.trim())) {
+                                    setCategories(prev => [...prev, customCategory.trim()]);
+                                    setCustomCategory("");
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                if (customCategory.trim() && !categories.includes(customCategory.trim())) {
+                                  setCategories(prev => [...prev, customCategory.trim()]);
+                                  setCustomCategory("");
+                                }
+                              }}
+                            >
+                              Add
+                            </Button>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="space-y-2">
@@ -484,21 +584,41 @@ export function AlgorithmFormBuilder({
                       </div>
 
                       <div className="space-y-2">
-                        <Label>List Type</Label>
-                        <Select value={listType} onValueChange={setListType}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select list type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(LIST_TYPE_LABELS)
-                              .filter(([key]) => key !== 'all')
-                              .map(([value, label]) => (
-                                <SelectItem key={value} value={value}>
+                        <Label className="block mb-2">List Types *</Label>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {Object.entries(LIST_TYPE_LABELS)
+                            .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
+                            .map(([value, label]) => {
+                              const isSelected = listTypes.includes(value);
+                              return (
+                                <Button
+                                  key={value}
+                                  type="button"
+                                  variant={isSelected ? "default" : "outline"}
+                                  size="sm"
+                                  className="h-8 rounded-full transition-all"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setListTypes(listTypes.filter((t) => t !== value));
+                                    } else {
+                                      setListTypes([...listTypes, value]);
+                                    }
+                                  }}
+                                >
                                   {label}
-                                </SelectItem>
-                              ))}
-                          </SelectContent>
-                        </Select>
+                                </Button>
+                              );
+                            })}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2 pt-4">
+                        <Switch
+                          id="published-toggle"
+                          checked={published}
+                          onCheckedChange={setPublished}
+                        />
+                        <Label htmlFor="published-toggle" className="font-semibold cursor-pointer">Published (Visible to Users)</Label>
                       </div>
                     </CardContent>
                   </Card>
