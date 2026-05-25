@@ -8,10 +8,12 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsUpDown,
+  Clock,
   Code2,
   CreditCard,
   Crown,
   Github,
+  HardDrive,
   Languages,
   Layers,
   Lightbulb,
@@ -74,6 +76,7 @@ import { useAppSelector } from "@/store/hooks";
 import { usePathname } from "next/navigation";
 import { usePostHog } from "@posthog/react";
 import { useSidebar } from "@/components/ui/sidebar";
+import { isSidebarRoute } from "@/config/sidebarNav";
 
 interface NavbarProps {
   isProblemMode?: boolean;
@@ -157,6 +160,8 @@ const Navbar = ({
       "/dsa/blind-75",
     ].includes(currentPath);
 
+  const hasSidebar = isSidebarRoute(currentPath);
+
   // Hide Navbar on valid DSA and Problem pages as they have their own implementation
   // EXCEPT if we are explicitly in problem mode (passed as prop by the page itself)
   if (isDsaProblemPage && !isProblemMode) {
@@ -235,11 +240,7 @@ const Navbar = ({
                   variant="ghost"
                   size="icon"
                   className="hidden data-[show=true]:md:flex h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all rounded-full"
-                  data-show={
-                    pathname?.startsWith("/dsa/") ||
-                    pathname?.startsWith("/problems") ||
-                    pathname?.startsWith("/dashboard")
-                  }
+                  data-show={hasSidebar}
                   onClick={toggleSidebar}
                 >
                   {!mounted || state === "collapsed" ? (
@@ -250,7 +251,10 @@ const Navbar = ({
                 </Button>
                 <Link
                   href="/"
-                  className="flex items-center gap-2 hover:opacity-80 transition-opacity shutter-click"
+                  className={cn(
+                    "flex items-center gap-2 hover:opacity-80 transition-opacity shutter-click",
+                    hasSidebar && "md:hidden"
+                  )}
                   onClick={closeMenus}
                 >
                   <img
@@ -258,7 +262,7 @@ const Navbar = ({
                     alt="RulCode Logo"
                     className="w-6 h-6"
                   />
-                  <span className=" font-medium ">rulcode</span>
+                  <span className="font-medium">rulcode</span>
                 </Link>
               </>
             )}
@@ -358,7 +362,9 @@ const Navbar = ({
                 </div>
               )}
 
-              <div className="h-4 w-[1px] bg-border/60 mx-1"></div>
+              {!hasSidebar && (
+                <div className="h-4 w-[1px] bg-border/60 mx-1"></div>
+              )}
 
               <Link
                 href={
@@ -626,40 +632,112 @@ const Navbar = ({
                       )}
 
                       {activePrepareTab === "blogs" && (
-                        <div className="flex flex-col gap-8">
+                        <div className="flex flex-col gap-6">
                           <div className="text-xs font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">
                             Guides
                           </div>
 
-                          <Link
-                            href="/blog"
-                            className="group flex items-start gap-5 relative shutter-click"
-                            onClick={closeMenus}
-                          >
-                            <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
-                              <PenTool className="w-5 h-5 text-foreground group-hover:text-primary" />
-                            </div>
-                            <div className="flex-1 pr-8">
-                              <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
-                                Engineering Blogs
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                <Badge
-                                  variant="secondary"
-                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
-                                >
-                                  Guides
-                                </Badge>
-                                <Badge
-                                  variant="secondary"
-                                  className="bg-muted text-[11px] font-normal hover:bg-muted/80 border-transparent px-2.5 py-0.5"
-                                >
-                                  Insights
-                                </Badge>
+                          <div className="grid grid-cols-1 gap-5">
+                            {/* Time Complexity */}
+                            <Link
+                              href="/guides/time-complexity"
+                              className="group flex items-start gap-5 relative shutter-click"
+                              onClick={closeMenus}
+                            >
+                              <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
+                                <Clock className="w-5 h-5 text-foreground group-hover:text-primary" />
                               </div>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
-                          </Link>
+                              <div className="flex-1 pr-8">
+                                <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                  Time Complexity
+                                </h4>
+                                <p className="text-[13px] text-muted-foreground leading-relaxed">
+                                  Big O runtime analysis and operation budgets cheat sheet.
+                                </p>
+                              </div>
+                              <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
+                            </Link>
+
+                            {/* Space Complexity */}
+                            <Link
+                              href="/guides/space-complexity"
+                              className="group flex items-start gap-5 relative shutter-click"
+                              onClick={closeMenus}
+                            >
+                              <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
+                                <HardDrive className="w-5 h-5 text-foreground group-hover:text-primary" />
+                              </div>
+                              <div className="flex-1 pr-8">
+                                <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                  Space Complexity
+                                </h4>
+                                <p className="text-[13px] text-muted-foreground leading-relaxed">
+                                  Recursion stack, memory bounds, and allocations cheat sheet.
+                                </p>
+                              </div>
+                              <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
+                            </Link>
+
+                            {/* Fundamentals */}
+                            <Link
+                              href="/guides/fundamentals/core-data-structures"
+                              className="group flex items-start gap-5 relative shutter-click"
+                              onClick={closeMenus}
+                            >
+                              <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
+                                <Layers className="w-5 h-5 text-foreground group-hover:text-primary" />
+                              </div>
+                              <div className="flex-1 pr-8">
+                                <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                  DSA Fundamentals
+                                </h4>
+                                <p className="text-[13px] text-muted-foreground leading-relaxed">
+                                  Core structures like Lists, Trees, Graphs, and Tries.
+                                </p>
+                              </div>
+                              <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
+                            </Link>
+
+                            {/* Patterns */}
+                            <Link
+                              href="/guides/patterns/arrays-hashing"
+                              className="group flex items-start gap-5 relative shutter-click"
+                              onClick={closeMenus}
+                            >
+                              <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
+                                <Target className="w-5 h-5 text-foreground group-hover:text-primary" />
+                              </div>
+                              <div className="flex-1 pr-8">
+                                <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                  Coding Patterns
+                                </h4>
+                                <p className="text-[13px] text-muted-foreground leading-relaxed">
+                                  High-impact blueprints like Pointers and Sliding Windows.
+                                </p>
+                              </div>
+                              <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
+                            </Link>
+
+                            {/* Engineering Blogs */}
+                            <Link
+                              href="/blog"
+                              className="group flex items-start gap-5 relative shutter-click"
+                              onClick={closeMenus}
+                            >
+                              <div className="p-3 bg-muted/50 rounded-xl group-hover:bg-primary/10 transition-colors border border-border/50 shrink-0">
+                                <PenTool className="w-5 h-5 text-foreground group-hover:text-primary" />
+                              </div>
+                              <div className="flex-1 pr-8">
+                                <h4 className="text-[15px] font-semibold mb-1.5 text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                  Engineering Blogs
+                                </h4>
+                                <p className="text-[13px] text-muted-foreground leading-relaxed">
+                                  Deep dive tutorials and competitive programming insights.
+                                </p>
+                              </div>
+                              <ChevronRight className="w-5 h-5 text-muted-foreground/30 absolute right-0 top-1/2 -translate-y-1/2 group-hover:translate-x-1 group-hover:text-primary transition-all" />
+                            </Link>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -922,14 +1000,16 @@ const Navbar = ({
                 {!isAuthPage && <UserMenu />}
 
                 {/* Mobile Sidebar Trigger */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden h-8 w-8 ml-1"
-                  onClick={() => setOpenMobile(true)}
-                >
-                  <MenuIcon className="w-4 h-4" />
-                </Button>
+                {hasSidebar && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden h-8 w-8 ml-1"
+                    onClick={() => setOpenMobile(true)}
+                  >
+                    <MenuIcon className="w-4 h-4" />
+                  </Button>
+                )}
               </>
             )}
           </div>

@@ -217,6 +217,7 @@ export const SolutionViewer: React.FC<SolutionViewerProps> = ({
                 getLanguageDisplayName={getLanguageDisplayName}
                 getLanguageForMonaco={getLanguageForMonaco}
                 getFileExtension={getFileExtension}
+                approachName={approachName}
               />
             ))}
           </div>
@@ -226,7 +227,7 @@ export const SolutionViewer: React.FC<SolutionViewerProps> = ({
       {/* Complexity Explanation - Future field */}
       {complexityExplanation && (
         <div className="prose prose-sm max-w-none dark:prose-invert border-t pt-6">
-          <h4 className="text-base font-semibold mb-3">Complexity Analysis</h4>
+          <h4 className="text-base font-medium mb-3">Complexity Analysis</h4>
           <div dangerouslySetInnerHTML={{ __html: complexityExplanation }} />
         </div>
       )}
@@ -246,6 +247,7 @@ const SolutionApproach: React.FC<{
   getLanguageDisplayName: (lang: string) => string;
   getLanguageForMonaco: (lang: string) => string;
   getFileExtension: (lang: string) => string;
+  approachName: string;
 }> = ({
   codeType,
   langImplementations,
@@ -257,6 +259,7 @@ const SolutionApproach: React.FC<{
   getLanguageDisplayName,
   getLanguageForMonaco,
   getFileExtension,
+  approachName,
 }) => {
     // Sort implementations based on the specified order
     const sortedImplementations = [...langImplementations].sort((a, b) => {
@@ -324,9 +327,14 @@ const SolutionApproach: React.FC<{
     return (
       <div className="space-y-4" ref={containerRef}>
         {/* Approach Header */}
-        <h3 className="text-base font-semibold">
-          Approach {approachIndex + 1}: {codeType === 'optimize' ? 'Optimized' : codeType.charAt(0).toUpperCase() + codeType.slice(1)}
-        </h3>
+        {controls?.approaches !== false && (
+          <h3 className="text-base font-medium">
+            {codeType === 'solution'
+              ? approachName
+              : `Approach ${approachIndex + 1}: ${codeType === 'optimize' ? 'Optimized' : codeType.charAt(0).toUpperCase() + codeType.slice(1)}`
+            }
+          </h3>
+        )}
 
         {/* Explanation Before */}
         {explanationBefore && controls?.explanation_before !== false && showPre && (

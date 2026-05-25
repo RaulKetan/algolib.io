@@ -137,6 +137,129 @@ export const visualizationMap: Record<string, any> = {
   'karatsuba-multiplication': dynamic(() => import('@/components/visualizations/algorithms/KaratsubaVisualization').then(m => m.KaratsubaVisualization), { ssr: false }),
 };
 
+export const visualizationMetadataMap: Record<string, { title: string; description: string }> = {
+  'two-pointers': {
+    title: 'Two Pointers Technique',
+    description: 'Visualize how two pointers starting at opposite ends of a sorted array converge inward to find a pair that meets a target condition in O(n) time.'
+  },
+  'sliding-window': {
+    title: 'Sliding Window',
+    description: 'See how left and right pointers define a dynamic window that expands and contracts to find optimal subarrays or substrings.'
+  },
+  'prefix-sum': {
+    title: 'Prefix Sum Array',
+    description: 'Visualize how cumulative sums are precomputed to allow any subarray range sum query in constant O(1) time.'
+  },
+  'binary-search': {
+    title: 'Binary Search',
+    description: 'Watch the search space bisect at each step as low, high, and mid pointers narrow down the target value in a sorted array.'
+  },
+  'dutch-national-flag': {
+    title: 'Dutch National Flag (3-Way Partition)',
+    description: 'See how three pointers partition an array of three distinct keys (e.g. Red, White, Blue or 0s, 1s, 2s) in a single O(n) pass.'
+  },
+  'monotonic-stack': {
+    title: 'Monotonic Stack',
+    description: 'Visualize how elements are pushed and popped to maintain a strict increasing/decreasing order, solving next greater element problems in O(n).'
+  },
+  'container-with-most-water': {
+    title: 'Container With Most Water',
+    description: 'Visualize two pointers moving inward, greedily replacing the shorter boundary to find the maximum possible containment area.'
+  },
+  'dfs-inorder': {
+    title: 'DFS Inorder Traversal',
+    description: 'Walk through the standard Depth-First Search inorder traversal (Left, Root, Right) of a binary tree.'
+  },
+  'bfs-level-order': {
+    title: 'BFS Level Order Traversal',
+    description: 'See how a queue organizes nodes to traverse a binary tree level-by-level from top to bottom, left to right.'
+  },
+  'lowest-common-ancestor-of-bst': {
+    title: 'Lowest Common Ancestor in BST',
+    description: 'Visualize how the binary search tree property is leveraged to find the lowest common ancestor node of two target nodes in O(log n) time.'
+  },
+  'bst-insert': {
+    title: 'BST Insertion',
+    description: 'See how a new value is placed in a Binary Search Tree by recursively comparing values and branching left or right.'
+  },
+  'trie': {
+    title: 'Trie (Prefix Tree)',
+    description: 'Visualize character-by-character insertion, search, and prefix matching operations in a prefix tree.'
+  },
+  'graph-dfs': {
+    title: 'Graph DFS',
+    description: 'Visualize Depth-First Search as it explores a graph by going deep along each branch before backtracking.'
+  },
+  'graph-bfs': {
+    title: 'Graph BFS',
+    description: 'Visualize Breadth-First Search exploring a graph layer-by-layer starting from a source node.'
+  },
+  'topological-sort': {
+    title: 'Topological Sort',
+    description: 'See how topological ordering resolves dependencies in a Directed Acyclic Graph (DAG) using DFS or Kahn\'s algorithm.'
+  },
+  'dijkstras': {
+    title: 'Dijkstra\'s Algorithm',
+    description: 'Visualize finding the shortest paths from a single source vertex to all other vertices in a weighted graph.'
+  },
+  'reverse-linked-list': {
+    title: 'Reverse Linked List',
+    description: 'Watch how pointers (prev, curr, next) are re-wired node by node to reverse a singly linked list in-place.'
+  },
+  'detect-cycle-in-a-linked-list': {
+    title: 'Linked List Cycle Detection',
+    description: 'Visualize Floyd\'s Cycle-Finding Algorithm (Tortoise & Hare) where a fast pointer eventually laps a slow pointer inside a loop.'
+  },
+  'middle-node': {
+    title: 'Middle of a Linked List',
+    description: 'See how a slow pointer (1x speed) and a fast pointer (2x speed) find the exact middle of a linked list in one pass.'
+  },
+  'merge-two-sorted-lists': {
+    title: 'Merge Two Sorted Lists',
+    description: 'Visualize the merge step of two sorted linked lists by comparing head elements and linking them in sorted order.'
+  },
+  'top-k-frequent-elements': {
+    title: 'Top K Frequent Elements',
+    description: 'Track how a frequency map and a min-heap extract the K most common elements in O(n log k) time.'
+  },
+  'sliding-window-maximum': {
+    title: 'Sliding Window Maximum',
+    description: 'See how a double-ended queue (deque) maintains potential maximums to solve the sliding window max problem in O(n) time.'
+  },
+  'knapsack-01': {
+    title: '0/1 Knapsack',
+    description: 'Visualize the dynamic programming table construction to maximize value within a weight capacity.'
+  },
+  'lru-cache': {
+    title: 'LRU Cache',
+    description: 'Visualize Least Recently Used cache eviction using a Hash Map for O(1) lookups and a Doubly Linked List for ordering.'
+  }
+};
+
+/**
+ * Get metadata (title, description) for an algorithm visualization
+ * @param algorithmId - The algorithm ID or slug
+ * @returns Object with title and description
+ */
+export function getVisualizationMetadata(algorithmId: string): { title: string; description: string } {
+  const metadata = visualizationMetadataMap[algorithmId];
+  if (metadata) {
+    return metadata;
+  }
+  
+  // Dynamic fallback title
+  const title = algorithmId
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+    
+  return {
+    title,
+    description: `Interactive simulator for ${title}. Step through the operations, inspect variables, and master the concepts dynamically.`
+  };
+}
+
+
 /**
  * Get visualization component for an algorithm
  * @param algorithmId - The algorithm ID or slug
