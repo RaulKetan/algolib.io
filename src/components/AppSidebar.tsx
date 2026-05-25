@@ -1,22 +1,14 @@
 "use client";
 
 import * as React from "react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   BookOpen,
-  Brain,
-  ChevronRight,
-  Clock,
-  Code,
-  Code2,
-  Code as CodeIcon,
-  Compass,
-  Eye,
+  ChevronDown,
   FileText,
-  Folder,
   Github,
-  Layers,
   LayoutDashboard,
   Linkedin,
   ListTodo,
@@ -25,12 +17,9 @@ import {
   MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
-  Play,
-  Rocket,
-  Search,
-  Target,
-  ThumbsUp,
 } from "lucide-react";
+
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,98 +35,239 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
 
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { ChevronDown } from "lucide-react";
-import Link from "next/link";
-import logo from "@/assets/logo.svg";
+import { useApp } from "@/contexts/AppContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useApp } from "@/contexts/AppContext";
-import { useTheme } from "next-themes";
+import logo from "@/assets/logo.svg";
+import { guidesData } from "@/data/guidesData";
+import { cn } from "@/lib/utils";
+import {
+  PATTERN_IDS,
+  getGuideUrl,
+  DSA_ITEMS,
+  GUIDE_GROUPS,
+  isSidebarRoute,
+  isGuideRoute,
+} from "@/config/sidebarNav";
 
-// Defined Products Configuration
-const sidebarConfig = {
-  interviews: {
-    title: "Interviews",
-    navMain: [
-      {
-        title: "Dashboard",
-        url: "/dashboard",
-        icon: LayoutDashboard,
-        hasCaret: false,
-      },
-      {
-        title: "DSA",
-        url: "/dsa/get-started",
-        icon: ListTodo,
-        hasCaret: true,
-        isGroup: true,
-        items: [
-          {
-            title: "Get started",
-            url: "/dsa/get-started",
-            icon: Rocket,
-            description: "Your personalized roadmap to mastering DSA.",
-          },
-          {
-            title: "Core patterns",
-            url: "/dsa/core",
-            icon: Target,
-            description: "Master the essential recurring algorithm patterns.",
-          },
-          {
-            title: "Blind 75",
-            url: "/dsa/blind-75",
-            icon: Brain,
-            description: "The curated list of top 75 must-do questions.",
-          },
-        ],
-      },
-    ],
-  },
-};
+// ─── Subcomponents ──────────────────────────────────────────────────────────
+
+interface SidebarLinkProps {
+  href: string;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isActive: boolean;
+  onClick?: () => void;
+}
+
+function SidebarLink({ href, title, icon: Icon, isActive, onClick }: SidebarLinkProps) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={cn(
+        "group flex items-center gap-3 text-[13px] py-1.5 px-3 rounded-xl transition-all duration-300 relative border border-transparent font-medium",
+        isActive
+          ? "text-foreground bg-muted/50 shadow-sm"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+      )}
+    >
+      <Icon
+        className={cn(
+          "w-3.5 h-3.5 opacity-60 shrink-0 group-hover:scale-110 group-hover:rotate-6 group-hover:text-foreground transition-all duration-300",
+          isActive && "text-foreground opacity-100"
+        )}
+      />
+      <span className="truncate">{title}</span>
+    </Link>
+  );
+}
+
+interface SidebarCollapsibleProps {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isExpanded: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}
+
+function SidebarCollapsible({
+  title,
+  icon: Icon,
+  isExpanded,
+  onToggle,
+  children,
+}: SidebarCollapsibleProps) {
+  return (
+    <div className="flex flex-col mb-1 group relative select-none">
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between h-8 text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-md transition-colors px-2 relative text-left cursor-pointer"
+      >
+        <div className="flex items-center gap-2.5">
+          <Icon className="w-4 h-4 opacity-70 shrink-0" />
+          <span className="text-[13px] font-medium text-foreground/80">{title}</span>
+        </div>
+        <ChevronDown
+          className={cn(
+            "w-3.5 h-3.5 opacity-50 transition-transform duration-200",
+            !isExpanded && "-rotate-90"
+          )}
+        />
+      </button>
+      {isExpanded && <div className="flex flex-col gap-1 mt-1 pl-3">{children}</div>}
+    </div>
+  );
+}
+
+interface SidebarHoverCardProps {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isActive: boolean;
+  children: React.ReactNode;
+}
+
+function SidebarHoverCard({ title, icon: Icon, isActive, children }: SidebarHoverCardProps) {
+  return (
+    <HoverCard openDelay={100} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <SidebarMenuButton
+          className={cn(
+            "flex w-full items-center justify-center h-8 text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-md transition-colors px-2 cursor-pointer",
+            isActive && "bg-muted/50 text-foreground"
+          )}
+        >
+          <Icon className="w-4 h-4 opacity-70" />
+        </SidebarMenuButton>
+      </HoverCardTrigger>
+      <HoverCardContent
+        side="right"
+        align="start"
+        sideOffset={15}
+        className="w-[280px] flex flex-col rounded-xl border border-border bg-popover text-popover-foreground shadow-lg p-1.5 py-2 z-[100] max-h-[400px] overflow-y-auto"
+      >
+        <div className="text-xs font-semibold px-3 py-1 text-foreground border-b border-border/40 mb-1 flex items-center gap-1.5">
+          <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+          {title}
+        </div>
+        {children}
+      </HoverCardContent>
+    </HoverCard>
+  );
+}
+
+interface SidebarLinkHoverCardProps {
+  href: string;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isActive: boolean;
+  onClick?: () => void;
+}
+
+function SidebarLinkHoverCard({
+  href,
+  title,
+  icon: Icon,
+  isActive,
+  onClick,
+}: SidebarLinkHoverCardProps) {
+  return (
+    <HoverCard openDelay={100} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <SidebarMenuButton
+          asChild
+          className={cn(
+            "flex w-full items-center justify-center h-8 text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-md transition-colors px-2 cursor-pointer",
+            isActive && "bg-muted/50 text-foreground"
+          )}
+        >
+          <Link href={href} onClick={onClick}>
+            <Icon className="w-4 h-4 opacity-70" />
+          </Link>
+        </SidebarMenuButton>
+      </HoverCardTrigger>
+      <HoverCardContent
+        side="right"
+        align="center"
+        sideOffset={15}
+        className="w-[120px] flex flex-col rounded-xl border border-border bg-popover text-popover-foreground shadow-lg p-2 z-[100]"
+      >
+        <div className="text-xs font-semibold text-center text-foreground">{title}</div>
+      </HoverCardContent>
+    </HoverCard>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const router = useRouter();
-  const { toggleSidebar, state, isMobile, setOpen, setOpenMobile } =
-    useSidebar();
+  const { toggleSidebar, state, isMobile, setOpenMobile } = useSidebar();
+  const { theme, setTheme } = useTheme();
+  const { user, hasPremiumAccess } = useApp();
 
-  // Close the mobile sheet when a nav link is tapped
+  const isCollapsed = state === "collapsed";
+  const showGuides = isGuideRoute(pathname);
+  const headerSubtitle = showGuides ? "Guides" : "Interviews";
+
+  const [isDsaExpanded, setIsDsaExpanded] = React.useState(true);
+  const [isGuidebookExpanded, setIsGuidebookExpanded] = React.useState(true);
+  const [expandedCategories, setExpandedCategories] = React.useState<Record<string, boolean>>(() => {
+    const state: Record<string, boolean> = {
+      "time-complexity": false,
+      "space-complexity": false,
+      fundamentals: false,
+      patterns: false,
+    };
+    if (pathname?.startsWith("/guides/")) {
+      const slugParts = pathname.replace("/guides/", "").split("/");
+      const slug = slugParts[slugParts.length - 1];
+      const fundamentalsCat = guidesData.find((c) => c.id === "fundamentals");
+      if (fundamentalsCat?.guides.some((g) => g.slug === slug)) state.fundamentals = true;
+      const patternGuides = guidesData
+        .filter((c) => (PATTERN_IDS as readonly string[]).includes(c.id))
+        .flatMap((c) => c.guides);
+      if (patternGuides.some((g) => g.slug === slug)) state.patterns = true;
+    }
+    return state;
+  });
+
+  // Keep expanded categories in sync with pathname changes (e.g. prev/next navigation)
+  React.useEffect(() => {
+    if (!pathname?.startsWith("/guides/")) return;
+    const slugParts = pathname.replace("/guides/", "").split("/");
+    const slug = slugParts[slugParts.length - 1];
+
+    setExpandedCategories((prev) => {
+      const isFundamentals = guidesData
+        .find((c) => c.id === "fundamentals")
+        ?.guides.some((g) => g.slug === slug);
+      const patternGuides = guidesData
+        .filter((c) => (PATTERN_IDS as readonly string[]).includes(c.id))
+        .flatMap((c) => c.guides);
+      const isPattern = patternGuides.some((g) => g.slug === slug);
+
+      if (isFundamentals && !prev.fundamentals) {
+        return { ...prev, fundamentals: true };
+      }
+      if (isPattern && !prev.patterns) {
+        return { ...prev, patterns: true };
+      }
+      return prev;
+    });
+  }, [pathname]);
+
   const closeMobileNav = () => {
     if (isMobile) setOpenMobile(false);
   };
-  const { theme, setTheme } = useTheme();
-
-  const sidebarRoutes = [
-    "/dsa/problems",
-    "/problems",
-    "/dsa/get-started",
-    "/dsa/blind-75",
-    "/dsa/core",
-    "/dsa/query",
-  ];
-  const isSidebarRoute = sidebarRoutes.some((route) =>
-    pathname?.startsWith(route),
-  );
-  const lastPathRef = React.useRef(pathname);
-
-  // Removed auto-expansion logic for DSA routes as per user request
-
-  const { user, hasPremiumAccess } = useApp();
 
   const handleSignOut = async () => {
     if (!supabase) return;
@@ -150,21 +280,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   };
 
-  const isCollapsed = state === "collapsed";
-
   // On desktop, only show if it's a sidebar route
-  if (!isMobile && !isSidebarRoute) {
+  if (!isMobile && !isSidebarRoute(pathname)) {
     return null;
   }
 
-  const currentConfig = sidebarConfig.interviews;
-
   return (
-    <Sidebar
-      collapsible="icon"
-      className="border-r border-border bg-background"
-      {...props}
-    >
+    <Sidebar collapsible="icon" className="border-r border-border bg-background" {...props}>
       <SidebarHeader className="p-4 border-b border-border/50 h-12 flex items-center justify-center">
         <div className="flex items-center gap-3 w-full">
           <Link
@@ -176,144 +298,237 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               alt="RulCode Logo"
               className="w-6 h-6 transition-all"
             />
-            <span className=" font-medium group-data-[collapsible=icon]:hidden">
-              rulcode
-            </span>
+            <span className="font-medium group-data-[collapsible=icon]:hidden">rulcode</span>
           </Link>
           <div className="h-4 w-[1px] bg-border/80 group-data-[collapsible=icon]:hidden"></div>
           <span className="flex items-center gap-1 text-[13px] text-muted-foreground group-data-[collapsible=icon]:hidden">
-            {currentConfig.title}
+            {headerSubtitle}
           </span>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-3 py-4 gap-0">
+
+      <SidebarContent className="px-3 py-4 gap-0 overflow-y-auto">
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
             <SidebarMenu className="gap-1.5">
-              {currentConfig.navMain.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  {!item.isGroup ? (
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      tooltip={item.title}
-                      className="h-8 justify-between hover:bg-muted/50 text-[#666] data-[active=true]:text-foreground data-[active=true]:font-medium"
-                    >
-                      <Link
-                        href={item.url}
-                        onClick={closeMobileNav}
-                        className="w-full flex items-center justify-between"
+              <SidebarMenuItem>
+                {isCollapsed ? (
+                  <div className="flex flex-col gap-2 items-center">
+                    {showGuides ? (
+                      /* Guide Route: Single Guidebook HoverCard containing all guide groups */
+                      <SidebarHoverCard
+                        title="Guides"
+                        icon={BookOpen}
+                        isActive={pathname?.startsWith("/guides")}
                       >
-                        <div className="flex items-center gap-2.5">
-                          {item.icon && (
-                            <item.icon className="w-4 h-4 opacity-70" />
-                          )}
-                          <span className="text-[13px] group-data-[collapsible=icon]:hidden">
-                            {item.title}
-                          </span>
-                        </div>
-                        {item.hasCaret && (
-                          <ChevronRight className="w-3.5 h-3.5 opacity-50 group-data-[collapsible=icon]:hidden absolute right-2 top-1/2 -translate-y-1/2" />
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
-                  ) : (
-                    <div className="flex flex-col mb-2 mt-2 group relative">
-                      {/* On mobile, always show inline list. On desktop collapsed, show HoverCard popup. */}
-                      {isCollapsed && !isMobile ? (
-                        <HoverCard openDelay={100} closeDelay={100}>
-                          <HoverCardTrigger asChild>
-                            <SidebarMenuButton className="flex w-full items-center justify-center h-8 text-[#666] hover:bg-muted/50 rounded-md transition-colors px-2 cursor-pointer">
-                              {item.icon && (
-                                <item.icon className="w-4 h-4 opacity-70" />
-                              )}
-                            </SidebarMenuButton>
-                          </HoverCardTrigger>
-                          <HoverCardContent
-                            side="right"
-                            align="start"
-                            sideOffset={15}
-                            className="w-[260px] flex flex-col rounded-xl border border-border bg-popover text-popover-foreground shadow-lg p-1.5 py-2 z-[100]"
-                          >
-                            <div className="text-xs font-medium px-3 py-1 text-foreground border-b border-border/40 mb-1">
-                              {item.title}
+                        {GUIDE_GROUPS.map((group) => {
+                          if (group.isSingleLink) {
+                            const url = group.id === "time-complexity" ? "/guides/time-complexity" : "/guides/space-complexity";
+                            return (
+                              <SidebarLink
+                                key={group.id}
+                                href={url}
+                                title={group.title}
+                                icon={group.icon}
+                                isActive={pathname === url}
+                                onClick={closeMobileNav}
+                              />
+                            );
+                          }
+                          return (
+                            <div key={group.id} className="mt-2 px-1">
+                              <div className="text-[11px] font-semibold text-muted-foreground px-2 py-0.5 flex items-center gap-1.5 uppercase tracking-wider">
+                                <group.icon className="w-3 h-3 opacity-60" />
+                                {group.title}
+                              </div>
+                              <div className="flex flex-col gap-1 mt-1 pl-1">
+                                {group.guides.map((guide) => {
+                                  const url = getGuideUrl(group.id, guide.slug);
+                                  return (
+                                    <SidebarLink
+                                      key={guide.slug}
+                                      href={url}
+                                      title={guide.title}
+                                      icon={FileText}
+                                      isActive={pathname === url}
+                                      onClick={closeMobileNav}
+                                    />
+                                  );
+                                })}
+                              </div>
                             </div>
-                            {item.items?.map((subItem) => (
-                              <Link
-                                key={subItem.title}
-                                href={subItem.url}
-                                className="flex items-center justify-between gap-3 cursor-pointer rounded-md p-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors group/sub"
-                              >
-                                <div className="flex flex-col gap-0.5">
-                                  <div className="flex items-center gap-2 text-foreground">
-                                    {subItem.icon && (
-                                      <subItem.icon className="w-4 h-4 opacity-70" />
-                                    )}
-                                    <span className="font-medium text-[13px]">
-                                      {subItem.title}
-                                    </span>
-                                  </div>
-                                  {subItem.description && (
-                                    <span className="text-[11px] text-muted-foreground pl-6 leading-tight">
-                                      {subItem.description}
-                                    </span>
-                                  )}
-                                </div>
-                                <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover/sub:opacity-100 group-hover/sub:translate-x-0 transition-all" />
-                              </Link>
-                            ))}
-                          </HoverCardContent>
-                        </HoverCard>
-                      ) : (
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          className="flex w-full items-center justify-between h-8 text-[#666] hover:bg-muted/50 rounded-md transition-colors px-2 relative"
+                          );
+                        })}
+                      </SidebarHoverCard>
+                    ) : (
+                      /* DSA / Dashboard Route */
+                      <>
+                        <SidebarLinkHoverCard
+                          href="/dashboard"
+                          title="Dashboard"
+                          icon={LayoutDashboard}
+                          isActive={pathname === "/dashboard"}
+                          onClick={closeMobileNav}
+                        />
+                        <SidebarHoverCard
+                          title="DSA"
+                          icon={ListTodo}
+                          isActive={pathname?.startsWith("/dsa")}
                         >
-                          <div className="flex items-center gap-2.5">
-                            {item.icon && (
-                              <item.icon className="w-4 h-4 opacity-70" />
-                            )}
-                            <span className="text-[13px] font-medium">
-                              {item.title}
-                            </span>
-                          </div>
-                          <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-                        </SidebarMenuButton>
-                      )}
-
-                      {/* Always show sub-items on mobile; on desktop only when not collapsed */}
-                      {(isMobile || !isCollapsed) && item.items && (
-                        <div className="flex flex-col gap-1 mt-1 pl-9">
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.title}
-                              href={subItem.url}
+                          {DSA_ITEMS.map((item) => (
+                            <SidebarLink
+                              key={item.id}
+                              href={item.url}
+                              title={item.title}
+                              icon={item.icon}
+                              isActive={pathname === item.url}
                               onClick={closeMobileNav}
-                              className={`flex items-center gap-2 text-[13px] py-1.5 px-2 rounded-md transition-colors ${
-                                pathname === subItem.url
-                                  ? "text-foreground font-medium bg-muted/50"
-                                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                              }`}
-                            >
-                              {subItem.icon && (
-                                <subItem.icon className="w-3.5 h-3.5 opacity-70" />
-                              )}
-                              {subItem.title}
-                            </Link>
+                            />
                           ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </SidebarMenuItem>
-              ))}
+                        </SidebarHoverCard>
+                        <SidebarHoverCard
+                          title="Guidebook"
+                          icon={BookOpen}
+                          isActive={pathname?.startsWith("/guides")}
+                        >
+                          {GUIDE_GROUPS.map((group) => {
+                            const url =
+                              group.id === "time-complexity"
+                                ? "/guides/time-complexity"
+                                : group.id === "space-complexity"
+                                ? "/guides/space-complexity"
+                                : group.id === "fundamentals"
+                                ? "/guides/fundamentals/core-data-structures"
+                                : "/guides/patterns/arrays-hashing";
+                            return (
+                              <SidebarLink
+                                key={group.id}
+                                href={url}
+                                title={group.title}
+                                icon={group.icon}
+                                isActive={pathname === url}
+                                onClick={closeMobileNav}
+                              />
+                            );
+                          })}
+                        </SidebarHoverCard>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  /* Expanded state */
+                  <div className="flex flex-col gap-4 select-none animate-fadeIn">
+                    {showGuides ? (
+                      /* Guide Route */
+                      GUIDE_GROUPS.map((group) => {
+                        if (group.isSingleLink) {
+                          const url = group.id === "time-complexity" ? "/guides/time-complexity" : "/guides/space-complexity";
+                          return (
+                            <SidebarLink
+                              key={group.id}
+                              href={url}
+                              title={group.title}
+                              icon={group.icon}
+                              isActive={pathname === url}
+                              onClick={closeMobileNav}
+                            />
+                          );
+                        }
+                        const isExpanded = !!expandedCategories[group.id];
+                        return (
+                          <SidebarCollapsible
+                            key={group.id}
+                            title={group.title}
+                            icon={group.icon}
+                            isExpanded={isExpanded}
+                            onToggle={() =>
+                              setExpandedCategories((prev) => ({
+                                ...prev,
+                                [group.id]: !prev[group.id],
+                              }))
+                            }
+                          >
+                            {group.guides.map((guide) => {
+                              const url = getGuideUrl(group.id, guide.slug);
+                              return (
+                                <SidebarLink
+                                  key={guide.slug}
+                                  href={url}
+                                  title={guide.title}
+                                  icon={FileText}
+                                  isActive={pathname === url}
+                                  onClick={closeMobileNav}
+                                />
+                              );
+                            })}
+                          </SidebarCollapsible>
+                        );
+                      })
+                    ) : (
+                      /* DSA / Dashboard Route */
+                      <>
+                        <SidebarLink
+                          href="/dashboard"
+                          title="Dashboard"
+                          icon={LayoutDashboard}
+                          isActive={pathname === "/dashboard"}
+                          onClick={closeMobileNav}
+                        />
+                        <SidebarCollapsible
+                          title="DSA"
+                          icon={ListTodo}
+                          isExpanded={isDsaExpanded}
+                          onToggle={() => setIsDsaExpanded(!isDsaExpanded)}
+                        >
+                          {DSA_ITEMS.map((item) => (
+                            <SidebarLink
+                              key={item.id}
+                              href={item.url}
+                              title={item.title}
+                              icon={item.icon}
+                              isActive={pathname === item.url}
+                              onClick={closeMobileNav}
+                            />
+                          ))}
+                        </SidebarCollapsible>
+                        <SidebarCollapsible
+                          title="Guidebook"
+                          icon={BookOpen}
+                          isExpanded={isGuidebookExpanded}
+                          onToggle={() => setIsGuidebookExpanded(!isGuidebookExpanded)}
+                        >
+                          {GUIDE_GROUPS.map((group) => {
+                            const url =
+                              group.id === "time-complexity"
+                                ? "/guides/time-complexity"
+                                : group.id === "space-complexity"
+                                ? "/guides/space-complexity"
+                                : group.id === "fundamentals"
+                                ? "/guides/fundamentals/core-data-structures"
+                                : "/guides/patterns/arrays-hashing";
+                            return (
+                              <SidebarLink
+                                key={group.id}
+                                href={url}
+                                title={group.title}
+                                icon={group.icon}
+                                isActive={pathname === url}
+                                onClick={closeMobileNav}
+                              />
+                            );
+                          })}
+                        </SidebarCollapsible>
+                      </>
+                    )}
+                  </div>
+                )}
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-4 mt-auto border-t border-border/50 flex flex-col gap-4">
-        {/* Bottom Action Row */}
         <div className="flex items-center justify-between w-full">
           {/* Socials - hidden when collapsed */}
           <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
@@ -401,12 +616,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                side="right"
-                sideOffset={10}
-                className="w-48"
-              >
+              <DropdownMenuContent align="end" side="right" sideOffset={10} className="w-48">
                 <DropdownMenuItem
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                   className="cursor-pointer text-xs"

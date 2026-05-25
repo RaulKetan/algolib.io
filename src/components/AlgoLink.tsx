@@ -31,7 +31,7 @@ export const AlgoLink: React.FC<AlgoLinkProps> = ({
   // Determine link type
   const isMail = safeUrl.startsWith('mailto:');
   const isHash = safeUrl.startsWith('#');
-  const isExternal = safeUrl.startsWith('http') || safeUrl.startsWith('https') || safeUrl.startsWith('//');
+  const isExternal = safeUrl.startsWith('http') || safeUrl.startsWith('https') || safeUrl.startsWith('//') || safeUrl.startsWith('/problem');
 
   // Icon Size and Style
   const iconBaseClass = cn("inline-block ml-1.5 w-4 h-4", iconClassName);
