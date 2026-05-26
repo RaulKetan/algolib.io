@@ -11,7 +11,7 @@ export function HeroSection() {
     const posthog = usePostHog();
 
     return (
-        <div className="relative pt-24 pb-24 lg:pt-36 lg:pb-36 overflow-hidden">
+        <div className="relative pt-16 pb-16 lg:pt-24 lg:pb-24 overflow-hidden">
             <div className="w-full max-w-[1600px] mx-auto px-4 relative z-10">
                 <div className="md:max-w-[80%] mx-auto animate-in fade-in slide-in-from-bottom duration-1000">
                     <h1 className="hero-title mb-8 text-[#1A1A1A] dark:text-white">
@@ -38,12 +38,12 @@ export function HeroSection() {
                                 <Link 
                                     href="/dsa/get-started"
                                     onClick={() => trackEvent(posthog, 'home_cta_clicked', { 
-                                        cta_label: 'Get started now', 
+                                        cta_label: 'Fast-Track My Prep', 
                                         destination: '/dsa/get-started',
                                         section: 'hero'
                                     })}
                                 >
-                                    Get started now <ArrowRight className="ml-2 w-6 h-6" />
+                                    Fast-Track My Prep <ArrowRight className="ml-2 w-6 h-6" />
                                 </Link>
                             </Button>
                             <span className="text-[10px] text-gray-500 font- uppercase tracking-wider opacity-60 text-center">
