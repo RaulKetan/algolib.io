@@ -1,7 +1,7 @@
 import { Check, Circle, Lock, ArrowRight, Timer, Database, Zap, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { AlgorithmListItem } from "@/types/algorithm";
+import { AlgorithmListItem, DIFFICULTY_MAP } from "@/types/algorithm";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
@@ -25,6 +25,7 @@ const difficultyColors: Record<string, string> = {
 export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, hasPremiumAccess, isPaywallEnabled, onCategoryClick }: AlgorithmCardProps) => {
     const displayTitle = algorithm.title || algorithm.name || '';
     const serialNo = algorithm.serial_no || (index !== undefined ? index + 1 : null);
+    const displayDifficulty = algorithm.mappedDifficulty || DIFFICULTY_MAP[algorithm.difficulty?.toLowerCase()] || 'Medium';
 
     return (
         <Link
@@ -61,7 +62,7 @@ export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, 
 
 
                         {isPremium && (
-                            <Badge variant="secondary" className={cn("bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1", isSidebar ? "scale-90" : "")}>
+                            <Badge variant="secondary" className={cn("bg-primary/10 text-primary border-primary/20 px-3 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold flex items-center gap-1.5 h-6 uppercase tracking-wider shadow-none select-none cursor-default shrink-0", isSidebar ? "scale-90" : "")}>
                                 {isPaywallEnabled && !hasPremiumAccess && <Lock className="w-2.5 h-2.5" />}
                                 PRO
                             </Badge>
@@ -76,8 +77,20 @@ export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, 
 
                     {/* Meta Info */}
                     <div className={cn("flex flex-wrap items-center gap-y-2", isSidebar ? "gap-x-3" : "gap-x-5")}>
+                        {/* Difficulty */}
+                        <div className="flex items-center gap-1.5">
+                            <div className={cn(
+                                "flex items-center gap-1 px-3 py-0.5 rounded-full border font-semibold uppercase tracking-wider h-6 select-none cursor-default shrink-0",
+                                difficultyColors[displayDifficulty] || difficultyColors['Medium'],
+                                isSidebar ? "text-[7px] h-5 px-1.5" : "text-[9px] sm:text-[10px]"
+                            )}>
+                                {!isSidebar && <Zap className="w-2.5 h-2.5" />}
+                                {displayDifficulty}
+                            </div>
+                        </div>
+
+                        {/* Category */}
                         <div className="flex items-center gap-1.5 flex-wrap">
-                            {!isSidebar && <BookOpen className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />}
                             {(() => {
                                 const categories = (algorithm.category || '').split(',').map(c => c.trim()).filter(Boolean);
                                 const visibleCatsCount = isSidebar ? 1 : 3;
@@ -97,7 +110,7 @@ export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, 
                                                         e.stopPropagation();
                                                     }
                                                 }}
-                                                className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium bg-muted/60 text-muted-foreground/90 hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-border/30 hover:border-primary/20 shrink-0 select-none z-10"
+                                                className="px-3 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold bg-muted/60 text-muted-foreground/90 hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-border/30 hover:border-primary/20 shrink-0 select-none z-10 h-6 flex items-center"
                                             >
                                                 {cat}
                                             </button>
@@ -112,7 +125,7 @@ export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, 
                                                 <Popover>
                                                     <PopoverTrigger asChild>
                                                         <button
-                                                            className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 border border-primary/20 shrink-0 z-10"
+                                                            className="px-3 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 border border-primary/20 shrink-0 z-10 h-6 flex items-center"
                                                         >
                                                             +{hiddenCats.length}
                                                         </button>
@@ -146,17 +159,6 @@ export const AlgorithmCard = ({ algorithm, status, isPremium, index, isSidebar, 
                                     </>
                                 );
                             })()}
-                        </div>
-
-                        <div className="flex items-center gap-1.5">
-                            <div className={cn(
-                                "flex items-center gap-1 px-2 py-0 rounded-full border font- uppercase tracking-wider",
-                                difficultyColors[algorithm.difficulty] || difficultyColors['Medium'],
-                                isSidebar ? "text-[7px]" : "text-[10px]"
-                            )}>
-                                {!isSidebar && <Zap className="w-2.5 h-2.5" />}
-                                {algorithm.difficulty}
-                            </div>
                         </div>
 
                         {!isSidebar && algorithm.metadata?.likes && (

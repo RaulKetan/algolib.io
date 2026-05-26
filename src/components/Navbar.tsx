@@ -214,7 +214,7 @@ const Navbar = ({
         className,
       )}
     >
-      <div className="w-full px-4 md:px-6 lg:px-8">
+      <div className="w-full px-6">
         <div className="flex h-12 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-4">

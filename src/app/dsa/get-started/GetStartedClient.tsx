@@ -16,14 +16,21 @@ import {
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+import { useApp } from "@/contexts/AppContext";
+
 const GetStartedClient = () => {
   const { data, isLoading } = useAlgorithms();
+  const { profile } = useApp();
   const [activeTab, setActiveTab] = useState("all");
   const isMobile = useIsMobile();
 
+  const isUserAdmin = profile?.role === 'admin';
+
   const allAlgorithms = useMemo(() => 
-    (data?.algorithms ?? []).filter(algo => algo.problemType === 'dsa'),
-    [data]
+    (data?.algorithms ?? [])
+      .filter(algo => algo.problemType === 'dsa')
+      .filter(algo => algo.published !== false || isUserAdmin),
+    [data, isUserAdmin]
   );
   
   const coreAlgorithms = useMemo(() => 

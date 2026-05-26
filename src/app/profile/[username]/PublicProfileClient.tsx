@@ -94,9 +94,14 @@ interface PublicProfileClientProps {
 
 const PublicProfileClient = ({ username }: PublicProfileClientProps) => {
   const router = useRouter();
-  const { user: currentUser } = useApp();
+  const { user: currentUser, profile: currentUserProfile } = useApp();
   const { data: algoMeta } = useAlgorithms();
-  const allAlgorithms = algoMeta?.algorithms;
+  const isUserAdmin = currentUserProfile?.role === 'admin';
+  const allAlgorithms = useMemo(() => 
+    (algoMeta?.algorithms || [])
+      .filter(algo => algo.published !== false || isUserAdmin),
+    [algoMeta, isUserAdmin]
+  );
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);

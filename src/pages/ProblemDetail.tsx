@@ -65,9 +65,14 @@ const ProblemDetail: React.FC = () => {
 
   // -- Data Fetching State --
   const { data: algorithm, isLoading: isLoadingAlgorithm } = useAlgorithm(algorithmIdOrSlug);
-  const { user, hasPremiumAccess, activeListType, setActiveListType, progressMap } = useApp();
+  const { user, hasPremiumAccess, activeListType, setActiveListType, progressMap, profile } = useApp();
   const { data: algorithmsData, isLoading: isAlgorithmsLoading } = useAlgorithms();
-  const allAlgorithms = algorithmsData?.algorithms || [];
+  const isUserAdmin = profile?.role === 'admin';
+  const allAlgorithms = useMemo(() => 
+    (algorithmsData?.algorithms || [])
+      .filter(algo => algo.published !== false || isUserAdmin),
+    [algorithmsData, isUserAdmin]
+  );
   const isPaywallEnabled = useFeatureFlag('paywall_enabled');
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

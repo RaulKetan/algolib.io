@@ -38,12 +38,12 @@ export function HeroSection() {
                                 <Link 
                                     href="/dsa/get-started"
                                     onClick={() => trackEvent(posthog, 'home_cta_clicked', { 
-                                        cta_label: 'Fast-Track My Prep', 
+                                        cta_label: 'Start Practice', 
                                         destination: '/dsa/get-started',
                                         section: 'hero'
                                     })}
                                 >
-                                    Fast-Track My Prep <ArrowRight className="ml-2 w-6 h-6" />
+                                    Start Practice <ArrowRight className="ml-2 w-6 h-6" />
                                 </Link>
                             </Button>
                             <span className="text-[10px] text-gray-500 font- uppercase tracking-wider opacity-60 text-center">
