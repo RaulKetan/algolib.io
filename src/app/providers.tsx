@@ -15,6 +15,7 @@ import { queryClient } from "@/lib/queryClient";
 import { AppProvider } from "@/contexts/AppContext";
 import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { usePathname } from 'next/navigation';
 import PostHogIdentify from "./PostHogIdentify";
 
 // Initialize PostHog synchronously at module load (client-side only).
@@ -37,6 +38,8 @@ if (typeof window !== 'undefined') {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isDsaPath = pathname ? pathname.startsWith('/dsa/') || pathname === '/dsa' : false;
 
   return (
     <PostHogProvider client={posthog}>
@@ -45,7 +48,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <AppProvider>
             <FeatureFlagProvider>
               <TooltipProvider>
-                <SidebarProvider defaultOpen={false}>
+                <SidebarProvider key={isDsaPath ? "dsa" : "other"} defaultOpen={isDsaPath}>
                   <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
