@@ -55,9 +55,10 @@ const scrollToCode = () => {
 interface ProblemDetailClientProps {
   initialAlgorithm: any;
   slug: string;
+  isCrawler?: boolean;
 }
 
-const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgorithm, slug }) => {
+const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgorithm, slug, isCrawler = false }) => {
   const algorithmIdOrSlug = slug;
   const router = useRouter();
   const posthog = usePostHog();
@@ -254,8 +255,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
 
   // -- Render Guards --
 
-  // Paywall Logic
-  if (isPaywallEnabled && isPremiumAlgorithm && !hasPremiumAccess) {
+  // Paywall Logic - Bypassed for Search Engine Crawlers to allow SEO indexing of the problem descriptions
+  if (isPaywallEnabled && isPremiumAlgorithm && !hasPremiumAccess && !isCrawler) {
     return <Paywall />;
   }
 

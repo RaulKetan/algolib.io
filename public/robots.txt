@@ -1,8 +1,16 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /dsa/query*
+Disallow: /*?category=*
+Disallow: /*?search=*
+Disallow: /*?topic=*
 
 User-agent: Bingbot
 Allow: /
+Disallow: /dsa/query*
+Disallow: /*?category=*
+Disallow: /*?search=*
+Disallow: /*?topic=*
 
 User-agent: Twitterbot
 Allow: /
@@ -12,4 +20,8 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /dsa/query*
+Disallow: /*?category=*
+Disallow: /*?search=*
+Disallow: /*?topic=*
 Sitemap: https://rulcode.com/sitemap.xml

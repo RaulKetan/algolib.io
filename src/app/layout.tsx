@@ -14,6 +14,7 @@ import AdminViewToggle from "@/admin/components/AdminViewToggle";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://rulcode.com'),
   title: "Rulcode: Master Algorithms Visually & Open Source",
   description: "Master 200+ algorithms visually with interactive animations, pro tips, and code snippets in Python, C++, Java, and TypeScript.",
   keywords: ["algorithms", "open source", "data structures", "competitive programming", "coding interviews", "algorithm visualization", "code snippets", "python", "java", "c++", "typescript", "Rulcode.com"],

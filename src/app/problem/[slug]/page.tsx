@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { supabase } from '@/integrations/supabase/client';
 import ProblemDetailClient from './ProblemDetailClient';
 import Script from 'next/script';
+import { headers } from 'next/headers';
 
 interface ProblemPageProps {
   params: Promise<{ slug: string }>;
@@ -104,10 +105,14 @@ export async function generateMetadata({ params }: ProblemPageProps): Promise<Me
     title: cleanTitle,
     description: cleanDesc,
     keywords: `${algorithm.category || ''}, algorithms, ${algorithm.name}, coding interview, visualization`,
+    alternates: {
+      canonical: `/problem/${algorithm.id}`,
+    },
     openGraph: {
       title: cleanTitle,
       description: cleanDesc,
       images: [algorithm.image || 'https://rulcode.com/og-image.png'],
+      url: `/problem/${algorithm.id}`,
     },
   };
 }
@@ -119,6 +124,10 @@ export default async function ProblemPage({ params }: ProblemPageProps) {
   if (!algorithm) {
     notFound();
   }
+
+  const reqHeaders = await headers();
+  const userAgent = reqHeaders.get('user-agent') || '';
+  const isCrawler = /bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(userAgent);
 
   // Generate dynamic BreadcrumbList Schema
   const breadcrumbJsonLd = {
@@ -220,6 +229,7 @@ export default async function ProblemPage({ params }: ProblemPageProps) {
       <ProblemDetailClient 
         initialAlgorithm={algorithm} 
         slug={slug} 
+        isCrawler={isCrawler}
       />
     </>
   );
