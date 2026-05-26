@@ -30,7 +30,7 @@ const FilterSection = ({ title, items, selectedItems, onToggle, columns = 2, has
                     {hasInfo && <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/40" />}
                 </div>
                 {isPremium && (
-                    <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] font-medium px-2 py-0.5 uppercase tracking-wide flex items-center gap-1">
+                    <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-medium px-2 py-0.5 uppercase tracking-wide flex items-center gap-1">
                         <Lock className="w-2.5 h-2.5" />
                         Pro
                     </Badge>
@@ -86,6 +86,8 @@ interface ProblemSidebarFiltersProps {
     selectedCompanies: string[];
     onCompanyToggle: (company: string) => void;
     companies?: string[];
+    selectedDifficulties: string[];
+    onDifficultyToggle: (difficulty: string) => void;
 }
 
 export const ProblemSidebarFilters = ({
@@ -94,7 +96,9 @@ export const ProblemSidebarFilters = ({
     topics,
     selectedCompanies,
     onCompanyToggle,
-    companies
+    companies,
+    selectedDifficulties,
+    onDifficultyToggle
 }: ProblemSidebarFiltersProps) => {
     const { hasPremiumAccess } = useApp();
     const displayTopics = topics || [];
@@ -137,6 +141,8 @@ export const ProblemSidebarFilters = ({
                                 <div key={diff} className="flex items-center space-x-3 group cursor-pointer group/item">
                                     <Checkbox
                                         id={diff}
+                                        checked={selectedDifficulties.includes(diff)}
+                                        onCheckedChange={() => onDifficultyToggle(diff)}
                                         className="w-3.5 h-3.5 rounded-none border-foreground/30 border bg-background shadow-none data-[state=checked]:bg-[#dfff5e] data-[state=checked]:border-[#dfff5e] data-[state=checked]:text-black"
                                     />
                                     <Label

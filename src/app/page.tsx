@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import HomeClient from './HomeClient';
 import Script from 'next/script';
 import { HeroSection } from '@/components/Home/sections/HeroSection';
+import { ProblemsSection } from '@/components/Home/sections/ProblemsSection';
+import { GuidedSection } from '@/components/Home/sections/GuidedSection';
 import { InteractiveSandboxTeaser } from '@/components/Home/sections/InteractiveSandboxTeaser';
 import { TopicRoadmapSection } from '@/components/Home/sections/TopicRoadmapSection';
 import { SprintsAndTracksSection } from '@/components/Home/sections/SprintsAndTracksSection';
@@ -79,6 +81,8 @@ export default function Page() {
       />
       <div className="min-h-screen bg-white dark:bg-black text-[#1A1A1A] dark:text-white overflow-x-hidden relative w-full">
         <HeroSection />
+        <ProblemsSection />
+        <GuidedSection />
         <InteractiveSandboxTeaser />
         <SprintsAndTracksSection />
         <TopicRoadmapSection />

@@ -8,6 +8,8 @@ import { ProblemsList } from "@/components/listing/ProblemsList";
 import { Button } from "@/components/ui/button";
 import { Target, Brain, Layers } from "lucide-react";
 
+import { useApp } from "@/contexts/AppContext";
+
 interface ProblemsClientProps {
   listType?: string;
   title?: string;
@@ -26,6 +28,7 @@ const ProblemsClient = ({
   const router = useRouter();
   const pathname = usePathname();
   const { data, isLoading } = useAlgorithms();
+  const { profile } = useApp();
   const searchParams = useSearchParams();
   
   const searchMode = searchParams.get('mode') || 'all';
@@ -33,9 +36,13 @@ const ProblemsClient = ({
   const topicFilter = searchParams.get('topic');
   const companyFilter = searchParams.get('company');
 
+  const isUserAdmin = profile?.role === 'admin';
+
   const allAlgorithms = useMemo(() => 
-    (data?.algorithms ?? []).filter(algo => algo.problemType === 'dsa'),
-    [data]
+    (data?.algorithms ?? [])
+      .filter(algo => algo.problemType === 'dsa')
+      .filter(algo => algo.published !== false || isUserAdmin),
+    [data, isUserAdmin]
   );
 
   const coreAlgorithms = useMemo(() => 

@@ -14,6 +14,8 @@ import {
   Building2,
   Check,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Code2,
   ExternalLink,
   Eye,
@@ -169,6 +171,7 @@ export const ProblemDescriptionPanel = React.memo(
     const [isUltraCompact, setIsUltraCompact] = useState(false);
     const [tabsShowLeftFade, setTabsShowLeftFade] = useState(false);
     const [tabsShowRightFade, setTabsShowRightFade] = useState(false);
+    const [openAccordionItems, setOpenAccordionItems] = useState<string[]>([]);
 
     // Detect tab scroll overflow to show left/right gradient fades
     useEffect(() => {
@@ -192,8 +195,32 @@ export const ProblemDescriptionPanel = React.memo(
       };
     }, []);
 
-    const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
-      ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const scrollToSection = (
+      ref: React.RefObject<HTMLDivElement>,
+      sectionId?: string,
+    ) => {
+      if (sectionId) {
+        setOpenAccordionItems((prev) => {
+          if (prev.includes(sectionId)) return prev;
+          return [...prev, sectionId];
+        });
+      }
+      setTimeout(() => {
+        ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    };
+
+    const handleScrollTabs = (direction: "left" | "right") => {
+      const el = tabsScrollRef.current;
+      if (!el) return;
+      const scrollAmount = 180;
+      el.scrollTo({
+        left:
+          direction === "left"
+            ? el.scrollLeft - scrollAmount
+            : el.scrollLeft + scrollAmount,
+        behavior: "smooth",
+      });
     };
 
     useEffect(() => {
@@ -266,16 +293,38 @@ export const ProblemDescriptionPanel = React.memo(
           onValueChange={setActiveTab}
           className="flex-1 flex flex-col overflow-hidden w-full pt-0 mt-0"
         >
-          {/* Tabs header with ScrollArea scrollbar exactly like the test cases tab + overflow fades */}
-          <div className="px-0 shrink-0 border-b bg-background/50 relative">
-            {/* Left fade — visible when scrolled away from start (only in text mode) */}
+          {/* Tabs header with ScrollArea scrollbar exactly like the test cases tab + overflow fades & scroll buttons */}
+          <div className="px-0 shrink-0 border-b bg-background/50 relative group/tabs">
+            {/* Left fade & Scroll Button */}
             <div
-              className={`absolute left-0 top-0 h-10 w-10 bg-gradient-to-r from-background via-background/80 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${!isCompact && tabsShowLeftFade ? "opacity-100" : "opacity-0"}`}
+              className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background via-background/90 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${tabsShowLeftFade ? "opacity-100" : "opacity-0"}`}
             />
-            {/* Right fade — visible when content overflows to the right (only in text mode) */}
+            {tabsShowLeftFade && (
+              <button
+                type="button"
+                onClick={() => handleScrollTabs("left")}
+                className="absolute left-1.5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 rounded-full bg-background/95 hover:bg-background border border-border shadow-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-200"
+                aria-label="Scroll tabs left"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Right fade & Scroll Button */}
             <div
-              className={`absolute right-0 top-0 h-10 w-10 bg-gradient-to-l from-background via-background/80 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${!isCompact && tabsShowRightFade ? "opacity-100" : "opacity-0"}`}
+              className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background via-background/90 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${tabsShowRightFade ? "opacity-100" : "opacity-0"}`}
             />
+            {tabsShowRightFade && (
+              <button
+                type="button"
+                onClick={() => handleScrollTabs("right")}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 rounded-full bg-background/95 hover:bg-background border border-border shadow-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-200"
+                aria-label="Scroll tabs right"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
+
             <ScrollAreaPrimitive.Root
               type="hover"
               className="w-full overflow-hidden"
@@ -285,7 +334,7 @@ export const ProblemDescriptionPanel = React.memo(
                 className="w-full"
               >
                 <div
-                  className={`flex flex-col pb-1.5 ${isCompact ? "w-full" : "w-max"}`}
+                  className={`flex flex-col ${isCompact ? "w-full" : "w-max"}`}
                 >
                   <TabsList
                     className={`flex p-0 bg-transparent gap-0 rounded-none h-10 ${isCompact ? "w-full" : "w-max min-w-full"}`}
@@ -293,7 +342,7 @@ export const ProblemDescriptionPanel = React.memo(
                     <TooltipProvider>
                       <TabsTrigger
                         value="description"
-                        className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
                       >
                         {isCompact ? (
                           <Tooltip>
@@ -312,7 +361,7 @@ export const ProblemDescriptionPanel = React.memo(
 
                       <TabsTrigger
                         value="visualizations"
-                        className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
                       >
                         {isCompact ? (
                           <Tooltip>
@@ -331,7 +380,7 @@ export const ProblemDescriptionPanel = React.memo(
 
                       <TabsTrigger
                         value="solutions"
-                        className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
                       >
                         {isCompact ? (
                           <Tooltip>
@@ -350,7 +399,7 @@ export const ProblemDescriptionPanel = React.memo(
 
                       <TabsTrigger
                         value="submissions"
-                        className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
                       >
                         {isCompact ? (
                           <Tooltip>
@@ -371,7 +420,7 @@ export const ProblemDescriptionPanel = React.memo(
                         algorithm?.controls?.brainstorm !== false && (
                           <TabsTrigger
                             value="thinkpad"
-                            className="flex-1 data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
+                            className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
                           >
                             {isCompact ? (
                               <Tooltip>
@@ -411,8 +460,8 @@ export const ProblemDescriptionPanel = React.memo(
                   {/* Title & Progress */}
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <div className="flex items-center gap-3 mb-3">
-                        <h1 className="text-xl font-medium">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h1 className="text-md font-medium">
                           {
                             <span className="font-medium text-md mr-1">
                               {algorithm.serial_no
@@ -425,14 +474,14 @@ export const ProblemDescriptionPanel = React.memo(
                         {(algorithm?.is_premium ||
                           algorithm?.is_pro ||
                           algorithm?.metadata?.is_pro) && (
-                          <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-300 border-amber-500/20 text-[10px] sm:text-xs font-bold px-3 py-1 uppercase tracking-wide h-7 rounded-full">
+                          <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] sm:text-[11px] font-bold px-3 py-0.5 uppercase tracking-wide h-6 rounded-full">
                             PRO
                           </Badge>
                         )}
                       </div>
 
                       {/* Difficulty and Company Tags */}
-                      <div className="flex flex-wrap items-center gap-2 mb-4">
+                      <div className="flex flex-wrap items-center gap-2">
                         {/* Difficulty Badge */}
                         {(!algorithm?.controls ||
                           algorithm.controls?.metadata?.difficulty !== false) &&
@@ -443,7 +492,7 @@ export const ProblemDescriptionPanel = React.memo(
                               ${DIFFICULTY_MAP[algorithm.difficulty?.toLowerCase()] === "Easy" ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30" : ""}
                               ${DIFFICULTY_MAP[algorithm.difficulty?.toLowerCase()] === "Medium" ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/30" : ""}
                               ${DIFFICULTY_MAP[algorithm.difficulty?.toLowerCase()] === "Hard" ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30" : ""}
-                              font-semibold px-3 py-1 h-7 rounded-full text-[10px] sm:text-xs
+                              font-semibold px-3 py-0.5 h-6 rounded-full text-[10px] sm:text-[11px]
                             `}
                             >
                               {DIFFICULTY_MAP[
@@ -458,10 +507,10 @@ export const ProblemDescriptionPanel = React.memo(
                           {algorithm.category && (
                             <Badge
                               variant="outline"
-                              className="bg-transparent text-foreground border-border text-[10px] sm:text-xs px-3 py-1 cursor-pointer hover:bg-muted/50 transition-all flex items-center h-7 rounded-full gap-1.5"
+                              className="bg-transparent text-foreground border-border text-[10px] sm:text-[11px] px-3 py-0.5 cursor-pointer hover:bg-muted/50 transition-all flex items-center h-6 rounded-full gap-1.5"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                scrollToSection(topicsRef);
+                                scrollToSection(topicsRef, "topics");
                               }}
                             >
                               <Tag className="w-3.5 h-3.5 text-primary" />
@@ -474,10 +523,10 @@ export const ProblemDescriptionPanel = React.memo(
                             algorithm.metadata.companies.length > 0 && (
                               <Badge
                                 variant="outline"
-                                className="bg-transparent text-foreground border-border text-[10px] sm:text-xs px-3 py-1 cursor-pointer hover:bg-muted/50 transition-all flex items-center h-7 rounded-full gap-1.5"
+                                className="bg-transparent text-foreground border-border text-[10px] sm:text-[11px] px-3 py-0.5 cursor-pointer hover:bg-muted/50 transition-all flex items-center h-6 rounded-full gap-1.5"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  scrollToSection(companiesRef);
+                                  scrollToSection(companiesRef, "companies");
                                 }}
                               >
                                 {hasPremiumAccess || isPlatformPreview ? (
@@ -494,10 +543,10 @@ export const ProblemDescriptionPanel = React.memo(
                             algorithm.metadata.hints.length > 0 && (
                               <Badge
                                 variant="outline"
-                                className="bg-transparent text-foreground border-border text-[10px] sm:text-xs px-3 py-1 cursor-pointer hover:bg-muted/50 transition-all flex items-center h-7 rounded-full gap-1.5"
+                                className="bg-transparent text-foreground border-border text-[10px] sm:text-[11px] px-3 py-0.5 cursor-pointer hover:bg-muted/50 transition-all flex items-center h-6 rounded-full gap-1.5"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  scrollToSection(hintsRef);
+                                  scrollToSection(hintsRef, "hints");
                                 }}
                               >
                                 <Lightbulb className="w-3.5 h-3.5 text-primary" />
@@ -514,7 +563,7 @@ export const ProblemDescriptionPanel = React.memo(
                         isCompleted && (
                           <Badge
                             variant="outline"
-                            className="bg-primary/10 text-primary border-primary/20 px-3 py-1 hover:bg-primary/20 transition-colors cursor-default flex items-center h-7 rounded-full text-[10px] sm:text-xs font-medium"
+                            className="bg-primary/10 text-primary border-primary/20 px-3 py-0.5 hover:bg-primary/20 transition-colors cursor-default flex items-center h-6 rounded-full text-[10px] sm:text-[11px] font-medium"
                           >
                             <div className="bg-primary rounded-full p-0.5 mr-1.5 flex items-center justify-center text-primary-foreground shadow-sm">
                               <Check className="w-2.5 h-2.5 stroke-[3]" />
@@ -970,7 +1019,7 @@ export const ProblemDescriptionPanel = React.memo(
                                           <TooltipProvider>
                                             <TabsTrigger
                                               value="usecase"
-                                              className="text-xs sm:text-sm"
+                                              className="text-[12px]"
                                             >
                                               {isUltraCompact ? (
                                                 <Tooltip>
@@ -990,7 +1039,7 @@ export const ProblemDescriptionPanel = React.memo(
                                             </TabsTrigger>
                                             <TabsTrigger
                                               value="tips"
-                                              className="text-xs sm:text-sm"
+                                              className="text-[12px]"
                                             >
                                               {isUltraCompact ? (
                                                 <Tooltip>
@@ -1010,7 +1059,7 @@ export const ProblemDescriptionPanel = React.memo(
                                             </TabsTrigger>
                                             <TabsTrigger
                                               value="steps"
-                                              className="text-xs sm:text-sm"
+                                              className="text-[12px]"
                                             >
                                               {isUltraCompact ? (
                                                 <Tooltip>
@@ -1119,7 +1168,12 @@ export const ProblemDescriptionPanel = React.memo(
 
                   {/* Metadata Accordions (Topics, Companies, Hints) */}
                   <div className="space-y-0 max-w-5xl mx-auto w-full">
-                    <Accordion type="multiple" className="w-full space-y-4">
+                    <Accordion
+                      type="multiple"
+                      className="w-full space-y-4"
+                      value={openAccordionItems}
+                      onValueChange={setOpenAccordionItems}
+                    >
                       {/* Topics Item */}
                       {algorithm.category && (
                         <AccordionItem
@@ -1149,7 +1203,7 @@ export const ProblemDescriptionPanel = React.memo(
                                 >
                                   <Badge
                                     variant="secondary"
-                                    className="bg-muted hover:bg-muted/80 text-foreground border-border font-normal cursor-pointer flex items-center gap-1.5"
+                                    className="bg-muted hover:bg-muted/80 text-foreground border-border font-semibold px-3 py-0.5 h-6 rounded-full text-[10px] sm:text-[11px] cursor-pointer flex items-center gap-1.5"
                                   >
                                     <Tag className="w-3 h-3 text-primary/70" />
                                     {tag}
@@ -1192,11 +1246,11 @@ export const ProblemDescriptionPanel = React.memo(
                                       >
                                         <Badge
                                           variant="secondary"
-                                          className="bg-muted hover:bg-muted/80 text-foreground border-border text-xs px-2 py-1 flex items-center gap-1.5 font-normal cursor-pointer"
+                                          className="bg-muted hover:bg-muted/80 text-foreground border-border font-semibold px-3 py-0.5 h-6 rounded-full text-[10px] sm:text-[11px] flex items-center gap-1.5 cursor-pointer"
                                         >
                                           <CompanyIcon
                                             company={company}
-                                            className="w-3.5 h-3.5 opacity-80"
+                                            className="w-3 h-3 opacity-80"
                                           />
                                           {company}
                                         </Badge>
@@ -1205,7 +1259,7 @@ export const ProblemDescriptionPanel = React.memo(
                                   )}
                                 </div>
                               ) : (
-                                <div className="relative overflow-hidden rounded-lg">
+                                <div className="relative overflow-hidden rounded-lg min-h-[95px] flex items-center px-4 py-2 border border-border/30 bg-muted/5">
                                   <div className="flex flex-wrap gap-2 filter blur-[3px] select-none pointer-events-none opacity-50">
                                     {algorithm.metadata.companies
                                       .slice(0, 5)
@@ -1213,7 +1267,7 @@ export const ProblemDescriptionPanel = React.memo(
                                         <Badge
                                           key={index}
                                           variant="secondary"
-                                          className="px-2 py-1"
+                                          className="font-semibold px-3 py-0.5 h-6 rounded-full text-[10px] sm:text-[11px]"
                                         >
                                           {company}
                                         </Badge>

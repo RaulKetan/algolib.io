@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, ReactNode } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { DIFFICULTY_MAP } from "@/types/algorithm";
 import { ListingLayout } from "@/components/listing/ListingLayout";
 import { PremiumProblemCard } from "@/components/listing/PremiumProblemCard";
@@ -51,11 +52,14 @@ export const ProblemsList = ({
   stickyHeaderSlot
 }: ProblemsListProps) => {
   const { activeListType, setActiveListType, progressMap, hasPremiumAccess } = useApp();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('serial-asc');
   const [selectedTopics, setSelectedTopics] = useState<string[]>(initialSelectedTopics.map(normalizeCategory));
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>(initialSelectedCompanies);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
   const [isCategoryWise, setIsCategoryWise] = useState(initialCategoryWise);
   const [mounted, setMounted] = useState(false);
   
@@ -127,6 +131,10 @@ export const ProblemsList = ({
       });
     }
 
+    if (selectedDifficulties.length > 0) {
+      result = result.filter(algo => selectedDifficulties.includes(algo.mappedDifficulty));
+    }
+
     const rank: any = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
     if (sortBy === 'name-asc') result.sort((a, b) => a.displayTitle.localeCompare(b.displayTitle));
     else if (sortBy === 'name-desc') result.sort((a, b) => b.displayTitle.localeCompare(a.displayTitle));
@@ -136,7 +144,7 @@ export const ProblemsList = ({
     else if (sortBy === 'serial-desc') result.sort((a, b) => (b.serial_no || 0) - (a.serial_no || 0));
 
     return result;
-  }, [algorithms, searchQuery, sortBy, selectedTopics, selectedCompanies]);
+  }, [algorithms, searchQuery, sortBy, selectedTopics, selectedCompanies, selectedDifficulties]);
 
   const currentGroupedAlgos = useMemo(() => {
     if (!isCategoryWise) return [];
@@ -145,10 +153,10 @@ export const ProblemsList = ({
 
   // Auto-expand all categories when searching or filtering
   useEffect(() => {
-    if (searchQuery || selectedTopics.length > 0 || selectedCompanies.length > 0) {
+    if (searchQuery || selectedTopics.length > 0 || selectedCompanies.length > 0 || selectedDifficulties.length > 0) {
       setOpenCategories(currentGroupedAlgos.map(([cat]) => cat));
     }
-  }, [searchQuery, selectedTopics, selectedCompanies, currentGroupedAlgos]);
+  }, [searchQuery, selectedTopics, selectedCompanies, selectedDifficulties, currentGroupedAlgos]);
 
   // Handle initial expansion for specific pages like /dsa/query
   useEffect(() => {
@@ -216,7 +224,11 @@ export const ProblemsList = ({
   const handleCategoryClick = (cat: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    handleTopicToggle(normalizeCategory(cat));
+    if (pathname === '/dsa/query') {
+      handleTopicToggle(normalizeCategory(cat));
+    } else {
+      router.push(`/dsa/query?topic=${encodeURIComponent(cat)}`);
+    }
   };
 
   const handleCompanyToggle = (company: string) => {
@@ -225,6 +237,14 @@ export const ProblemsList = ({
       return;
     }
     setSelectedCompanies(prev => prev.includes(company) ? prev.filter(c => c !== company) : [...prev, company]);
+  };
+
+  const handleDifficultyToggle = (difficulty: string) => {
+    if (difficulty === 'CLEAR_ALL') {
+      setSelectedDifficulties([]);
+      return;
+    }
+    setSelectedDifficulties(prev => prev.includes(difficulty) ? prev.filter(d => d !== difficulty) : [...prev, difficulty]);
   };
 
   const allTopics = useMemo(() => {
@@ -274,6 +294,8 @@ export const ProblemsList = ({
       selectedCompanies={selectedCompanies}
       onCompanyToggle={handleCompanyToggle}
       companies={allCompanies}
+      selectedDifficulties={selectedDifficulties}
+      onDifficultyToggle={handleDifficultyToggle}
       showRecommendation={showRecommendation}
       stats={{ count: filteredAndSortedAlgorithms.length, hours: totalHours }}
       showCategoryToggle={showCategoryToggle}

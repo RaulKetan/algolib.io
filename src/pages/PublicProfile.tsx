@@ -93,9 +93,14 @@ const PublicProfile = () => {
   const router = useRouter();
   const params = useParams();
   const username = params?.username as string | undefined;
-  const { user: currentUser } = useApp();
+  const { user: currentUser, profile: currentUserProfile } = useApp();
   const { data: algoMeta } = useAlgorithms();
-  const allAlgorithms = algoMeta?.algorithms;
+  const isUserAdmin = currentUserProfile?.role === 'admin';
+  const allAlgorithms = useMemo(() => 
+    (algoMeta?.algorithms || [])
+      .filter(algo => algo.published !== false || isUserAdmin),
+    [algoMeta, isUserAdmin]
+  );
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
