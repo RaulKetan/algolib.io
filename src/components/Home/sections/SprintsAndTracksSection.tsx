@@ -63,7 +63,7 @@ export function SprintsAndTracksSection() {
       >
         
         {/* SECTION HEADER - Sleek Typography - Left Aligned with inline icon */}
-        <div className="max-w-[1400px] mx-auto mb-10 text-left">
+        <div className="max-w-4xl mx-auto mb-10 text-left">
           <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mb-4 leading-[1.1] flex items-center gap-3">
             <Flame className="w-[1em] h-[1em] fill-primary text-primary shrink-0" />
             <span>Launch Your <span className="bg-gradient-to-r from-primary via-[#EAFF96] to-[#A3E635] bg-clip-text text-transparent">DSA Mastery</span></span>

@@ -211,8 +211,8 @@ export function TopicRoadmapSection() {
         className="w-full max-w-[1500px] mx-auto px-6 relative z-10"
       >
 
-        {/* Heading with navigation actions - Now left-aligned and outside */}
-        <div className="max-w-[1400px] mx-auto mb-10 relative z-10 text-left">
+        {/* Heading with navigation actions - Now aligned to the start of the card container */}
+        <div className="max-w-4xl mx-auto mb-10 relative z-10 text-left">
           <h3 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-4 leading-[1.1] flex items-center gap-3">
             <LayoutGrid className="w-[1em] h-[1em] text-primary shrink-0" />
             <span>Start Your Journey Topic-Wise</span>
