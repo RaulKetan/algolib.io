@@ -132,7 +132,7 @@ export const NotesComponent = ({ algorithmId, algorithmTitle, restoreData }: Not
       {/* Notes Content */}
       <div className="flex-1 p-4">
         {isPreview ? (
-          <div className="min-h-[500px] lg:min-h-[700px] p-4 border rounded-lg bg-muted/30 prose prose-sm dark:prose-invert max-w-none">
+          <div className="min-h-[500px] lg:min-h-[700px] p-4 border rounded-none bg-muted/30 prose prose-sm dark:prose-invert max-w-none">
             <ReactMarkdown>{notes || '*No content yet*'}</ReactMarkdown>
           </div>
         ) : (
@@ -140,7 +140,7 @@ export const NotesComponent = ({ algorithmId, algorithmTitle, restoreData }: Not
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Start writing your notes... (Markdown supported)"
-            className="min-h-[500px] lg:min-h-[700px] font-mono text-sm resize-none"
+            className="min-h-[500px] lg:min-h-[700px] font-mono text-sm resize-none rounded-none"
           />
         )}
       </div>

@@ -113,7 +113,7 @@ export function GuidedSection() {
                     {/* Bottom CTA Button */}
                     <div className="flex justify-center">
                         <Button size="lg" className="rounded-full px-8 py-6 text-base bg-primary hover:bg-primary/90 text-black transition-all hover:scale-105 active:scale-95 shadow-xl shadow-primary/20" asChild>
-                            <Link href="/guides" onClick={() => handleCtaClick('Explore Guides', '/guides', 'guided_section_cta')}>
+                            <Link href="/guides/time-complexity" onClick={() => handleCtaClick('Explore Guides', '/guides/time-complexity', 'guided_section_cta')}>
                                 Explore Guides <ArrowRight className="ml-2 w-5 h-5" />
                             </Link>
                         </Button>

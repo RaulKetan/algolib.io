@@ -53,6 +53,7 @@ interface CodeWorkspacePanelProps {
   onSubmissionComplete?: () => void;
   onSubmissionStart?: () => void;
   setSubmissions?: (submissions: any) => void;
+  hideToolbar?: boolean;
 }
 
 export const CodeWorkspacePanel = React.memo(({
@@ -80,7 +81,8 @@ export const CodeWorkspacePanel = React.memo(({
   handlePreviousProblem,
   onSubmissionComplete,
   onSubmissionStart,
-  setSubmissions
+  setSubmissions,
+  hideToolbar
 }: CodeWorkspacePanelProps) => {
   const posthog = usePostHog();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -149,6 +151,7 @@ export const CodeWorkspacePanel = React.memo(({
                 onSubmissionComplete={onSubmissionComplete}
                 onSubmissionStart={onSubmissionStart}
                 setSubmissions={setSubmissions}
+                hideToolbar={hideToolbar}
               />
             ) : (
               <div className="flex-1 flex items-center justify-center">

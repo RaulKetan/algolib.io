@@ -36,7 +36,15 @@ import {
   XCircle,
   Youtube,
   Zap,
+  Plus,
+  X,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
@@ -109,6 +117,9 @@ const BrainstormSection = dynamic(
   { ssr: false },
 );
 
+const BASE_LEFT_TABS = ["description"];
+const BASE_RIGHT_TABS = ["editor"];
+
 interface ProblemDescriptionPanelProps {
   algorithm: any;
   activeTab: string;
@@ -134,6 +145,15 @@ interface ProblemDescriptionPanelProps {
   user?: User | null;
   submissions?: Submission[];
   onSelectSubmission?: (submission: Submission) => void;
+
+  // Customizable workspace panel props
+  panelId?: "left" | "right";
+  tabs?: string[];
+  onAddTab?: (tabId: string) => void;
+  onRemoveTab?: (tabId: string) => void;
+  onActivateTab?: (tabId: string) => void;
+  editorContent?: React.ReactNode;
+  rightHeaderContent?: React.ReactNode;
 }
 
 export const ProblemDescriptionPanel = React.memo(
@@ -158,6 +178,13 @@ export const ProblemDescriptionPanel = React.memo(
     user = null,
     submissions = [],
     onSelectSubmission,
+    panelId = "left",
+    tabs,
+    onAddTab,
+    onRemoveTab,
+    onActivateTab,
+    editorContent,
+    rightHeaderContent,
   }: ProblemDescriptionPanelProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const topicsRef = useRef<HTMLDivElement>(null);
@@ -172,6 +199,19 @@ export const ProblemDescriptionPanel = React.memo(
     const [tabsShowLeftFade, setTabsShowLeftFade] = useState(false);
     const [tabsShowRightFade, setTabsShowRightFade] = useState(false);
     const [openAccordionItems, setOpenAccordionItems] = useState<string[]>([]);
+
+    const ALL_AVAILABLE_TABS = [
+      { id: "description", label: "Description", icon: FileText },
+      { id: "visualizations", label: "Visualizations", icon: Eye },
+      { id: "solutions", label: "Solutions", icon: Flashlight },
+      { id: "submissions", label: "Submissions", icon: History },
+      { id: "thinkpad", label: "Thinkpad", icon: Book },
+      { id: "editor", label: "Code", icon: Code2 },
+    ];
+
+    const activeTabsList = tabs || (panelId === "left"
+      ? ["description", "visualizations", "solutions", "submissions"]
+      : ["editor", "thinkpad"]);
 
     // Detect tab scroll overflow to show left/right gradient fades
     useEffect(() => {
@@ -194,6 +234,14 @@ export const ProblemDescriptionPanel = React.memo(
         ro.disconnect();
       };
     }, []);
+
+    const handleToolCardClick = (tabId: string) => {
+      if (onActivateTab) {
+        onActivateTab(tabId);
+      } else {
+        setActiveTab(tabId);
+      }
+    };
 
     const scrollToSection = (
       ref: React.RefObject<HTMLDivElement>,
@@ -294,160 +342,163 @@ export const ProblemDescriptionPanel = React.memo(
           className="flex-1 flex flex-col overflow-hidden w-full pt-0 mt-0"
         >
           {/* Tabs header with ScrollArea scrollbar exactly like the test cases tab + overflow fades & scroll buttons */}
-          <div className="px-0 shrink-0 border-b bg-background/50 relative group/tabs">
-            {/* Left fade & Scroll Button */}
-            <div
-              className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background via-background/90 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${tabsShowLeftFade ? "opacity-100" : "opacity-0"}`}
-            />
-            {tabsShowLeftFade && (
-              <button
-                type="button"
-                onClick={() => handleScrollTabs("left")}
-                className="absolute left-1.5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 rounded-full bg-background/95 hover:bg-background border border-border shadow-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-200"
-                aria-label="Scroll tabs left"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-            )}
-
-            {/* Right fade & Scroll Button */}
-            <div
-              className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background via-background/90 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${tabsShowRightFade ? "opacity-100" : "opacity-0"}`}
-            />
-            {tabsShowRightFade && (
-              <button
-                type="button"
-                onClick={() => handleScrollTabs("right")}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 rounded-full bg-background/95 hover:bg-background border border-border shadow-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-200"
-                aria-label="Scroll tabs right"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            )}
-
-            <ScrollAreaPrimitive.Root
-              type="hover"
-              className="w-full overflow-hidden"
-            >
-              <ScrollAreaPrimitive.Viewport
-                ref={tabsScrollRef}
-                className="w-full"
-              >
-                <div
-                  className={`flex flex-col ${isCompact ? "w-full" : "w-max"}`}
+          <div className="px-0 shrink-0 border-b bg-background/50 relative group/tabs flex items-center justify-between">
+            <div className="flex-1 min-w-0 relative h-10 flex items-center">
+              {/* Left fade & Scroll Button */}
+              <div
+                className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background via-background/90 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${tabsShowLeftFade ? "opacity-100" : "opacity-0"}`}
+              />
+              {tabsShowLeftFade && (
+                <button
+                  type="button"
+                  onClick={() => handleScrollTabs("left")}
+                  className="absolute left-1.5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 rounded-full bg-background/95 hover:bg-background border border-border shadow-sm text-muted-foreground hover:text-foreground active:scale-95 transition-all duration-200"
+                  aria-label="Scroll tabs left"
                 >
-                  <TabsList
-                    className={`flex p-0 bg-transparent gap-0 rounded-none h-10 ${isCompact ? "w-full" : "w-max min-w-full"}`}
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              )}
+
+              {/* Right fade & Scroll Button */}
+              <div
+                className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background via-background/90 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${tabsShowRightFade ? "opacity-100" : "opacity-0"}`}
+              />
+              {tabsShowRightFade && (
+                <button
+                  type="button"
+                  onClick={() => handleScrollTabs("right")}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 rounded-full bg-background/95 hover:bg-background border border-border shadow-sm text-muted-foreground hover:text-foreground active:scale-95 transition-all duration-200"
+                  aria-label="Scroll tabs right"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
+
+              <ScrollAreaPrimitive.Root
+                type="hover"
+                className="w-full overflow-hidden"
+              >
+                <ScrollAreaPrimitive.Viewport
+                  ref={tabsScrollRef}
+                  className="w-full"
+                >
+                  <div
+                    className={`flex flex-col ${isCompact ? "w-full" : "w-max"}`}
                   >
-                    <TooltipProvider>
-                      <TabsTrigger
-                        value="description"
-                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
-                      >
-                        {isCompact ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <FileText className="w-4 h-4" />
-                            </TooltipTrigger>
-                            <TooltipContent>Description</TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <>
-                            <FileText className="w-4 h-4 mr-2 shrink-0" />
-                            Description
-                          </>
-                        )}
-                      </TabsTrigger>
-
-                      <TabsTrigger
-                        value="visualizations"
-                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
-                      >
-                        {isCompact ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Eye className="w-4 h-4" />
-                            </TooltipTrigger>
-                            <TooltipContent>Visualizations</TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <>
-                            <Eye className="w-4 h-4 mr-2 shrink-0" />
-                            Visualizations
-                          </>
-                        )}
-                      </TabsTrigger>
-
-                      <TabsTrigger
-                        value="solutions"
-                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
-                      >
-                        {isCompact ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Flashlight className="w-4 h-4" />
-                            </TooltipTrigger>
-                            <TooltipContent>Solutions</TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <>
-                            <Flashlight className="w-4 h-4 mr-2 shrink-0" />
-                            Solutions
-                          </>
-                        )}
-                      </TabsTrigger>
-
-                      <TabsTrigger
-                        value="submissions"
-                        className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
-                      >
-                        {isCompact ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <History className="w-4 h-4" />
-                            </TooltipTrigger>
-                            <TooltipContent>Submissions</TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <>
-                            <History className="w-4 h-4 mr-2 shrink-0" />
-                            Submissions
-                          </>
-                        )}
-                      </TabsTrigger>
-
-                      {isBrainstormEnabled &&
-                        algorithm?.controls?.brainstorm !== false && (
-                          <TabsTrigger
-                            value="thinkpad"
-                            className="flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all"
-                          >
-                            {isCompact ? (
+                    <TabsList
+                      className={`flex p-0 bg-transparent gap-0 rounded-none h-10 ${isCompact ? "w-full" : "w-max min-w-full"}`}
+                    >
+                      <TooltipProvider>
+                        {onAddTab && (
+                          <div className="flex items-center px-2">
+                            <DropdownMenu>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Book className="w-4 h-4" />
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 rounded-full bg-transparent text-foreground/80 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all duration-200 flex items-center justify-center"
+                                    >
+                                      <Plus className="w-4 h-4 stroke-[2.5]" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
                                 </TooltipTrigger>
-                                <TooltipContent>Thinkpad</TooltipContent>
+                                <TooltipContent side="top">Add Tab</TooltipContent>
                               </Tooltip>
-                            ) : (
-                              <>
-                                <Book className="w-4 h-4 mr-2 shrink-0" />
-                                Thinkpad
-                              </>
-                            )}
-                          </TabsTrigger>
+                              
+                              <DropdownMenuContent align="start" className="w-48 bg-popover border border-border rounded-lg shadow-md p-1 z-[150]">
+                                {ALL_AVAILABLE_TABS
+                                  .filter(t => {
+                                    if (activeTabsList.includes(t.id)) return false;
+                                    if (t.id === 'thinkpad') {
+                                      return isBrainstormEnabled && algorithm?.controls?.brainstorm !== false;
+                                    }
+                                    return true;
+                                  })
+                                  .map(t => {
+                                    const Icon = t.icon;
+                                    return (
+                                      <DropdownMenuItem
+                                        key={t.id}
+                                        onClick={() => onAddTab(t.id)}
+                                        className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-muted/80 transition-colors"
+                                      >
+                                        <Icon className="w-4 h-4 text-muted-foreground" />
+                                        <span>{t.label}</span>
+                                      </DropdownMenuItem>
+                                    );
+                                  })
+                                }
+                                {ALL_AVAILABLE_TABS.filter(t => {
+                                  if (activeTabsList.includes(t.id)) return false;
+                                  if (t.id === 'thinkpad') {
+                                    return isBrainstormEnabled && algorithm?.controls?.brainstorm !== false;
+                                  }
+                                  return true;
+                                }).length === 0 && (
+                                  <div className="px-3 py-2 text-xs text-muted-foreground text-center">
+                                    All tabs added
+                                  </div>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         )}
-                    </TooltipProvider>
-                  </TabsList>
-                </div>
-              </ScrollAreaPrimitive.Viewport>
-              <ScrollAreaPrimitive.Scrollbar
-                orientation="horizontal"
-                className="flex h-1.5 touch-none select-none flex-col border-t border-t-transparent p-[1px] transition-colors"
-              >
-                <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-border" />
-              </ScrollAreaPrimitive.Scrollbar>
-            </ScrollAreaPrimitive.Root>
+
+                        {activeTabsList.map((tabId) => {
+                          const tabMeta = ALL_AVAILABLE_TABS.find(t => t.id === tabId);
+                          if (!tabMeta) return null;
+                          
+                          if (tabId === 'thinkpad' && (!isBrainstormEnabled || algorithm?.controls?.brainstorm === false)) {
+                            return null;
+                          }
+                          
+                          const IconComponent = tabMeta.icon;
+                          const isRemovable = panelId === 'left' ? !BASE_LEFT_TABS.includes(tabId) : !BASE_RIGHT_TABS.includes(tabId);
+                          
+                          return (
+                            <TabsTrigger
+                              key={tabId}
+                              value={tabId}
+                              className="group/trigger relative flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all flex items-center justify-center"
+                            >
+                              {isCompact ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="flex items-center justify-center">
+                                      <IconComponent className="w-4 h-4" />
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent>{tabMeta.label}</TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <>
+                                  <IconComponent className="w-4 h-4 mr-2 shrink-0" />
+                                  {tabMeta.label}
+                                </>
+                              )}
+                            </TabsTrigger>
+                          );
+                        })}
+                      </TooltipProvider>
+                    </TabsList>
+                  </div>
+                </ScrollAreaPrimitive.Viewport>
+                <ScrollAreaPrimitive.Scrollbar
+                  orientation="horizontal"
+                  className="flex h-1.5 touch-none select-none flex-col border-t border-t-transparent p-[1px] transition-colors"
+                >
+                  <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-border" />
+                </ScrollAreaPrimitive.Scrollbar>
+              </ScrollAreaPrimitive.Root>
+            </div>
+
+            {rightHeaderContent && (
+              <div className="flex items-center shrink-0 border-l border-border h-10 pr-2 select-none">
+                {rightHeaderContent}
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-hidden relative">
@@ -601,7 +652,7 @@ export const ProblemDescriptionPanel = React.memo(
                     <div className="flex flex-col gap-3">
                       {/* Visualize Card */}
                       <div
-                        onClick={() => setActiveTab("visualizations")}
+                        onClick={() => handleToolCardClick("visualizations")}
                         className="group cursor-pointer flex items-center justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/30 dark:hover:bg-zinc-900/20 hover:border-primary/40 transition-all duration-300 shadow-sm"
                       >
                         <div className="flex items-start gap-4">
@@ -629,7 +680,7 @@ export const ProblemDescriptionPanel = React.memo(
 
                       {/* Solutions Card */}
                       <div
-                        onClick={() => setActiveTab("solutions")}
+                        onClick={() => handleToolCardClick("solutions")}
                         className="group cursor-pointer flex items-center justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/30 dark:hover:bg-zinc-900/20 hover:border-primary/40 transition-all duration-300 shadow-sm"
                       >
                         <div className="flex items-start gap-4">
@@ -656,7 +707,7 @@ export const ProblemDescriptionPanel = React.memo(
                       {isBrainstormEnabled &&
                         algorithm?.controls?.brainstorm !== false && (
                           <div
-                            onClick={() => setActiveTab("thinkpad")}
+                            onClick={() => handleToolCardClick("thinkpad")}
                             className="group cursor-pointer flex items-center justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/30 dark:hover:bg-zinc-900/20 hover:border-primary/40 transition-all duration-300 shadow-sm"
                           >
                             <div className="flex items-start gap-4">
@@ -1391,6 +1442,15 @@ export const ProblemDescriptionPanel = React.memo(
                 </div>
               </ScrollArea>
             </TabsContent>
+
+            {activeTabsList.includes("editor") && (
+              <TabsContent
+                value="editor"
+                className="h-full m-0 data-[state=inactive]:hidden"
+              >
+                {editorContent}
+              </TabsContent>
+            )}
 
             <TabsContent
               value="visualizations"

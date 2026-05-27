@@ -196,7 +196,7 @@ export const WhiteboardComponent = ({
 }: WhiteboardComponentProps) => {
   return (
     <div
-      className={` relative w-full  border rounded-lg overflow-hidden z-10 ${isExpand ? "h-full" : "h-[700px]"
+      className={` relative w-full  border rounded-none overflow-hidden z-10 ${isExpand ? "h-full" : "h-[700px]"
         }`}
     >
       <Tldraw snapshot={restoreData} className="tldraw-rulcode">

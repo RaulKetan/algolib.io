@@ -13,6 +13,9 @@ import dynamic from 'next/dynamic';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import { CodeRunnerRef } from "@/components/CodeRunner/CodeRunner";
+import { LanguageSelector } from "@/components/CodeRunner/LanguageSelector";
+import { RotateCcw, AlignLeft, Maximize, Minimize2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Refactored Components
 import Navbar from "@/components/Navbar";
@@ -22,6 +25,8 @@ import { Paywall } from "@/components/Paywall";
 
 // Hooks
 import { useAlgorithmLayout } from "@/hooks/useAlgorithmLayout";
+import { useEditorSettings } from "@/hooks/useEditorSettings";
+import { SettingsPopover } from "@/components/CodeRunner/SettingsPopover";
 import { useInterviewSession } from "@/hooks/useInterviewSession";
 import { useAlgorithmInteractions } from "@/hooks/useAlgorithmInteractions";
 import { useUserAlgorithmData } from "@/hooks/useUserAlgorithmData";
@@ -89,6 +94,7 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
   // -- Hooks --
   const layout = useAlgorithmLayout();
   const session = useInterviewSession();
+  const { settings, updateSetting } = useEditorSettings();
 
   // Fetch user data hook
   const { data: userAlgoData, loading: loadingUserData, refetch: refetchUserData } = useUserAlgorithmData({
@@ -127,15 +133,28 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
   }, [userAlgoData?.submissions]);
 
   const handleSelectSubmission = useCallback((submission: any) => {
-    runnerRef.current?.selectSubmission(submission);
-  }, []);
+    // 1. Find which panel contains the "editor" (Code) tab and activate it first
+    if (layout.leftTabs.includes('editor')) {
+      layout.setActiveLeftTab('editor');
+    } else if (layout.rightTabs.includes('editor')) {
+      layout.setActiveRightTab('editor');
+    } else {
+      layout.addTab('right', 'editor');
+    }
+    
+    // 2. Select the submission after a short timeout so Monaco mounts inside a visible container
+    setTimeout(() => {
+      runnerRef.current?.selectSubmission(submission);
+    }, 50);
+  }, [layout.leftTabs, layout.rightTabs, layout.setActiveLeftTab, layout.setActiveRightTab, layout.addTab]);
 
   // -- Code Runner Control --
   const runnerRef = React.useRef<CodeRunnerRef>(null);
   const [runnerState, setRunnerState] = useState({
     isLoading: false,
     isSubmitting: false,
-    lastRunSuccess: false
+    lastRunSuccess: false,
+    viewingSubmission: null as any
   });
 
   const handleRunnerStateChange = useCallback((state: any) => {
@@ -202,10 +221,140 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
       const href = anchor.getAttribute('href');
       if (href === '#visualization') {
         e.preventDefault();
-        layout.setActiveTab('visualizations');
+        if (layout.leftTabs.includes('visualizations')) {
+          layout.setActiveLeftTab('visualizations');
+        } else if (layout.rightTabs.includes('visualizations')) {
+          layout.setActiveRightTab('visualizations');
+        } else {
+          layout.addTab('left', 'visualizations');
+        }
       }
     }
-  }, [layout.setActiveTab]);
+  }, [layout.leftTabs, layout.rightTabs, layout.setActiveLeftTab, layout.setActiveRightTab, layout.addTab]);
+
+  const activateWorkspaceTab = useCallback((tabId: string) => {
+    if (layout.isMobile) {
+      if (layout.leftTabs.includes(tabId)) {
+        layout.setActiveLeftTab(tabId);
+      } else {
+        layout.addTab('left', tabId);
+      }
+      return;
+    }
+
+    if (layout.leftTabs.includes(tabId)) {
+      layout.setActiveLeftTab(tabId);
+    } else if (layout.rightTabs.includes(tabId)) {
+      layout.setActiveRightTab(tabId);
+    } else {
+      const targetPanel = tabId === 'thinkpad' ? 'right' : 'left';
+      layout.addTab(targetPanel, tabId);
+    }
+  }, [layout.isMobile, layout.leftTabs, layout.rightTabs, layout.setActiveLeftTab, layout.setActiveRightTab, layout.addTab]);
+
+
+  const isLeftPanelEditorActive = layout.activeLeftTab === 'editor' && layout.leftTabs.includes('editor');
+  const isRightPanelEditorActive = layout.activeRightTab === 'editor' && layout.rightTabs.includes('editor');
+
+  const availableLanguages = useMemo(() => {
+    const controls = activeAlgorithm?.controls?.code_runner;
+    return controls?.languages ? (Object.keys(controls.languages) as any[]).filter((lang) => controls.languages[lang]) : undefined;
+  }, [activeAlgorithm]);
+
+  const getEditorHeaderContent = useCallback((panelId: 'left' | 'right') => {
+    const isActive = panelId === 'left' ? isLeftPanelEditorActive : isRightPanelEditorActive;
+    if (!isActive || runnerState.viewingSubmission) return null;
+
+    const handleReset = () => {
+      runnerRef.current?.reset?.();
+    };
+
+    const handleFormat = () => {
+      runnerRef.current?.formatCode?.();
+    };
+
+    const isFullscreen = layout.isCodeRunnerMaximized;
+    const toggleFullscreen = () => {
+      layout.setIsCodeRunnerMaximized(!layout.isCodeRunnerMaximized);
+    };
+
+    return (
+      <TooltipProvider>
+        <div className="flex items-center h-10 select-none">
+          <LanguageSelector
+            language={interactions.selectedLanguage as any}
+            onLanguageChange={(lang) => interactions.setSelectedLanguage(lang)}
+            availableLanguages={availableLanguages}
+            disabled={runnerState.isLoading || runnerState.isSubmitting}
+          />
+          <div className="flex items-center gap-1 pl-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={handleReset}
+                  disabled={runnerState.isLoading || runnerState.isSubmitting}
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="z-[150]">Reset to starter code</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={handleFormat}
+                >
+                  <AlignLeft className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="z-[150]">Format code</TooltipContent>
+            </Tooltip>
+
+            <SettingsPopover settings={settings} updateSetting={updateSetting} />
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={toggleFullscreen}
+                >
+                  {isFullscreen ? (
+                    <Minimize2 className="w-4 h-4" />
+                  ) : (
+                    <Maximize className="w-4 h-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="z-[150]">
+                {isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
+      </TooltipProvider>
+    );
+  }, [
+    isLeftPanelEditorActive,
+    isRightPanelEditorActive,
+    interactions.selectedLanguage,
+    interactions.setSelectedLanguage,
+    availableLanguages,
+    runnerState.isLoading,
+    runnerState.isSubmitting,
+    layout.isCodeRunnerMaximized,
+    layout.setIsCodeRunnerMaximized,
+    settings,
+    updateSetting
+  ]);
 
   const codeWorkspacePanel = useMemo(() => (
     <CodeWorkspacePanel
@@ -231,8 +380,15 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
       handlePreviousProblem={interactions.handlePreviousProblem}
       onSubmissionComplete={() => {
         refetchUserData();
-        layout.setActiveTab('submissions');
+        if (layout.leftTabs.includes('submissions')) {
+          layout.setActiveLeftTab('submissions');
+        } else if (layout.rightTabs.includes('submissions')) {
+          layout.setActiveRightTab('submissions');
+        } else {
+          layout.addTab('left', 'submissions');
+        }
       }}
+      hideToolbar={!layout.isMobile}
     />
 
   ), [
@@ -250,7 +406,13 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
     loadingUserData,
     interactions.handleRandomProblem,
     interactions.handleNextProblem,
-    interactions.handlePreviousProblem
+    interactions.handlePreviousProblem,
+    layout.leftTabs,
+    layout.rightTabs,
+    layout.setActiveLeftTab,
+    layout.setActiveRightTab,
+    layout.addTab,
+    refetchUserData
   ]);
 
   // -- Render Guards --
@@ -328,8 +490,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                     <div className="h-full rounded-xl overflow-hidden border border-border/70 shadow-md bg-card/30 backdrop-blur-sm">
                       <ProblemDescriptionPanel
                         algorithm={activeAlgorithm}
-                        activeTab={layout.activeTab}
-                        setActiveTab={layout.setActiveTab}
+                        activeTab={layout.activeLeftTab}
+                        setActiveTab={layout.setActiveLeftTab}
                         isMobile={true}
                         toggleLeftPanel={layout.toggleLeftPanel}
                         isCompleted={interactions.isCompleted}
@@ -345,6 +507,12 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                         submissions={submissions}
                         user={user}
                         onSelectSubmission={handleSelectSubmission}
+                        panelId="left"
+                        tabs={layout.leftTabs}
+                        onAddTab={(tab) => layout.addTab('left', tab)}
+                        onRemoveTab={(tab) => layout.removeTab('left', tab)}
+                        onActivateTab={activateWorkspaceTab}
+                        editorContent={codeWorkspacePanel}
                       />
                     </div>
                   </div>
@@ -372,7 +540,13 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                       setSubmissions={setSubmissions}
                       onSubmissionComplete={() => {
                         refetchUserData();
-                        layout.setActiveTab('submissions');
+                        if (layout.leftTabs.includes('submissions')) {
+                          layout.setActiveLeftTab('submissions');
+                        } else if (layout.rightTabs.includes('submissions')) {
+                          layout.setActiveRightTab('submissions');
+                        } else {
+                          layout.addTab('left', 'submissions');
+                        }
                       }}
                       className="h-[85vh]"
                     />
@@ -404,8 +578,8 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                       <div className="h-full rounded-xl overflow-hidden border border-border/70 shadow-md bg-card/30 backdrop-blur-sm">
                         <ProblemDescriptionPanel
                           algorithm={activeAlgorithm}
-                          activeTab={layout.activeTab}
-                          setActiveTab={layout.setActiveTab}
+                          activeTab={layout.activeLeftTab}
+                          setActiveTab={layout.setActiveLeftTab}
                           isMobile={layout.isMobile}
                           toggleLeftPanel={layout.toggleLeftPanel}
                           isCompleted={interactions.isCompleted}
@@ -422,6 +596,13 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                           user={user}
                           submissions={submissions}
                           onSelectSubmission={handleSelectSubmission}
+                          panelId="left"
+                          tabs={layout.leftTabs}
+                          onAddTab={(tab) => layout.addTab('left', tab)}
+                          onRemoveTab={(tab) => layout.removeTab('left', tab)}
+                          onActivateTab={activateWorkspaceTab}
+                          editorContent={codeWorkspacePanel}
+                          rightHeaderContent={getEditorHeaderContent('left')}
                         />
                       </div>
                     </div>
@@ -441,7 +622,34 @@ const ProblemDetailClient: React.FC<ProblemDetailClientProps> = ({ initialAlgori
                   >
                     <div className="h-full pt-0 pl-0 pr-0 sm:pt-0 sm:pl-0 sm:pr-0 pb-1.5 sm:pb-2 mr-2">
                       <div className="h-full rounded-lg overflow-hidden border border-border/70 shadow-md bg-card/30 backdrop-blur-sm">
-                        {codeWorkspacePanel}
+                        <ProblemDescriptionPanel
+                          algorithm={activeAlgorithm}
+                          activeTab={layout.activeRightTab}
+                          setActiveTab={layout.setActiveRightTab}
+                          isMobile={layout.isMobile}
+                          toggleLeftPanel={layout.toggleRightPanel}
+                          isCompleted={interactions.isCompleted}
+                          likes={interactions.likes}
+                          dislikes={interactions.dislikes}
+                          userVote={interactions.userVote}
+                          isFavorite={interactions.isFavorite}
+                          handleVote={interactions.handleVote}
+                          toggleFavorite={interactions.toggleFavorite}
+                          isVisualizationMaximized={layout.isVisualizationMaximized}
+                          setIsVisualizationMaximized={layout.setIsVisualizationMaximized}
+                          handleRichTextClick={handleRichTextClick}
+                          hasPremiumAccess={hasPremiumAccess}
+                          user={user}
+                          submissions={submissions}
+                          onSelectSubmission={handleSelectSubmission}
+                          panelId="right"
+                          tabs={layout.rightTabs}
+                          onAddTab={(tab) => layout.addTab('right', tab)}
+                          onRemoveTab={(tab) => layout.removeTab('right', tab)}
+                          onActivateTab={activateWorkspaceTab}
+                          editorContent={codeWorkspacePanel}
+                          rightHeaderContent={getEditorHeaderContent('right')}
+                        />
                       </div>
                     </div>
                   </ResizablePanel>
