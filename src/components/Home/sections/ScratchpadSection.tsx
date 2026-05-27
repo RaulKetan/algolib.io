@@ -1,6 +1,6 @@
 "use client";
 
-import { PenTool, ArrowRight, NotebookPen } from "lucide-react";
+import { PenTool, ArrowRight, Book } from "lucide-react";
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -112,13 +112,13 @@ export function ScratchpadSection() {
                             <Link
                                 href="/problem/kadanes-algorithm?tab=thinkpad"
                                 onClick={() => trackEvent(posthog, "home_cta_clicked", {
-                                    cta_label: "Try Now – Thinkpad",
+                                    cta_label: "Try Thinkpad",
                                     destination: "/problem/kadanes-algorithm?tab=thinkpad",
                                     section: "scratchpad_thinkpad"
                                 })}
                             >
-                                <NotebookPen className="w-5 h-5" />
-                                Try Now
+                                <Book className="w-5 h-5" />
+                                Try Thinkpad
                                 <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
                             </Link>
                         </Button>

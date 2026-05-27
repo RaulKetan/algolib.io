@@ -54,6 +54,7 @@ interface CodeRunnerProps {
   onSubmissionStart?: () => void;
   setSubmissions?: React.Dispatch<React.SetStateAction<Submission[]>>;
   isPlatformPreview?: boolean;
+  hideToolbar?: boolean;
 }
 
 export interface CodeRunnerRef {
@@ -89,7 +90,8 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
   onSubmissionComplete,
   onSubmissionStart,
   setSubmissions: setSubmissionsProp,
-  isPlatformPreview = false
+  isPlatformPreview = false,
+  hideToolbar = false
 }, ref) => {
   const posthog = usePostHog();
   const isLimitExceeded = useFeatureFlag("todays_limit_exceed");
@@ -324,13 +326,16 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
     },
     selectSubmission: (submission: Submission) => {
       submissionViewer.handleSelectSubmission(submission);
-    }
+    },
+    reset: handleReset,
+    formatCode: handleFormatCode,
+    toggleFullscreen: toggleFullscreen
   }));
 
   // Report state changes
   useEffect(() => {
-    onStateChange?.({ isLoading, isSubmitting, lastRunSuccess });
-  }, [isLoading, isSubmitting, lastRunSuccess, onStateChange]);
+    onStateChange?.({ isLoading, isSubmitting, lastRunSuccess, viewingSubmission });
+  }, [isLoading, isSubmitting, lastRunSuccess, viewingSubmission, onStateChange]);
 
   // Hook 5: Keyboard Shortcuts
   useKeyboardShortcuts({
@@ -437,28 +442,30 @@ export const CodeRunner = React.forwardRef<CodeRunnerRef, CodeRunnerProps>(({
       onValueChange={(v) => setActiveEditorTab(v as any)}
       className="h-full flex flex-col"
     >
-      <EditorToolbar
-        activeEditorTab={activeEditorTab}
-        setActiveEditorTab={setActiveEditorTab}
-        language={language}
-        onLanguageChange={handleLanguageChange}
-        availableLanguages={availableLanguages}
-        isMobile={isMobile || false}
-        onToggleRightPanel={onToggleRightPanel}
-        onReset={handleReset}
-        onFormatCode={handleFormatCode}
-        isLoading={isLoading}
-        isSubmitting={isSubmitting}
-        isFullscreen={isFullscreen}
-        onToggleFullscreen={toggleFullscreen}
-        viewingSubmission={viewingSubmission}
-        onCloseSubmission={submissionViewer.handleCloseSubmission}
-        isScratchpadOpen={isScratchpadOpen}
-        setIsScratchpadOpen={setIsScratchpadOpen}
-        settings={settings}
-        updateSetting={updateSetting}
-        brainstormProps={brainstormProps}
-      />
+      {(!hideToolbar || viewingSubmission) && (
+        <EditorToolbar
+          activeEditorTab={activeEditorTab}
+          setActiveEditorTab={setActiveEditorTab}
+          language={language}
+          onLanguageChange={handleLanguageChange}
+          availableLanguages={availableLanguages}
+          isMobile={isMobile || false}
+          onToggleRightPanel={onToggleRightPanel}
+          onReset={handleReset}
+          onFormatCode={handleFormatCode}
+          isLoading={isLoading}
+          isSubmitting={isSubmitting}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={toggleFullscreen}
+          viewingSubmission={viewingSubmission}
+          onCloseSubmission={submissionViewer.handleCloseSubmission}
+          isScratchpadOpen={isScratchpadOpen}
+          setIsScratchpadOpen={setIsScratchpadOpen}
+          settings={settings}
+          updateSetting={updateSetting}
+          brainstormProps={brainstormProps}
+        />
+      )}
 
       <EditorPane
         activeEditorTab={activeEditorTab}

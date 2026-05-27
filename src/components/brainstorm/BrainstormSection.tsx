@@ -78,13 +78,13 @@ export const BrainstormSection = ({
         className="h-full flex flex-col"
       >
         <div className="flex items-center justify-between border-b shrink-0">
-          <TabsList className="flex-1 flex p-0 bg-transparent gap-0 rounded-none h-10">
+          <TabsList className="flex p-0 bg-transparent gap-0 rounded-none h-10">
             <TooltipProvider>
               <FeatureGuard flag="drawing">
                 {controls?.whiteboard !== false && (
                   <TabsTrigger
                     value="whiteboard"
-                    className="flex-1 gap-2 data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white border-b-2 border-transparent data-[state=active]:border-primary rounded-none"
+                    className="px-4 h-10 gap-2 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none transition-all"
                   >
                     {isCompact ? (
                       <Tooltip>
@@ -108,7 +108,7 @@ export const BrainstormSection = ({
                 {controls?.notes !== false && (
                   <TabsTrigger
                     value="notes"
-                    className="flex-1 gap-2 data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white border-b-2 border-transparent data-[state=active]:border-primary rounded-none"
+                    className="px-4 h-10 gap-2 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none transition-all"
                   >
                     {isCompact ? (
                       <Tooltip>
@@ -131,7 +131,7 @@ export const BrainstormSection = ({
               <FeatureGuard flag="history">
                 <TabsTrigger
                   value="history"
-                  className="flex-1 gap-2 data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white border-b-2 border-transparent data-[state=active]:border-primary rounded-none"
+                  className="px-4 h-10 gap-2 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none transition-all"
                 >
                   {isCompact ? (
                     <Tooltip>
@@ -168,7 +168,7 @@ export const BrainstormSection = ({
                 <TabsList className="w-full justify-start rounded-none border-b px-4 bg-background">
                   <FeatureGuard flag="drawing">
                     {controls?.whiteboard !== false && (
-                      <TabsTrigger value="whiteboard" className="gap-2 data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white">
+                      <TabsTrigger value="whiteboard" className="gap-2 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white">
                         <Palette className="w-4 h-4" />
                         Whiteboard
                       </TabsTrigger>
@@ -176,13 +176,13 @@ export const BrainstormSection = ({
                   </FeatureGuard>
                   <FeatureGuard flag="notes">
                     {controls?.notes !== false && (
-                      <TabsTrigger value="notes" className="gap-2 data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white">
+                      <TabsTrigger value="notes" className="gap-2 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white">
                         <FileText className="w-4 h-4" />
                         Notes
                       </TabsTrigger>
                     )}
                   </FeatureGuard>
-                  <TabsTrigger value="history" className="gap-2 data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white">
+                  <TabsTrigger value="history" className="gap-2 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-black dark:data-[state=active]:text-white">
                     <History className="w-4 h-4" />
                     History
                   </TabsTrigger>

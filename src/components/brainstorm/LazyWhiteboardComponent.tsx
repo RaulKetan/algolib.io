@@ -6,7 +6,7 @@ const WhiteboardComponent = React.lazy(() =>
 );
 
 const WhiteboardSkeleton = () => (
-  <div className="h-[700px] w-full bg-background rounded-lg border border-border p-4">
+  <div className="h-[700px] w-full bg-background rounded-none border border-border p-4">
     <div className="flex gap-2 mb-4">
       <Skeleton className="h-10 w-48" />
       <Skeleton className="h-10 w-24" />
@@ -19,7 +19,7 @@ const WhiteboardSkeleton = () => (
       <Skeleton className="h-8 w-8 rounded" />
       <Skeleton className="h-8 w-8 rounded" />
     </div>
-    <Skeleton className="h-[calc(100%-88px)] w-full rounded-lg" />
+    <Skeleton className="h-[calc(100%-88px)] w-full rounded-none" />
   </div>
 );
 
