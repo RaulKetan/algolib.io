@@ -1,5 +1,7 @@
 # Welcome to Rulcode.com 🚀
 
+[![License: Modified MIT (Non-Commercial)](https://img.shields.io/badge/License-Modified_MIT_(Non--Commercial)-red.svg)](LICENSE)
+
 Rulcode.com is an open-source platform to **learn, visualize, and master algorithms** with interactive explanations and multi-language code snippets (Python, Java, C++, and TypeScript).
 
 🌐 **Visit Live:** [https://rulcode.com](https://rulcode.com)
@@ -288,3 +290,9 @@ Help us expand Rulcode.com with more algorithms, better explanations, and improv
 Fork → Edit → Pull Request.
 
 ⭐ **Star this repo** if you find it helpful!
+
+---
+
+## 📄 License
+
+This project is licensed under a **Modified MIT License (Non-Commercial)** - see the [LICENSE](LICENSE) file for details. This allows public contributions, viewing, and personal use, but strictly prohibits copying the code for commercial utilization or integrating it into a commercial product.

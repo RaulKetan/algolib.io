@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Loader2, Mail, Lock, User, ArrowLeft, CheckCircle2, AlertTriangle } from 'lucide-react';
 import logo from '@/assets/logo.svg';
 
 
@@ -190,7 +190,17 @@ const LoginClient = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4">
+      {!showVerificationMessage && (
+        <div className="w-full max-w-[440px] mb-4">
+          <Alert className="border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 text-amber-800 dark:text-amber-200">
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <AlertDescription className="text-sm">
+              <strong className="font-semibold text-amber-900 dark:text-amber-100">Notice:</strong> Older email passwords will not work. If your account was created before <strong>May 1st</strong>, you will need to register (sign up) again.
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
       <Card className="w-full max-w-[440px] shadow-xl border-border/50">
         <div className="p-8 sm:p-10">
           <div className="text-center mb-8">
