@@ -235,7 +235,7 @@ export function ChallengeAndTopicSection() {
       <div className="w-full max-w-[1500px] mx-auto px-6 relative z-10">
 
         {/* SECTION HEADER - Sleek Typography */}
-        <div className="text-center mb-24 max-w-3xl mx-auto">
+        <div className="max-w-[1400px] mx-auto mb-24 text-left">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -249,7 +249,7 @@ export function ChallengeAndTopicSection() {
             Launch Your <span className="bg-gradient-to-r from-primary via-[#EAFF96] to-[#A3E635] bg-clip-text text-transparent">DSA Mastery</span>
           </h2>
 
-          <p className="text-zinc-400 text-base md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
+          <p className="text-zinc-400 text-base md:text-xl font-medium leading-relaxed max-w-2xl">
             Experience high-octane interview sprints, targeted corporate practice maps, and connected roadmaps designed to wow modern developers.
           </p>
         </div>

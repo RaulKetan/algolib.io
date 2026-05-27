@@ -63,8 +63,7 @@ const UserMenu = () => {
                         className="relative h-8 w-8 rounded-full"
                     >
                         <Avatar className="h-8 w-8">
-                            {/* Disable avatar image for now to show the user icon */}
-                            {/* <AvatarImage src={user.user_metadata?.avatar_url} /> */}
+                            <AvatarImage src={profile?.avatar_url || user?.user_metadata?.avatar_url || undefined} alt={profile?.full_name || user?.user_metadata?.full_name || "User"} className="object-cover" />
                             <AvatarFallback className="bg-muted text-muted-foreground">
                                 <User className="h-4 w-4" />
                             </AvatarFallback>

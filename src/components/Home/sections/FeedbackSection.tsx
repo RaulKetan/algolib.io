@@ -269,7 +269,7 @@ export function FeedbackSection() {
                                 className={`px-5 py-2.5 rounded-xl text-xs font-bold tracking-tight shadow-md flex items-center gap-2 transition-all duration-300 active:scale-[0.98] ${
                                     isCompleted 
                                         ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
-                                        : "bg-primary hover:bg-primary/95 text-white"
+                                        : "bg-primary hover:bg-primary/95 text-primary-foreground"
                                 }`}
                             >
                                 <Play className={`w-3.5 h-3.5 ${isRunning ? "animate-spin" : ""}`} />
