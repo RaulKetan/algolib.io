@@ -91,6 +91,7 @@ const blind75Map: Record<string, React.LazyExoticComponent<React.ComponentType<a
   "implement-trie-prefix-tree": React.lazy(() => import("@/components/visualizations/algorithms/ImplementTrieVisualization").then(m => ({ default: m.ImplementTrieVisualization }))), "add-and-search-word": React.lazy(() => import("@/components/visualizations/algorithms/AddAndSearchWordVisualization").then(m => ({ default: m.AddAndSearchWordVisualization }))),
   'binary-tree-level-order-traversal': React.lazy(() => import('@/components/visualizations/algorithms/BFSLevelOrderVisualization').then(m => ({ default: m.BFSLevelOrderVisualization }))),
   "word-search-ii": React.lazy(() => import("@/components/visualizations/algorithms/WordSearchIIVisualization").then(m => ({ default: m.WordSearchIIVisualization }))),
+  "last-stone-weight": React.lazy(() => import("@/components/visualizations/algorithms/LastStoneWeightVisualization").then(m => ({ default: m.LastStoneWeightVisualization }))),
 };
 
 export const renderBlind75Visualization = (algoId: string): React.ReactNode | null => {

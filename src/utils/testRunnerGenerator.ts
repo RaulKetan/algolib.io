@@ -969,6 +969,7 @@ import java.util.HashSet;
 import java.util.HashMap;
  import java.util.Queue;
   import java.util.LinkedList;
+  
 public class Main {
     ${definitions}
     ${parsers}
@@ -1493,8 +1494,8 @@ const inferCppSignatures = (testCases: ClassTestCase[]) => {
                 if (typeof ret === 'string') type = 'string';
                 else if (typeof ret === 'boolean') type = 'bool';
                 else if (Array.isArray(ret)) {
-                     if (ret.length > 0 && typeof ret[0] === 'string') type = 'vector<string>';
-                     else type = 'vector<int>';
+                    if (ret.length > 0 && typeof ret[0] === 'string') type = 'vector<string>';
+                    else type = 'vector<int>';
                 }
                 methods[name].returnType = type;
             }
@@ -1621,7 +1622,7 @@ const toJavaLiteralValue = (val: any): string => {
     if (typeof val === 'boolean') return val ? "true" : "false";
     if (typeof val === 'number') {
         if (Number.isInteger(val)) return String(val);
-        return String(val); 
+        return String(val);
     }
     if (typeof val === 'string') return JSON.stringify(val);
     if (Array.isArray(val)) {
