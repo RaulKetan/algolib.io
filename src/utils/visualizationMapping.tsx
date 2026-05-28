@@ -122,6 +122,7 @@ export const visualizationMap: Record<string, any> = {
   'top-k-frequent-elements': dynamic(() => import('@/components/visualizations/algorithms/TopKFrequentElementsVisualization').then(m => m.TopKFrequentElementsVisualization), { ssr: false }),
   'sliding-window-maximum': dynamic(() => import('@/components/visualizations/algorithms/SlidingWindowMaxVisualization').then(m => m.SlidingWindowMaxVisualization), { ssr: false }),
   'find-median-from-data-stream': dynamic(() => import('@/components/visualizations/algorithms/FindMedianFromDataStreamVisualization').then(m => m.FindMedianFromDataStreamVisualization), { ssr: false }),
+  'last-stone-weight': dynamic(() => import('@/components/visualizations/algorithms/LastStoneWeightVisualization').then(m => m.LastStoneWeightVisualization), { ssr: false }),
 
   // Cache Algorithms
   'lru-cache': dynamic(() => import('@/components/visualizations/algorithms/LRUCacheVisualization').then(m => m.LRUCacheVisualization), { ssr: false }),
@@ -233,6 +234,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'lru-cache': {
     title: 'LRU Cache',
     description: 'Visualize Least Recently Used cache eviction using a Hash Map for O(1) lookups and a Doubly Linked List for ordering.'
+  },
+  'last-stone-weight': {
+    title: 'Last Stone Weight',
+    description: 'Simulate stone smashing gameplay by maintaining a max heap to extract the heaviest two stones on each turn.'
   }
 };
 
