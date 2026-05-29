@@ -88,6 +88,7 @@ export const visualizationMap: Record<string, any> = {
   'sudoku-solver': dynamic(() => import('@/components/visualizations/algorithms/SudokuSolverVisualization').then(m => m.SudokuSolverVisualization), { ssr: false }),
 
   // Advanced Data Structures
+  'time-based-key-value-store': dynamic(() => import('@/components/visualizations/algorithms/TimeMapVisualization').then(m => m.TimeMapVisualization), { ssr: false }),
   'design-twitter': dynamic(() => import('@/components/visualizations/algorithms/DesignTwitterVisualization').then(m => m.DesignTwitterVisualization), { ssr: false }),
   'segment-tree': dynamic(() => import('@/components/visualizations/algorithms/SegmentTreeVisualization').then(m => m.SegmentTreeVisualization), { ssr: false }),
   'fenwick-tree': dynamic(() => import('@/components/visualizations/algorithms/FenwickTreeVisualization').then(m => m.FenwickTreeVisualization), { ssr: false }),
@@ -253,6 +254,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'design-twitter': {
     title: 'Design Twitter',
     description: 'Visualize the internal data structures of a simplified Twitter implementation, tracking user followings and rendering chronological news feeds with a min-heap.'
+  },
+  'time-based-key-value-store': {
+    title: 'Time-Based Key-Value Store',
+    description: 'Visualize how a hash map of dynamically growing arrays combined with binary search allows efficient retrieval of time-versioned values.'
   }
 };
 

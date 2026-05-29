@@ -343,7 +343,7 @@ export const ProblemDescriptionPanel = React.memo(
         >
           {/* Tabs header with ScrollArea scrollbar exactly like the test cases tab + overflow fades & scroll buttons */}
           <div className="px-0 shrink-0 border-b bg-background/50 relative group/tabs flex items-center justify-between">
-            <div className="flex-1 min-w-0 relative h-10 flex items-center">
+            <div className="flex-1 min-w-0 relative h-9 flex items-center">
               {/* Left fade & Scroll Button */}
               <div
                 className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background via-background/90 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${tabsShowLeftFade ? "opacity-100" : "opacity-0"}`}
@@ -386,7 +386,7 @@ export const ProblemDescriptionPanel = React.memo(
                     className={`flex flex-col ${isCompact ? "w-full" : "w-max"}`}
                   >
                     <TabsList
-                      className={`flex p-0 bg-transparent gap-0 rounded-none h-10 ${isCompact ? "w-full" : "w-max min-w-full"}`}
+                      className={`flex p-0 bg-transparent gap-0 rounded-none h-9 ${isCompact ? "w-full" : "w-max min-w-full"}`}
                     >
                       <TooltipProvider>
                         {onAddTab && (
@@ -461,7 +461,7 @@ export const ProblemDescriptionPanel = React.memo(
                             <TabsTrigger
                               key={tabId}
                               value={tabId}
-                              className="group/trigger relative flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-10 px-3 sm:px-4 transition-all flex items-center justify-center"
+                              className="group/trigger relative flex-1 text-[12px] data-[state=active]:bg-transparent data-[state=active]:text-foreground border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none h-9 px-3 sm:px-4 transition-all flex items-center justify-center"
                             >
                               {isCompact ? (
                                 <Tooltip>
@@ -495,7 +495,7 @@ export const ProblemDescriptionPanel = React.memo(
             </div>
 
             {rightHeaderContent && (
-              <div className="flex items-center shrink-0 border-l border-border h-10 pr-2 select-none">
+              <div className="flex items-center shrink-0 border-l border-border h-9 pr-2 select-none">
                 {rightHeaderContent}
               </div>
             )}

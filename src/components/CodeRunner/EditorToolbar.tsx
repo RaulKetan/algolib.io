@@ -61,7 +61,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     brainstormProps
 }) => {
     return (
-        <div className="flex items-center justify-between px-0 border-b bg-muted/40 h-10 shrink-0 gap-2">
+        <div className="flex items-center justify-between px-0 border-b bg-muted/40 h-9 shrink-0 gap-2">
             <div className="flex items-center gap-0 overflow-x-auto no-scrollbar mask-linear-fade shrink-0 h-full">
                 {activeEditorTab === 'current' && (
                     <div className="flex items-center h-full">
@@ -75,10 +75,10 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
                 )}
 
                 {(isScratchpadOpen || viewingSubmission) && (
-                    <TabsList className="bg-transparent h-10 p-0 gap-0 w-auto justify-start rounded-none">
+                    <TabsList className="bg-transparent h-9 p-0 gap-0 w-auto justify-start rounded-none">
                         <TabsTrigger
                             value="current"
-                            className="data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary h-10 px-4 rounded-none gap-2"
+                            className="data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary h-9 px-4 rounded-none gap-2"
                         >
                             <Code className="w-4 h-4" />
                             {!isMobile && "Code"}
@@ -87,7 +87,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
                         {brainstormProps && isScratchpadOpen && (
                             <TabsTrigger
                                 value="scratchpad"
-                                className="data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary h-10 px-4 rounded-none gap-2 items-center group"
+                                className="data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary h-9 px-4 rounded-none gap-2 items-center group"
                             >
                                 <Book className="w-4 h-4" />
                                 {!isMobile && "Thinkpad"}
@@ -110,7 +110,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
                         {viewingSubmission && (
                             <TabsTrigger
                                 value="submission"
-                                className="data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary h-10 px-4 gap-3 rounded-none group items-center"
+                                className="data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary h-9 px-4 gap-3 rounded-none group items-center"
                             >
                                 <div className="flex items-center gap-2 text-xs">
                                     <span className={`font-semibold ${viewingSubmission?.status === 'passed' ? 'text-green-600' : 'text-destructive'}`}>

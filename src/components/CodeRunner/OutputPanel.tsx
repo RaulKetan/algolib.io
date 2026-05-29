@@ -145,14 +145,14 @@ export const OutputPanel = React.memo(({
   return (
     <div className="h-full flex flex-col border-t overflow-hidden">
       {/* Top Bar / Tabs */}
-      <div className="flex items-center justify-between border-b shrink-0 h-[42px]">
+      <div className="flex items-center justify-between border-b shrink-0 h-9">
         {/* Scrollable Tabs Area */}
-        <div className="flex-1 flex items-center pr-1 pl-0 overflow-x-auto overflow-y-hidden scrollbar-thin mask-image-linear-gradient-to-r h-[42px] ">
+        <div className="flex-1 flex items-center pr-1 pl-0 overflow-x-auto overflow-y-hidden scrollbar-thin mask-image-linear-gradient-to-r h-9 ">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onTabChange("testcase")}
-            className={`h-10 text-xs gap-2 shrink-0 rounded-none transition-all ${activeTab === "testcase" ? "text-foreground bg-muted/50 border-b-2 border-primary" : "text-muted-foreground border-b-2 border-transparent"}`}
+            className={`h-9 text-xs gap-2 shrink-0 rounded-none transition-all ${activeTab === "testcase" ? "text-foreground bg-muted/50 border-b-2 border-primary" : "text-muted-foreground border-b-2 border-transparent"}`}
           >
             <FlaskConical className="w-3.5 h-3.5" />
             Testcase
@@ -162,7 +162,7 @@ export const OutputPanel = React.memo(({
             variant="ghost"
             size="sm"
             onClick={() => onTabChange("result")}
-            className={`h-10 text-xs gap-2 shrink-0 rounded-none transition-all ${activeTab === "result" ? "text-foreground bg-muted/50 border-b-2 border-primary" : "text-muted-foreground border-b-2 border-transparent"}`}
+            className={`h-9 text-xs gap-2 shrink-0 rounded-none transition-all ${activeTab === "result" ? "text-foreground bg-muted/50 border-b-2 border-primary" : "text-muted-foreground border-b-2 border-transparent"}`}
             disabled={!output}
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -177,7 +177,7 @@ export const OutputPanel = React.memo(({
               variant="ghost"
               size="icon"
               onClick={onMaximize}
-              className="h-10 w-10 text-muted-foreground hover:text-foreground rounded-none"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground rounded-none"
               title={isMaximized ? "Restore to panel" : "Maximize output"}
             >
               {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
@@ -195,7 +195,7 @@ export const OutputPanel = React.memo(({
               onValueChange={setActiveTestCaseTab}
               className="flex-1 flex flex-col min-h-0"
             >
-              <div className="flex items-start justify-between bg-background/50 shrink-0 py-1.5 px-2 min-h-[44px]">
+              <div className="flex items-start justify-between bg-background/50 shrink-0 py-1.5 px-2 min-h-[36px]">
                 {/* Scrollable Tabs List */}
                 <ScrollArea className="flex-1 w-full whitespace-nowrap">
                   <div className="flex items-center w-max p-1">
@@ -340,7 +340,7 @@ export const OutputPanel = React.memo(({
               {output.testResults && (
                 <div className="h-full flex flex-col min-h-0">
                   <Tabs value={activeResultTab} onValueChange={setActiveResultTab} className="flex-1 flex flex-col min-h-0">
-                    <div className="flex border-b bg-background/50 shrink-0 sticky top-0 z-10 py-1.5 px-2 items-start w-full min-h-[44px]">
+                    <div className="flex border-b bg-background/50 shrink-0 sticky top-0 z-10 py-1.5 px-2 items-start w-full min-h-[36px]">
                       <ScrollArea className="flex-1 w-full whitespace-nowrap">
                         <div className="flex w-max p-1">
                           <TabsList className="h-9 bg-transparent p-0 flex-nowrap justify-start gap-1 border-none shadow-none">
