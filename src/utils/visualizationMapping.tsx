@@ -88,6 +88,7 @@ export const visualizationMap: Record<string, any> = {
   'sudoku-solver': dynamic(() => import('@/components/visualizations/algorithms/SudokuSolverVisualization').then(m => m.SudokuSolverVisualization), { ssr: false }),
 
   // Advanced Data Structures
+  'design-twitter': dynamic(() => import('@/components/visualizations/algorithms/DesignTwitterVisualization').then(m => m.DesignTwitterVisualization), { ssr: false }),
   'segment-tree': dynamic(() => import('@/components/visualizations/algorithms/SegmentTreeVisualization').then(m => m.SegmentTreeVisualization), { ssr: false }),
   'fenwick-tree': dynamic(() => import('@/components/visualizations/algorithms/FenwickTreeVisualization').then(m => m.FenwickTreeVisualization), { ssr: false }),
   'sparse-table': dynamic(() => import('@/components/visualizations/algorithms/SparseTableVisualization').then(m => m.SparseTableVisualization), { ssr: false }),
@@ -248,6 +249,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'k-closest': {
     title: 'K Closest Points to Origin',
     description: 'Visualize how points on an X-Y plane are tracked and sorted by their Euclidean distance to the origin using a min-heap structure.'
+  },
+  'design-twitter': {
+    title: 'Design Twitter',
+    description: 'Visualize the internal data structures of a simplified Twitter implementation, tracking user followings and rendering chronological news feeds with a min-heap.'
   }
 };
 

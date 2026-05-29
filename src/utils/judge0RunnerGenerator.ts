@@ -1,5 +1,6 @@
+import { ensureStaticMethods, findEntryFunction, splitCppCode } from './codeManipulation';
+
 import { Language } from '@/components/CodeRunner/LanguageSelector';
-import { findEntryFunction, ensureStaticMethods, splitCppCode } from './codeManipulation';
 import { getRegistryCode } from './testRunnerGenerator';
 
 interface Judge0Options {

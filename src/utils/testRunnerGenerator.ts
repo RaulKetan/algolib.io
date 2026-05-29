@@ -1,6 +1,7 @@
+import { DSName, SUPPORTED_DS, getDSDetails } from '@/lib/dsa-registry';
+import { ensureStaticMethods, extractCppSignatures, extractType, findEntryFunction, splitCppCode, stripComments } from './codeManipulation';
+
 import { Language } from '@/components/CodeRunner/LanguageSelector';
-import { findEntryFunction, ensureStaticMethods, splitCppCode, stripComments, extractCppSignatures, extractType } from './codeManipulation';
-import { getDSDetails, DSName, SUPPORTED_DS } from '@/lib/dsa-registry';
 import { convertTreeNodeToArray } from './treeUtils';
 
 export const getRegistryCode = (inputSchema: any[], language: Language, userCode: string) => {
@@ -1549,8 +1550,16 @@ const generateCppClassRunner = (
             first = false;
             std::vector<std::string> results;
             try {
+                auto start = std::chrono::high_resolution_clock::now();
                 ${calls}
-                std::cout << "{\\"status\\":\\"pass\\",\\"input\\":[" << R"JSON(${JSON.stringify(methods)})JSON" << "," << R"JSON(${JSON.stringify(args)})JSON" << "],\\"expected\\":" << R"JSON(${JSON.stringify(expected)})JSON" << ",\\"actual\\":" << toJson(results) << "}";
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double, std::milli> duration = end - start;
+                
+                std::string actual_json = toJson(results);
+                std::string expected_json = R"JSON(${JSON.stringify(expected)})JSON";
+                std::string status = (actual_json == expected_json) ? "pass" : "fail";
+                
+                std::cout << "{\\"status\\":\\"" << status << "\\",\\"input\\":[" << R"JSON(${JSON.stringify(methods)})JSON" << "," << R"JSON(${JSON.stringify(args)})JSON" << "],\\"expected\\":" << expected_json << ",\\"actual\\":" << actual_json << ",\\"time\\":" << duration.count() << "}";
             } catch (...) {
                 std::cout << "{\\"status\\":\\"error\\",\\"error\\":\\"Execution Error\\"}";
             }
@@ -1565,7 +1574,10 @@ const generateCppClassRunner = (
 #include <algorithm>
 #include <map>
 #include <unordered_map>
-
+#include <unordered_set>
+#include <queue>
+#include <tuple>
+#include <chrono>
 using namespace std;
 
 // Json Helpers
