@@ -82,6 +82,7 @@ export const visualizationMap: Record<string, any> = {
   'permutations': dynamic(() => import('@/components/visualizations/algorithms/PermutationsVisualization').then(m => m.PermutationsVisualization), { ssr: false }),
   'combinations': dynamic(() => import('@/components/visualizations/algorithms/CombinationsVisualization').then(m => m.CombinationsVisualization), { ssr: false }),
   'combination-sum': dynamic(() => import('@/components/visualizations/algorithms/CombinationSumVisualization').then(m => m.CombinationSumVisualization), { ssr: false }),
+  'combination-sum-ii': dynamic(() => import('@/components/visualizations/algorithms/CombinationSumIIVisualization').then(m => m.CombinationSumIIVisualization), { ssr: false }),
   'word-search': dynamic(() => import('@/components/visualizations/algorithms/WordSearchVisualization').then(m => m.WordSearchVisualization), { ssr: false }),
   'word-search-grid': dynamic(() => import('@/components/visualizations/algorithms/WordSearchVisualization').then(m => m.WordSearchVisualization), { ssr: false }),
   'n-queens': dynamic(() => import('@/components/visualizations/algorithms/NQueensVisualization').then(m => m.NQueensVisualization), { ssr: false }),

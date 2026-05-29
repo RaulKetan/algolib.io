@@ -40,6 +40,7 @@ const blind75Map: Record<string, React.LazyExoticComponent<React.ComponentType<a
   "encode-and-decode-strings": React.lazy(() => import("@/components/visualizations/algorithms/EncodeDecodeStringsVisualization").then(m => ({ default: m.EncodeDecodeStringsVisualization }))),
   "maximum-depth-of-binary-tree": React.lazy(() => import("@/components/visualizations/algorithms/MaximumDepthOfBinaryTreeVisualization").then(m => ({ default: m.MaximumDepthOfBinaryTreeVisualization }))),
   "combination-sum": React.lazy(() => import("@/components/visualizations/algorithms/CombinationSumVisualization").then(m => ({ default: m.CombinationSumVisualization }))),
+  "combination-sum-ii": React.lazy(() => import("@/components/visualizations/algorithms/CombinationSumIIVisualization").then(m => ({ default: m.CombinationSumIIVisualization }))),
   "house-robber": React.lazy(() => import("@/components/visualizations/algorithms/HouseRobberVisualization").then(m => ({ default: m.HouseRobberVisualization }))),
   "house-robber-ii": React.lazy(() => import("@/components/visualizations/algorithms/HouseRobberIIVisualization").then(m => ({ default: m.HouseRobberIIVisualization }))),
   "decode-ways": React.lazy(() => import("@/components/visualizations/algorithms/DecodeWaysVisualization").then(m => ({ default: m.DecodeWaysVisualization }))),
