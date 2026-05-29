@@ -5,7 +5,7 @@ import { ListingLayout } from "@/components/listing/ListingLayout";
 import { PremiumProblemCard } from "@/components/listing/PremiumProblemCard";
 import { useApp } from '@/contexts/AppContext';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { getGroupedByCategory, normalizeCategory } from "@/constants/categories";
+import { getGroupedByCategory, normalizeCategory, resolveAlgoCategories } from "@/constants/categories";
 import { Brain, Target } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ProgressStats } from "@/components/profile/ProgressStats";
@@ -118,7 +118,8 @@ export const ProblemsList = ({
     if (selectedTopics.length > 0) {
       result = result.filter(algo => {
         if (!algo.category) return false;
-        const cats = algo.category.split(',').map((c: string) => normalizeCategory(c.trim()));
+        const rawCats = algo.category.split(',').map((c: string) => c.trim());
+        const cats = resolveAlgoCategories(rawCats);
         return cats.some(cat => selectedTopics.includes(cat));
       });
     }
@@ -250,7 +251,8 @@ export const ProblemsList = ({
   const allTopics = useMemo(() => {
     const categories = algorithms.flatMap(algo => {
       if (!algo.category) return [];
-      return algo.category.split(',').map((c: string) => normalizeCategory(c.trim()));
+      const rawCats = algo.category.split(',').map((c: string) => c.trim());
+      return resolveAlgoCategories(rawCats);
     }).filter(Boolean);
     return Array.from(new Set(categories)).sort();
   }, [algorithms]);

@@ -150,7 +150,7 @@ export const ListingLayout = ({
                                     </div>
                                 )}
 
-                                <div className="rounded-2xl border border-border/40 bg-card shadow-sm hover:shadow-md transition-all duration-300 p-4 sm:p-5 space-y-4">
+                                <div className="rounded-xl border border-border/40 bg-card shadow-sm hover:shadow-md transition-all duration-300 p-4 sm:p-5 space-y-4">
                                     {/* Search & Sort Row */}
                                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
                                         <div className="relative flex-1 group">

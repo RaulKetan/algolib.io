@@ -1,0 +1,674 @@
+import { useState, useMemo } from 'react';
+import { SimpleStepControls } from '../shared/SimpleStepControls';
+import { VariablePanel } from '../shared/VariablePanel';
+import { AnimatedCodeEditor } from '../shared/AnimatedCodeEditor';
+import { VisualizationLayout } from '../shared/VisualizationLayout';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card } from '@/components/ui/card';
+import { Info, HelpCircle } from 'lucide-react';
+
+interface HeapNode {
+  distance: number;
+  x: number;
+  y: number;
+}
+
+interface Step {
+  minHeap: HeapNode[];
+  result: number[][];
+  points: number[][];
+  activePointIdx: number | null;
+  activeDistance: number | null;
+  i: number | null;
+  current: HeapNode | null;
+  explanation: string;
+  highlightedLines: number[];
+  variables: Record<string, any>;
+  pointStatuses: ('idle' | 'active' | 'heap' | 'result' | 'discarded')[];
+}
+
+export const KClosestPointsVisualization = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const initialPoints = useMemo(() => [[3, 3], [5, -1], [-2, 4], [1, 2], [-1, -1]], []);
+  const k = 2;
+
+  const steps: Step[] = useMemo(() => {
+    const s: Step[] = [];
+    const points = [...initialPoints];
+    let heap: HeapNode[] = [];
+    let result: number[][] = [];
+
+    const getStatuses = (
+      activeIdx: number | null,
+      phase: 'init' | 'points' | 'pop' | 'done'
+    ): ('idle' | 'active' | 'heap' | 'result' | 'discarded')[] => {
+      return points.map((p, idx) => {
+        const inResult = result.some(rp => rp[0] === p[0] && rp[1] === p[1]);
+        if (inResult) return 'result';
+
+        if (idx === activeIdx) return 'active';
+
+        const inHeap = heap.some(hp => hp.x === p[0] && hp.y === p[1]);
+        if (inHeap) return 'heap';
+
+        if (phase === 'pop' || phase === 'done') {
+          return 'discarded';
+        }
+
+        return 'idle';
+      });
+    };
+
+    // Step 0: Init
+    s.push({
+      minHeap: [],
+      result: [],
+      points: points,
+      activePointIdx: null,
+      activeDistance: null,
+      i: null,
+      current: null,
+      explanation: "Initialize an empty array minHeap to store the points sorted by their distance from the origin.",
+      highlightedLines: [1, 2],
+      variables: {
+        points: '[[3, 3], [5, -1], [-2, 4], [1, 2], [-1, -1]]',
+        k: k,
+        minHeap: '[]',
+        result: '[]'
+      },
+      pointStatuses: points.map(() => 'idle')
+    });
+
+    // Loop through points
+    for (let idx = 0; idx < points.length; idx++) {
+      const p = points[idx];
+      const dist = p[0] * p[0] + p[1] * p[1];
+
+      // Step A: check_point (loop head)
+      s.push({
+        minHeap: [...heap],
+        result: [],
+        points: points,
+        activePointIdx: idx,
+        activeDistance: null,
+        i: null,
+        current: null,
+        explanation: `Iterate over the points. Current point being evaluated is [${p[0]}, ${p[1]}].`,
+        highlightedLines: [12],
+        variables: {
+          minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+          result: '[]',
+          'current point': `[${p[0]}, ${p[1]}]`
+        },
+        pointStatuses: getStatuses(idx, 'points')
+      });
+
+      // Step B: calc_distance
+      s.push({
+        minHeap: [...heap],
+        result: [],
+        points: points,
+        activePointIdx: idx,
+        activeDistance: dist,
+        i: null,
+        current: null,
+        explanation: `Calculate squared distance (d²) from origin for [${p[0]}, ${p[1]}]: x² + y² = ${p[0]}² + (${p[1]})² = ${p[0] * p[0]} + ${p[1] * p[1]} = ${dist}.`,
+        highlightedLines: [13, 8, 9, 10],
+        variables: {
+          minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+          result: '[]',
+          'current point': `[${p[0]}, ${p[1]}]`,
+          'distance (d²)': dist
+        },
+        pointStatuses: getStatuses(idx, 'points')
+      });
+
+      // Step C: push_heap
+      const newHeapNode = { distance: dist, x: p[0], y: p[1] };
+      heap.push(newHeapNode);
+      s.push({
+        minHeap: [...heap],
+        result: [],
+        points: points,
+        activePointIdx: idx,
+        activeDistance: dist,
+        i: null,
+        current: null,
+        explanation: `Push the node [${dist}, ${p[0]}, ${p[1]}] onto the minHeap array.`,
+        highlightedLines: [14],
+        variables: {
+          minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+          result: '[]',
+          'current point': `[${p[0]}, ${p[1]}]`,
+          'distance (d²)': dist
+        },
+        pointStatuses: getStatuses(idx, 'points')
+      });
+
+      // Step D: sort_heap
+      heap.sort((a, b) => a.distance - b.distance);
+      s.push({
+        minHeap: [...heap],
+        result: [],
+        points: points,
+        activePointIdx: null,
+        activeDistance: null,
+        i: null,
+        current: null,
+        explanation: `Sort the minHeap ascending by distance so the closest element moves to the front. Heap is now: [${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}].`,
+        highlightedLines: [15, 4, 5, 6],
+        variables: {
+          minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+          result: '[]'
+        },
+        pointStatuses: getStatuses(null, 'points')
+      });
+    }
+
+    // Step E: Init result array
+    s.push({
+      minHeap: [...heap],
+      result: [],
+      points: points,
+      activePointIdx: null,
+      activeDistance: null,
+      i: null,
+      current: null,
+      explanation: "All points have been processed and sorted in the heap. Initialize an empty result array.",
+      highlightedLines: [18],
+      variables: {
+        minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+        result: '[]'
+      },
+      pointStatuses: getStatuses(null, 'pop')
+    });
+
+    // Extract K closest points
+    for (let i = 0; i < k; i++) {
+      // Step F: loop check
+      s.push({
+        minHeap: [...heap],
+        result: [...result],
+        points: points,
+        activePointIdx: null,
+        activeDistance: null,
+        i: i,
+        current: null,
+        explanation: `Check extraction loop condition: i = ${i} < k (${k}). Proceed to pull the next closest point.`,
+        highlightedLines: [19],
+        variables: {
+          minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+          result: `[${result.map(r => `[${r.join(',')}]`).join(', ')}]`,
+          i: i
+        },
+        pointStatuses: getStatuses(null, 'pop')
+      });
+
+      // Step G: shift/pop heap
+      const current = heap.shift()!;
+      const originalIdx = points.findIndex(pt => pt[0] === current.x && pt[1] === current.y);
+      s.push({
+        minHeap: [...heap],
+        result: [...result],
+        points: points,
+        activePointIdx: originalIdx,
+        activeDistance: current.distance,
+        i: i,
+        current: current,
+        explanation: `Extract (shift) the front element from the minHeap: [${current.distance}, ${current.x}, ${current.y}] (closest remaining point).`,
+        highlightedLines: [20],
+        variables: {
+          minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+          result: `[${result.map(r => `[${r.join(',')}]`).join(', ')}]`,
+          i: i,
+          current: `[${current.distance}, ${current.x}, ${current.y}]`
+        },
+        pointStatuses: getStatuses(originalIdx, 'pop')
+      });
+
+      // Step H: push to result
+      result.push([current.x, current.y]);
+      s.push({
+        minHeap: [...heap],
+        result: [...result],
+        points: points,
+        activePointIdx: null,
+        activeDistance: null,
+        i: i,
+        current: current,
+        explanation: `Push the extracted coordinates [${current.x}, ${current.y}] to the result list.`,
+        highlightedLines: [21, 22, 23],
+        variables: {
+          minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+          result: `[${result.map(r => `[${r.join(',')}]`).join(', ')}]`,
+          i: i,
+          current: `[${current.distance}, ${current.x}, ${current.y}]`
+        },
+        pointStatuses: getStatuses(null, 'pop')
+      });
+    }
+
+    // Step I: loop check exit
+    s.push({
+      minHeap: [...heap],
+      result: [...result],
+      points: points,
+      activePointIdx: null,
+      activeDistance: null,
+      i: k,
+      current: null,
+      explanation: `Check loop condition: i = ${k} is not < k (${k}). Exit extraction loop.`,
+      highlightedLines: [19],
+      variables: {
+        minHeap: `[${heap.map(h => `[${h.distance}, ${h.x}, ${h.y}]`).join(', ')}]`,
+        result: `[${result.map(r => `[${r.join(',')}]`).join(', ')}]`,
+        i: k
+      },
+      pointStatuses: getStatuses(null, 'pop')
+    });
+
+    // Step J: return result
+    s.push({
+      minHeap: [...heap],
+      result: [...result],
+      points: points,
+      activePointIdx: null,
+      activeDistance: null,
+      i: null,
+      current: null,
+      explanation: `Algorithm complete. Return the final result containing the k closest points: [${result.map(r => `[${r.join(',')}]`).join(', ')}].`,
+      highlightedLines: [26],
+      variables: {
+        result: `[${result.map(r => `[${r.join(',')}]`).join(', ')}]`
+      },
+      pointStatuses: getStatuses(null, 'done')
+    });
+
+    return s;
+  }, [initialPoints]);
+
+  const code = `function kClosest(points: number[][], k: number): number[][] {
+    const minHeap: number[][] = [];
+
+    const compare = (a: number[], b: number[]): number => {
+        return a[0] - b[0];
+    };
+
+    const getDistance = (point: number[]): number => {
+        return point[0] * point[0] + point[1] * point[1];
+    };
+
+    for (const point of points) {
+        const distance = getDistance(point);
+        minHeap.push([distance, point[0], point[1]]);
+        minHeap.sort(compare);
+    }
+
+    const result: number[][] = [];
+    for (let i = 0; i < k; i++) {
+        const current = minHeap.shift();
+        if (current) {
+            result.push([current[1], current[2]]);
+        }
+    }
+
+    return result;
+}`;
+
+  const step = steps[currentStep];
+
+  // SVG dimensions & grid scaling details
+  const svgSize = 320;
+  const halfSize = svgSize / 2;
+  const scale = 25; // 25px = 1 unit on coordinate system (-6 to +6)
+
+  const toSvgX = (x: number) => halfSize + x * scale;
+  const toSvgY = (y: number) => halfSize - y * scale;
+
+  // Concentric circle radii based on actual distance-squared values
+  const circles = [
+    { name: 'd² = 2', rVal: Math.sqrt(2) },
+    { name: 'd² = 5', rVal: Math.sqrt(5) },
+    { name: 'd² = 18', rVal: Math.sqrt(18) },
+    { name: 'd² = 20', rVal: Math.sqrt(20) },
+    { name: 'd² = 26', rVal: Math.sqrt(26) },
+  ];
+
+  return (
+    <VisualizationLayout
+      leftContent={
+        <div className="space-y-6">
+          {/* Main Visual Arena */}
+          <Card className="p-6 bg-card/50 backdrop-blur-sm border-primary/20 relative overflow-hidden flex flex-col items-center">
+            <h3 className="text-xs font-semibold mb-4 text-muted-foreground uppercase tracking-widest text-center self-stretch">
+              X-Y Coordinate Plane
+            </h3>
+
+            {/* SVG Interactive Plane */}
+            <div className="relative border border-border/60 bg-muted/10 rounded-2xl p-2 w-[340px] h-[340px] flex items-center justify-center shadow-inner">
+              <svg width={svgSize} height={svgSize} className="overflow-visible select-none">
+                {/* Horizontal & Vertical grid lines */}
+                {Array.from({ length: 13 }).map((_, idx) => {
+                  const val = idx - 6;
+                  if (val === 0) return null; // Skip axis
+                  const sx = toSvgX(val);
+                  const sy = toSvgY(val);
+                  return (
+                    <g key={`grid-${val}`}>
+                      {/* Vertical line */}
+                      <line
+                        x1={sx}
+                        y1={0}
+                        x2={sx}
+                        y2={svgSize}
+                        className="stroke-muted/30 stroke-[1]"
+                        strokeDasharray="2,4"
+                      />
+                      {/* Horizontal line */}
+                      <line
+                        x1={0}
+                        y1={sy}
+                        x2={svgSize}
+                        y2={sy}
+                        className="stroke-muted/30 stroke-[1]"
+                        strokeDasharray="2,4"
+                      />
+                    </g>
+                  );
+                })}
+
+                {/* Main Axes */}
+                <line
+                  x1={0}
+                  y1={halfSize}
+                  x2={svgSize}
+                  y2={halfSize}
+                  className="stroke-muted-foreground/40 stroke-[1.5]"
+                />
+                <line
+                  x1={halfSize}
+                  y1={0}
+                  x2={halfSize}
+                  y2={svgSize}
+                  className="stroke-muted-foreground/40 stroke-[1.5]"
+                />
+
+                {/* Axes Label Ticks */}
+                {[-5, -3, 3, 5].map((val) => (
+                  <g key={`axis-tick-${val}`}>
+                    {/* X axis tick */}
+                    <line
+                      x1={toSvgX(val)}
+                      y1={halfSize - 3}
+                      x2={toSvgX(val)}
+                      y2={halfSize + 3}
+                      className="stroke-muted-foreground/60 stroke-[1.5]"
+                    />
+                    <text
+                      x={toSvgX(val)}
+                      y={halfSize + 16}
+                      textAnchor="middle"
+                      className="text-[9px] font-bold fill-muted-foreground"
+                    >
+                      {val}
+                    </text>
+
+                    {/* Y axis tick */}
+                    <line
+                      x1={halfSize - 3}
+                      y1={toSvgY(val)}
+                      x2={halfSize + 3}
+                      y2={toSvgY(val)}
+                      className="stroke-muted-foreground/60 stroke-[1.5]"
+                    />
+                    <text
+                      x={halfSize - 14}
+                      y={toSvgY(val) + 3}
+                      textAnchor="middle"
+                      className="text-[9px] font-bold fill-muted-foreground"
+                    >
+                      {val}
+                    </text>
+                  </g>
+                ))}
+
+                {/* Concentric Boundary Circles */}
+                {circles.map((c, idx) => {
+                  const radiusPixels = c.rVal * scale;
+                  const isActiveRadius = step.activeDistance !== null && Math.abs(c.rVal * c.rVal - step.activeDistance) < 0.1;
+                  
+                  return (
+                    <circle
+                      key={`circle-${idx}`}
+                      cx={halfSize}
+                      cy={halfSize}
+                      r={radiusPixels}
+                      fill="none"
+                      className={`transition-all duration-100 ${
+                        isActiveRadius
+                          ? 'stroke-amber-500/40 stroke-[2] stroke-dash-animated'
+                          : 'stroke-primary/5 stroke-[1]'
+                      }`}
+                      strokeDasharray={isActiveRadius ? '4,4' : '2,4'}
+                    />
+                  );
+                })}
+
+                {/* Pulsing Glowing Origin (0,0) */}
+                <circle
+                  cx={halfSize}
+                  cy={halfSize}
+                  r={7}
+                  className="fill-indigo-500/20 stroke-indigo-500 stroke-[1.5] animate-pulse"
+                />
+                <circle
+                  cx={halfSize}
+                  cy={halfSize}
+                  r={2.5}
+                  className="fill-indigo-500"
+                />
+
+                {/* Active point distance vector line */}
+                {step.activePointIdx !== null && (
+                  <motion.line
+                    initial={{ x2: halfSize, y2: halfSize }}
+                    animate={{
+                      x2: toSvgX(step.points[step.activePointIdx][0]),
+                      y2: toSvgY(step.points[step.activePointIdx][1]),
+                    }}
+                    transition={{ duration: 0 }}
+                    x1={halfSize}
+                    y1={halfSize}
+                    className="stroke-amber-500/80 stroke-[2] stroke-dash-vector"
+                    strokeDasharray="4,3"
+                  />
+                )}
+
+                {/* Plot the coordinate points */}
+                {step.points.map((pt, idx) => {
+                  const sx = toSvgX(pt[0]);
+                  const sy = toSvgY(pt[1]);
+                  const status = step.pointStatuses[idx];
+
+                  // Visual configurations based on state
+                  let dotClass = 'fill-muted stroke-muted-foreground/30 stroke-[1.5]';
+                  let ringColor = 'transparent';
+                  let ringScale = 1;
+
+                  if (status === 'active') {
+                    dotClass = 'fill-amber-500 stroke-amber-200 stroke-[2] drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]';
+                    ringColor = 'rgba(245,158,11,0.4)';
+                    ringScale = 1.6;
+                  } else if (status === 'heap') {
+                    dotClass = 'fill-violet-600 stroke-violet-300 stroke-[1.5] drop-shadow-[0_0_4px_rgba(124,58,237,0.4)]';
+                  } else if (status === 'result') {
+                    dotClass = 'fill-emerald-500 stroke-emerald-200 stroke-[2] drop-shadow-[0_0_6px_rgba(16,185,129,0.7)]';
+                  } else if (status === 'discarded') {
+                    dotClass = 'fill-slate-400/20 stroke-slate-500/20 stroke-[1]';
+                  } else {
+                    dotClass = 'fill-slate-400 dark:fill-zinc-600 stroke-slate-300 dark:stroke-zinc-500 stroke-[1.5]';
+                  }
+
+                  return (
+                    <g key={`pt-${idx}`}>
+                      {/* Active outer pulse ring */}
+                      {status === 'active' && (
+                        <circle
+                          cx={sx}
+                          cy={sy}
+                          r={10}
+                          fill="none"
+                          stroke={ringColor}
+                          strokeWidth={2}
+                          className="animate-ping"
+                          style={{ transformOrigin: `${sx}px ${sy}px` }}
+                        />
+                      )}
+
+                      {/* Main point circle */}
+                      <circle
+                        cx={sx}
+                        cy={sy}
+                        r={status === 'active' ? 7.5 : 6}
+                        className={`transition-all duration-100 ${dotClass}`}
+                      />
+
+                      {/* Point coordinates text tag */}
+                      <text
+                        x={sx}
+                        y={sy - 12}
+                        textAnchor="middle"
+                        className={`text-[9px] font-bold transition-all duration-100 ${
+                          status === 'active'
+                            ? 'fill-amber-500 dark:fill-amber-400 font-extrabold text-[10px]'
+                            : status === 'result'
+                            ? 'fill-emerald-500 dark:fill-emerald-400'
+                            : status === 'discarded'
+                            ? 'fill-muted-foreground/30'
+                            : 'fill-foreground'
+                        }`}
+                      >
+                        ({pt[0]}, {pt[1]})
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          </Card>
+
+          {/* Interactive Guide Commentary */}
+          <Card className="p-4 bg-primary/5 border-primary/20 relative overflow-hidden min-h-[96px] flex flex-col justify-center">
+            <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+            <h4 className="text-xs font-bold uppercase tracking-widest text-primary mb-1.5 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5" />
+              Interactive Guide
+            </h4>
+            <p className="text-sm text-foreground leading-relaxed font-medium transition-all duration-100">
+              {step.explanation}
+            </p>
+          </Card>
+
+          {/* Min-Heap Status Bar */}
+          <Card className="p-4 bg-card border border-border/80 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                Min-Heap Queue Status (Sorted Ascending)
+              </span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-violet-600 border border-violet-300" />
+                <span className="text-[10px] text-muted-foreground uppercase font-bold">Heap Node</span>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-3 min-h-[56px] p-3 bg-muted/20 border border-dashed border-border rounded-xl">
+              <AnimatePresence mode="popLayout">
+                {step.minHeap.map((node, index) => (
+                  <motion.div
+                    key={`heap-${node.x}-${node.y}-${index}`}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0 }}
+                    className="flex items-center gap-1 bg-violet-600/10 dark:bg-violet-900/20 border border-violet-500/30 rounded-lg px-2.5 py-1.5 shadow-sm"
+                  >
+                    <span className="text-[10px] font-black text-violet-500 uppercase mr-1">
+                      d²={node.distance}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-foreground">
+                      ({node.x}, {node.y})
+                    </span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {step.minHeap.length === 0 && (
+                <span className="text-xs text-muted-foreground/60 py-1">
+                  Heap is empty. Points will be inserted here.
+                </span>
+              )}
+            </div>
+          </Card>
+
+          {/* Result Panel */}
+          <Card className="p-4 bg-card border border-border/80 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                Final Closest Points (k = {k})
+              </span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-emerald-300 animate-pulse" />
+                <span className="text-[10px] text-muted-foreground uppercase font-bold">Closest K</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 min-h-[56px] p-3 bg-emerald-500/5 dark:bg-emerald-500/10 border border-dashed border-emerald-500/20 rounded-xl">
+              <AnimatePresence mode="popLayout">
+                {step.result.map((pt, index) => (
+                  <motion.div
+                    key={`res-${pt[0]}-${pt[1]}-${index}`}
+                    layout
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0 }}
+                    className="flex items-center bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-3 py-1.5 shadow-sm"
+                  >
+                    <span className="text-xs font-mono font-black text-emerald-500 mr-1.5">
+                      ✓ Closest
+                    </span>
+                    <span className="text-xs font-mono font-bold text-foreground">
+                      ({pt[0]}, {pt[1]})
+                    </span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {step.result.length === 0 && (
+                <span className="text-xs text-muted-foreground/60 py-1">
+                  Result list is empty. Currently extracting...
+                </span>
+              )}
+            </div>
+          </Card>
+
+          {/* Variables Inspector */}
+          <VariablePanel variables={step.variables} />
+        </div>
+      }
+      rightContent={
+        <AnimatedCodeEditor
+          code={code}
+          language="typescript"
+          highlightedLines={step.highlightedLines}
+        />
+      }
+      controls={
+        <SimpleStepControls
+          currentStep={currentStep}
+          totalSteps={steps.length}
+          onStepChange={setCurrentStep}
+        />
+      }
+    />
+  );
+};

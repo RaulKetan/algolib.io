@@ -92,6 +92,8 @@ const blind75Map: Record<string, React.LazyExoticComponent<React.ComponentType<a
   'binary-tree-level-order-traversal': React.lazy(() => import('@/components/visualizations/algorithms/BFSLevelOrderVisualization').then(m => ({ default: m.BFSLevelOrderVisualization }))),
   "word-search-ii": React.lazy(() => import("@/components/visualizations/algorithms/WordSearchIIVisualization").then(m => ({ default: m.WordSearchIIVisualization }))),
   "last-stone-weight": React.lazy(() => import("@/components/visualizations/algorithms/LastStoneWeightVisualization").then(m => ({ default: m.LastStoneWeightVisualization }))),
+  "k-closest-points-to-origin": React.lazy(() => import("@/components/visualizations/algorithms/KClosestPointsVisualization").then(m => ({ default: m.KClosestPointsVisualization }))),
+  "k-closest": React.lazy(() => import("@/components/visualizations/algorithms/KClosestPointsVisualization").then(m => ({ default: m.KClosestPointsVisualization }))),
 };
 
 export const renderBlind75Visualization = (algoId: string): React.ReactNode | null => {
