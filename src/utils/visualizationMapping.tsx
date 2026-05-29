@@ -123,6 +123,8 @@ export const visualizationMap: Record<string, any> = {
   'sliding-window-maximum': dynamic(() => import('@/components/visualizations/algorithms/SlidingWindowMaxVisualization').then(m => m.SlidingWindowMaxVisualization), { ssr: false }),
   'find-median-from-data-stream': dynamic(() => import('@/components/visualizations/algorithms/FindMedianFromDataStreamVisualization').then(m => m.FindMedianFromDataStreamVisualization), { ssr: false }),
   'last-stone-weight': dynamic(() => import('@/components/visualizations/algorithms/LastStoneWeightVisualization').then(m => m.LastStoneWeightVisualization), { ssr: false }),
+  'k-closest-points-to-origin': dynamic(() => import('@/components/visualizations/algorithms/KClosestPointsVisualization').then(m => m.KClosestPointsVisualization), { ssr: false }),
+  'k-closest': dynamic(() => import('@/components/visualizations/algorithms/KClosestPointsVisualization').then(m => m.KClosestPointsVisualization), { ssr: false }),
 
   // Cache Algorithms
   'lru-cache': dynamic(() => import('@/components/visualizations/algorithms/LRUCacheVisualization').then(m => m.LRUCacheVisualization), { ssr: false }),
@@ -238,6 +240,14 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'last-stone-weight': {
     title: 'Last Stone Weight',
     description: 'Simulate stone smashing gameplay by maintaining a max heap to extract the heaviest two stones on each turn.'
+  },
+  'k-closest-points-to-origin': {
+    title: 'K Closest Points to Origin',
+    description: 'Visualize how points on an X-Y plane are tracked and sorted by their Euclidean distance to the origin using a min-heap structure.'
+  },
+  'k-closest': {
+    title: 'K Closest Points to Origin',
+    description: 'Visualize how points on an X-Y plane are tracked and sorted by their Euclidean distance to the origin using a min-heap structure.'
   }
 };
 
