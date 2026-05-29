@@ -31,6 +31,8 @@ const FIELD_TYPES = [
   { value: "string", label: "String" },
   { value: "number", label: "Number" },
   { value: "boolean", label: "Boolean" },
+  { value: "any[]", label: "Mixed Array (any[])" },
+  { value: "any[][]", label: "2D Mixed Array (any[][])" },
   { value: "number[]", label: "Number Array" },
   { value: "string[]", label: "String Array" },
   { value: "number[][]", label: "2D Number Array" },
