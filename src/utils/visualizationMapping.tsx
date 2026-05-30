@@ -68,11 +68,14 @@ export const visualizationMap: Record<string, any> = {
   // Dynamic Programming
   'knapsack-01': dynamic(() => import('@/components/visualizations/algorithms/KnapsackVisualization').then(m => m.KnapsackVisualization), { ssr: false }),
   'coin-change': dynamic(() => import('@/components/visualizations/algorithms/CoinChangeVisualization').then(m => m.CoinChangeVisualization), { ssr: false }),
+  'coin-change-ii': dynamic(() => import('@/components/visualizations/algorithms/CoinChangeIIVisualization').then(m => m.CoinChangeIIVisualization), { ssr: false }),
+  'coin-change-2': dynamic(() => import('@/components/visualizations/algorithms/CoinChangeIIVisualization').then(m => m.CoinChangeIIVisualization), { ssr: false }),
   'lcs': dynamic(() => import('@/components/visualizations/algorithms/LCSVisualization').then(m => m.LCSVisualization), { ssr: false }),
   'lis': dynamic(() => import('@/components/visualizations/algorithms/LISVisualization').then(m => m.LISVisualization), { ssr: false }),
   'edit-distance': dynamic(() => import('@/components/visualizations/algorithms/EditDistanceVisualization').then(m => m.EditDistanceVisualization), { ssr: false }),
   'matrix-path-dp': dynamic(() => import('@/components/visualizations/algorithms/MatrixPathVisualization').then(m => m.MatrixPathVisualization), { ssr: false }),
   'house-robber': dynamic(() => import('@/components/visualizations/algorithms/HouseRobberVisualization').then(m => m.HouseRobberVisualization), { ssr: false }),
+  'best-time-to-buy-and-sell-stock-with-cooldown': dynamic(() => import('@/components/visualizations/algorithms/BestTimeToBuyAndSellStockWithCooldownVisualization').then(m => m.BestTimeToBuyAndSellStockWithCooldownVisualization), { ssr: false }),
   'climbing-stairs': dynamic(() => import('@/components/visualizations/algorithms/ClimbingStairsVisualization').then(m => m.ClimbingStairsVisualization), { ssr: false }),
   'partition-equal-subset': dynamic(() => import('@/components/visualizations/algorithms/PartitionEqualSubsetVisualization').then(m => m.PartitionEqualSubsetVisualization), { ssr: false }),
   'word-break': dynamic(() => import('@/components/visualizations/algorithms/WordBreakVisualization').then(m => m.WordBreakVisualization), { ssr: false }),
@@ -235,6 +238,18 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'knapsack-01': {
     title: '0/1 Knapsack',
     description: 'Visualize the dynamic programming table construction to maximize value within a weight capacity.'
+  },
+  'coin-change-ii': {
+    title: 'Coin Change II',
+    description: 'Visualize the dynamic programming approach to find the total number of unique combinations that make up a given amount.'
+  },
+  'coin-change-2': {
+    title: 'Coin Change II',
+    description: 'Visualize the dynamic programming approach to find the total number of unique combinations that make up a given amount.'
+  },
+  'best-time-to-buy-and-sell-stock-with-cooldown': {
+    title: 'Best Time to Buy and Sell Stock with Cooldown',
+    description: 'Visualize a dynamic programming state machine to maximize profit from trading stocks, subject to a 1-day cooldown period after selling.'
   },
   'lru-cache': {
     title: 'LRU Cache',
