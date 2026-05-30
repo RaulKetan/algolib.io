@@ -122,9 +122,13 @@ export const visualizationMap: Record<string, any> = {
   'count-bits': dynamic(() => import('@/components/visualizations/algorithms/CountingBitsVisualization').then(m => m.CountingBitsVisualization), { ssr: false }),
   'subset-generation-bits': dynamic(() => import('@/components/visualizations/algorithms/SubsetBitsVisualization').then(m => m.SubsetBitsVisualization), { ssr: false }),
 
+  // Scheduling / Greedy
+  'task-scheduler': dynamic(() => import('@/components/visualizations/algorithms/TaskSchedulerVisualization').then(m => m.TaskSchedulerVisualization), { ssr: false }),
+
   // Heap/Priority Queue
   'kth-largest': dynamic(() => import('@/components/visualizations/algorithms/KthLargestVisualization').then(m => m.KthLargestVisualization), { ssr: false }),
   'kth-largest-element': dynamic(() => import('@/components/visualizations/algorithms/KthLargestVisualization').then(m => m.KthLargestVisualization), { ssr: false }),
+  'kth-largest-element-in-a-stream': dynamic(() => import('@/components/visualizations/algorithms/KthLargestElementInAStreamVisualization').then(m => m.KthLargestElementInAStreamVisualization), { ssr: false }),
   'top-k-frequent-elements': dynamic(() => import('@/components/visualizations/algorithms/TopKFrequentElementsVisualization').then(m => m.TopKFrequentElementsVisualization), { ssr: false }),
   'sliding-window-maximum': dynamic(() => import('@/components/visualizations/algorithms/SlidingWindowMaxVisualization').then(m => m.SlidingWindowMaxVisualization), { ssr: false }),
   'find-median-from-data-stream': dynamic(() => import('@/components/visualizations/algorithms/FindMedianFromDataStreamVisualization').then(m => m.FindMedianFromDataStreamVisualization), { ssr: false }),
@@ -231,6 +235,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
     title: 'Top K Frequent Elements',
     description: 'Track how a frequency map and a min-heap extract the K most common elements in O(n log k) time.'
   },
+  'kth-largest-element-in-a-stream': {
+    title: 'Kth Largest Element in a Stream',
+    description: 'Visualize maintaining a sliding window of the top K elements using a Min-Heap data structure as new scores arrive.'
+  },
   'sliding-window-maximum': {
     title: 'Sliding Window Maximum',
     description: 'See how a double-ended queue (deque) maintains potential maximums to solve the sliding window max problem in O(n) time.'
@@ -238,6 +246,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'knapsack-01': {
     title: '0/1 Knapsack',
     description: 'Visualize the dynamic programming table construction to maximize value within a weight capacity.'
+  },
+  'task-scheduler': {
+    title: 'Task Scheduler',
+    description: 'Visualize scheduling tasks with cooling intervals using a max-heap and queue to minimize idle time.'
   },
   'coin-change-ii': {
     title: 'Coin Change II',
