@@ -49,7 +49,7 @@ export function AlgorithmList() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [listTypeFilter, setListTypeFilter] = useState<string>('all');
+  const [listTypeFilters, setListTypeFilters] = useState<string[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'serial_no', direction: 'asc' });
   const [customCategoryInputs, setCustomCategoryInputs] = useState<Record<string, string>>({});
@@ -81,9 +81,9 @@ export function AlgorithmList() {
   };
 
   const filteredAlgorithms = algorithms.filter(algo => {
-    if (listTypeFilter === 'all') return true;
+    if (listTypeFilters.length === 0) return true;
     const types = algo.listTypes || (algo.list_type ? [algo.list_type] : ['core']);
-    return types.includes(listTypeFilter);
+    return types.some((t: string) => listTypeFilters.includes(t));
   })?.sort((a: any, b: any) => {
     let aValue = sortConfig.key === 'list_type' ? (a.listTypes?.join(', ') || a.listType || '') : a[sortConfig.key];
     let bValue = sortConfig.key === 'list_type' ? (b.listTypes?.join(', ') || b.listType || '') : b[sortConfig.key];
@@ -174,19 +174,51 @@ export function AlgorithmList() {
             ))}
           </SelectContent>
         </Select>
-        <Select value={listTypeFilter} onValueChange={setListTypeFilter}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="All List Types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All List Types</SelectItem>
-            {Object.entries(LIST_TYPE_LABELS)
-              .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
-              .map(([value, label]) => (
-                <SelectItem key={value} value={value}>{label}</SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-[200px] justify-between font-normal">
+              <span className="truncate">
+                {listTypeFilters.length === 0 ? "All List Types" : `${listTypeFilters.length} selected`}
+              </span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search list types..." className="h-9" />
+              <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem
+                    onSelect={() => setListTypeFilters([])}
+                    className="cursor-pointer flex justify-between"
+                  >
+                    All List Types
+                    {listTypeFilters.length === 0 && <Check className="h-4 w-4 text-primary" />}
+                  </CommandItem>
+                  {Object.entries(LIST_TYPE_LABELS)
+                    .filter(([key]) => key !== 'all' && key !== 'coreAlgo')
+                    .map(([value, label]) => {
+                      const isSelected = listTypeFilters.includes(value);
+                      return (
+                        <CommandItem
+                          key={value}
+                          onSelect={() => {
+                            setListTypeFilters(prev => 
+                              isSelected ? prev.filter(t => t !== value) : [...prev, value]
+                            );
+                          }}
+                          className="cursor-pointer flex justify-between"
+                        >
+                          {label}
+                          {isSelected && <Check className="h-4 w-4 text-primary" />}
+                        </CommandItem>
+                      );
+                    })}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Table */}
