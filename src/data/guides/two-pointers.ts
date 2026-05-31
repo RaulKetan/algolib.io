@@ -101,17 +101,23 @@ A palindrome is a string that reads the same backward as forward, ignoring case 
 ##### Python
 \`\`\`python
 def isPalindrome(s: str) -> bool:
+    # Lefty starts at the beginning, Righty starts at the end
     left, right = 0, len(s) - 1
     
+    # Keep walking towards each other until they meet or cross
     while left < right:
+        # Lefty skips any spaces, punctuation, or symbols
         while left < right and not s[left].isalnum():
             left += 1
+        # Righty skips any spaces, punctuation, or symbols
         while left < right and not s[right].isalnum():
             right -= 1
             
+        # If the letters they are pointing to don't match (ignoring case), it's not a palindrome!
         if s[left].lower() != s[right].lower():
             return False
             
+        # They matched! Take a step inwards to check the next pair
         left += 1
         right -= 1
         
@@ -122,21 +128,27 @@ def isPalindrome(s: str) -> bool:
 \`\`\`java
 public class Solution {
     public boolean isPalindrome(String s) {
+        // Lefty starts at the beginning, Righty starts at the end
         int left = 0;
         int right = s.length() - 1;
         
+        // Keep walking towards each other until they meet or cross
         while (left < right) {
+            // Lefty skips any spaces, punctuation, or symbols
             while (left < right && !Character.isLetterOrDigit(s.charAt(left))) {
                 left++;
             }
+            // Righty skips any spaces, punctuation, or symbols
             while (left < right && !Character.isLetterOrDigit(s.charAt(right))) {
                 right--;
             }
             
+            // If the letters they are pointing to don't match (ignoring case), it's not a palindrome!
             if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {
                 return false;
             }
             
+            // They matched! Take a step inwards to check the next pair
             left++;
             right--;
         }
@@ -153,21 +165,27 @@ public class Solution {
 class Solution {
 public:
     bool isPalindrome(std::string s) {
+        // Lefty starts at the beginning, Righty starts at the end
         int left = 0;
         int right = s.length() - 1;
         
+        // Keep walking towards each other until they meet or cross
         while (left < right) {
+            // Lefty skips any spaces, punctuation, or symbols
             while (left < right && !std::isalnum(s[left])) {
                 left++;
             }
+            // Righty skips any spaces, punctuation, or symbols
             while (left < right && !std::isalnum(s[right])) {
                 right--;
             }
             
+            // If the letters they are pointing to don't match (ignoring case), it's not a palindrome!
             if (std::tolower(s[left]) != std::tolower(s[right])) {
                 return false;
             }
             
+            // They matched! Take a step inwards to check the next pair
             left++;
             right--;
         }
@@ -179,21 +197,27 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function isPalindrome(s: string): boolean {
+  // Lefty starts at the beginning, Righty starts at the end
   let left = 0;
   let right = s.length - 1;
 
+  // Keep walking towards each other until they meet or cross
   while (left < right) {
+    // Lefty skips any spaces, punctuation, or symbols
     while (left < right && !/[a-zA-Z0-9]/.test(s[left])) {
       left++;
     }
+    // Righty skips any spaces, punctuation, or symbols
     while (left < right && !/[a-zA-Z0-9]/.test(s[right])) {
       right--;
     }
 
+    // If the letters they are pointing to don't match (ignoring case), it's not a palindrome!
     if (s[left].toLowerCase() !== s[right].toLowerCase()) {
       return false;
     }
 
+    // They matched! Take a step inwards to check the next pair
     left++;
     right--;
   }
@@ -226,14 +250,21 @@ Given a 1-indexed array of integers \`numbers\` that is already **sorted in non-
 ##### Python
 \`\`\`python
 def twoSum(numbers: list[int], target: int) -> list[int]:
+    # Lefty starts at the smallest number, Righty starts at the largest
     left, right = 0, len(numbers) - 1
     
     while left < right:
         current_sum = numbers[left] + numbers[right]
+        
+        # We found the exact weight we need!
         if current_sum == target:
-            return [left + 1, right + 1]  # 1-based indices
+            return [left + 1, right + 1]  # The problem asks for 1-based indices
+            
+        # Too light! Lefty needs to step right to find a heavier box.
         elif current_sum < target:
             left += 1
+            
+        # Too heavy! Righty needs to step left to find a lighter box.
         else:
             right -= 1
             
@@ -244,15 +275,22 @@ def twoSum(numbers: list[int], target: int) -> list[int]:
 \`\`\`java
 public class Solution {
     public int[] twoSum(int[] numbers, int target) {
+        // Lefty starts at the smallest number, Righty starts at the largest
         int left = 0;
         int right = numbers.length - 1;
         
         while (left < right) {
             int sum = numbers[left] + numbers[right];
+            
+            // We found the exact weight we need!
             if (sum == target) {
-                return new int[]{left + 1, right + 1}; // 1-based indices
+                return new int[]{left + 1, right + 1}; // The problem asks for 1-based indices
+            
+            // Too light! Lefty needs to step right to find a heavier box.
             } else if (sum < target) {
                 left++;
+                
+            // Too heavy! Righty needs to step left to find a lighter box.
             } else {
                 right--;
             }
@@ -269,15 +307,22 @@ public class Solution {
 class Solution {
 public:
     std::vector<int> twoSum(std::vector<int>& numbers, int target) {
+        // Lefty starts at the smallest number, Righty starts at the largest
         int left = 0;
         int right = numbers.size() - 1;
         
         while (left < right) {
             int sum = numbers[left] + numbers[right];
+            
+            // We found the exact weight we need!
             if (sum == target) {
-                return {left + 1, right + 1}; // 1-based indices
+                return {left + 1, right + 1}; // The problem asks for 1-based indices
+            
+            // Too light! Lefty needs to step right to find a heavier box.
             } else if (sum < target) {
                 left++;
+                
+            // Too heavy! Righty needs to step left to find a lighter box.
             } else {
                 right--;
             }
@@ -290,15 +335,22 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function twoSum(numbers: number[], target: number): number[] {
+  // Lefty starts at the smallest number, Righty starts at the largest
   let left = 0;
   let right = numbers.length - 1;
 
   while (left < right) {
     const sum = numbers[left] + numbers[right];
+    
+    // We found the exact weight we need!
     if (sum === target) {
-      return [left + 1, right + 1]; // 1-based indices
+      return [left + 1, right + 1]; // The problem asks for 1-based indices
+      
+    // Too light! Lefty needs to step right to find a heavier box.
     } else if (sum < target) {
       left++;
+      
+    // Too heavy! Righty needs to step left to find a lighter box.
     } else {
       right--;
     }
@@ -330,15 +382,22 @@ class ListNode:
         self.next = next
 
 def hasCycle(head: ListNode) -> bool:
+    # Both the slow Tortoise and fast Hare start at the beginning
     slow = fast = head
     
+    # The Hare runs until it hits the end of the track (null)
     while fast and fast.next:
+        # Tortoise takes 1 step
         slow = slow.next
+        # Hare takes 2 steps!
         fast = fast.next.next
+        
+        # Did the Hare lap the Tortoise and tap them on the shoulder?
         if slow == fast:
             return True  # Pointers collided, cycle detected!
             
-    return False  # Fast pointer hit null, no cycle
+    # The Hare reached the finish line, so the track is straight
+    return False  
 \`\`\`
 
 ##### Java
@@ -356,16 +415,23 @@ public class Solution {
     public boolean hasCycle(ListNode head) {
         if (head == null) return false;
         
+        # Both the slow Tortoise and fast Hare start at the beginning
         ListNode slow = head;
         ListNode fast = head;
         
+        # The Hare runs until it hits the end of the track (null)
         while (fast != null && fast.next != null) {
+            # Tortoise takes 1 step
             slow = slow.next;
+            # Hare takes 2 steps!
             fast = fast.next.next;
+            
+            # Did the Hare lap the Tortoise and tap them on the shoulder?
             if (slow == fast) {
                 return true; // Cycle detected
             }
         }
+        # The Hare reached the finish line, so the track is straight
         return false; // No cycle
     }
 }
@@ -384,16 +450,23 @@ public:
     bool hasCycle(ListNode *head) {
         if (!head) return false;
         
+        // Both the slow Tortoise and fast Hare start at the beginning
         ListNode *slow = head;
         ListNode *fast = head;
         
+        // The Hare runs until it hits the end of the track (null)
         while (fast != nullptr && fast->next != nullptr) {
+            // Tortoise takes 1 step
             slow = slow->next;
+            // Hare takes 2 steps!
             fast = fast->next->next;
+            
+            // Did the Hare lap the Tortoise and tap them on the shoulder?
             if (slow == fast) {
                 return true;
             }
         }
+        // The Hare reached the finish line, so the track is straight
         return false;
     }
 };
@@ -411,16 +484,23 @@ class ListNode {
 }
 
 function hasCycle(head: ListNode | null): boolean {
+  // Both the slow Tortoise and fast Hare start at the beginning
   let slow = head;
   let fast = head;
 
+  // The Hare runs until it hits the end of the track (null)
   while (fast !== null && fast.next !== null) {
+    // Tortoise takes 1 step
     slow = slow!.next;
+    // Hare takes 2 steps!
     fast = fast.next.next;
+    
+    // Did the Hare lap the Tortoise and tap them on the shoulder?
     if (slow === fast) {
       return true;
     }
   }
+  // The Hare reached the finish line, so the track is straight
   return false;
 }
 \`\`\`
@@ -444,14 +524,18 @@ The amount of water contained is limited by the shorter line: \`Area = min(heigh
 ##### Python
 \`\`\`python
 def maxArea(height: list[int]) -> int:
+    # Start with the widest possible container
     left, right = 0, len(height) - 1
     max_val = 0
     
     while left < right:
         width = right - left
+        # The water level is limited by the shorter wall
         h = min(height[left], height[right])
+        # Update the max area if this container holds more water
         max_val = max(max_val, h * width)
         
+        # To find a larger container, we MUST abandon the shorter wall
         if height[left] < height[right]:
             left += 1
         else:
@@ -464,15 +548,19 @@ def maxArea(height: list[int]) -> int:
 \`\`\`java
 public class Solution {
     public int maxArea(int[] height) {
+        // Start with the widest possible container
         int left = 0;
         int right = height.length - 1;
         int maxVal = 0;
         
         while (left < right) {
             int width = right - left;
+            // The water level is limited by the shorter wall
             int h = Math.min(height[left], height[right]);
+            // Update the max area if this container holds more water
             maxVal = Math.max(maxVal, h * width);
             
+            // To find a larger container, we MUST abandon the shorter wall
             if (height[left] < height[right]) {
                 left++;
             } else {
@@ -492,15 +580,19 @@ public class Solution {
 class Solution {
 public:
     int maxArea(std::vector<int>& height) {
+        // Start with the widest possible container
         int left = 0;
         int right = height.size() - 1;
         int maxVal = 0;
         
         while (left < right) {
             int width = right - left;
+            // The water level is limited by the shorter wall
             int h = std::min(height[left], height[right]);
+            // Update the max area if this container holds more water
             maxVal = std::max(maxVal, h * width);
             
+            // To find a larger container, we MUST abandon the shorter wall
             if (height[left] < height[right]) {
                 left++;
             } else {
@@ -515,15 +607,19 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function maxArea(height: number[]): number {
+  // Start with the widest possible container
   let left = 0;
   let right = height.length - 1;
   let maxVal = 0;
 
   while (left < right) {
     const width = right - left;
+    // The water level is limited by the shorter wall
     const h = Math.min(height[left], height[right]);
+    // Update the max area if this container holds more water
     maxVal = Math.max(maxVal, h * width);
 
+    // To find a larger container, we MUST abandon the shorter wall
     if (height[left] < height[right]) {
       left++;
     } else {

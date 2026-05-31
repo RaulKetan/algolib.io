@@ -67,18 +67,27 @@ Given two strings \`S\` and \`T\`, return \`true\` if \`T\` is an anagram of \`S
 ##### Python
 \`\`\`python
 def isAnagram(s: str, t: str) -> bool:
+    # If the lengths are different, they cannot be anagrams
     if len(s) != len(t):
         return False
         
+    # Create a frequency counter notebook
     counts = {}
+    
+    # Tally up every character in the first string
     for char in s:
         counts[char] = counts.get(char, 0) + 1
         
+    # Check the second string against our tally
     for char in t:
+        # If we see a character not in our tally, or we've seen it too many times
         if char not in counts or counts[char] == 0:
             return False
+            
+        # Cross off one occurrence of this character
         counts[char] -= 1
         
+    # If we haven't failed by now, they are perfectly matched anagrams
     return True
 \`\`\`
 
@@ -86,23 +95,33 @@ def isAnagram(s: str, t: str) -> bool:
 \`\`\`java
 public class Solution {
     public boolean isAnagram(String s, String t) {
+        // If the lengths are different, they cannot be anagrams
         if (s.length() != t.length()) {
             return false;
         }
         
+        // Use an array of 26 integers to tally lowercase English letters
         int[] counts = new int[26];
+        
+        // Tally up every character in the first string
         for (int i = 0; i < s.length(); i++) {
             counts[s.charAt(i) - 'a']++;
         }
         
+        // Check the second string against our tally
         for (int i = 0; i < t.length(); i++) {
             int idx = t.charAt(i) - 'a';
+            
+            // If the count drops below zero, there's a mismatch
             if (counts[idx] == 0) {
                 return false;
             }
+            
+            // Cross off one occurrence of this character
             counts[idx]--;
         }
         
+        // If we haven't failed by now, they are perfectly matched anagrams
         return true;
     }
 }
@@ -116,22 +135,31 @@ public class Solution {
 class Solution {
 public:
     bool isAnagram(std::string s, std::string t) {
+        // If the lengths are different, they cannot be anagrams
         if (s.length() != t.length()) {
             return false;
         }
         
+        // Use an array of 26 integers to tally lowercase English letters
         std::vector<int> counts(26, 0);
+        
+        // Tally up every character in the first string
         for (char c : s) {
             counts[c - 'a']++;
         }
         
+        // Check the second string against our tally
         for (char c : t) {
+            // If the count drops below zero, there's a mismatch
             if (counts[c - 'a'] == 0) {
                 return false;
             }
+            
+            // Cross off one occurrence of this character
             counts[c - 'a']--;
         }
         
+        // If we haven't failed by now, they are perfectly matched anagrams
         return true;
     }
 };
@@ -140,23 +168,33 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function isAnagram(s: string, t: string): boolean {
+  // If the lengths are different, they cannot be anagrams
   if (s.length !== t.length) {
     return false;
   }
 
+  // Create a frequency counter map
   const counts = new Map<string, number>();
+  
+  // Tally up every character in the first string
   for (const char of s) {
     counts.set(char, (counts.get(char) || 0) + 1);
   }
 
+  // Check the second string against our tally
   for (const char of t) {
     const currentCount = counts.get(char) || 0;
+    
+    // If we see a character not in our tally, or we've seen it too many times
     if (currentCount === 0) {
       return false;
     }
+    
+    // Cross off one occurrence of this character
     counts.set(char, currentCount - 1);
   }
 
+  // If we haven't failed by now, they are perfectly matched anagrams
   return true;
 }
 \`\`\`
@@ -190,19 +228,26 @@ Given an array of strings \`strs\`, group the anagrams together. You can return 
 ##### Python
 \`\`\`python
 def groupAnagrams(strs: list[str]) -> list[list[str]]:
+    # Map from character count signature to list of anagrams
     groups = {}
+    
     for word in strs:
-        # Create a signature array of 26 letters
+        # Create a signature array of 26 letters (a-z)
         count = [0] * 26
         for char in word:
             count[ord(char) - ord('a')] += 1
             
-        # Convert list to tuple to use as dictionary key
+        # Convert list to tuple to use as dictionary key (lists are unhashable)
         signature = tuple(count)
+        
+        # If this is a new signature, initialize an empty list
         if signature not in groups:
             groups[signature] = []
+            
+        # Add the current word to its anagram group
         groups[signature].append(word)
         
+    # Return all grouped anagrams
     return list(groups.values())
 \`\`\`
 
@@ -212,27 +257,33 @@ import java.util.*;
 
 public class Solution {
     public List<List<String>> groupAnagrams(String[] strs) {
+        // Map from character count signature to list of anagrams
         Map<String, List<String>> groups = new HashMap<>();
         
         for (String word : strs) {
+            // Create a signature array of 26 letters (a-z)
             int[] count = new int[26];
             for (char c : word.toCharArray()) {
                 count[c - 'a']++;
             }
             
-            // Build signature string: "#1#0#2..."
+            // Build signature string: "#1#0#2..." so it can be a Hash Map key
             StringBuilder sb = new StringBuilder();
             for (int val : count) {
                 sb.append('#').append(val);
             }
             String signature = sb.toString();
             
+            // If this is a new signature, initialize an empty list
             if (!groups.containsKey(signature)) {
                 groups.put(signature, new ArrayList<>());
             }
+            
+            // Add the current word to its anagram group
             groups.get(signature).add(word);
         }
         
+        // Return all grouped anagrams
         return new ArrayList<>(groups.values());
     }
 }
@@ -247,23 +298,27 @@ public class Solution {
 class Solution {
 public:
     std::vector<std::vector<std::string>> groupAnagrams(std::vector<std::string>& strs) {
+        // Map from character count signature to list of anagrams
         std::unordered_map<std::string, std::vector<std::string>> groups;
         
         for (const std::string& word : strs) {
+            // Create a signature array of 26 letters (a-z)
             std::vector<int> count(26, 0);
             for (char c : word) {
                 count[c - 'a']++;
             }
             
-            // Build signature key
+            // Build signature key so it can be used in the hash map
             std::string signature = "";
             for (int val : count) {
                 signature += "#" + std::to_string(val);
             }
             
+            // Add the current word to its anagram group
             groups[signature].push_back(word);
         }
         
+        // Return all grouped anagrams
         std::vector<std::vector<std::string>> result;
         for (auto& pair : groups) {
             result.push_back(pair.second);
@@ -276,21 +331,29 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function groupAnagrams(strs: string[]): string[][] {
+  // Map from character count signature to list of anagrams
   const groups = new Map<string, string[]>();
 
   for (const word of strs) {
+    // Create a signature array of 26 letters (a-z)
     const count = new Array(26).fill(0);
     for (let i = 0; i < word.length; i++) {
-      count[word.charCodeAt(i) - 97]++;
+      count[word.charCodeAt(i) - 97]++; // 'a' is ASCII 97
     }
 
+    // Convert list to a comma-separated string to use as a Map key
     const signature = count.join(',');
+    
+    // If this is a new signature, initialize an empty list
     if (!groups.has(signature)) {
       groups.set(signature, []);
     }
+    
+    // Add the current word to its anagram group
     groups.get(signature)!.push(word);
   }
 
+  // Return all grouped anagrams
   return Array.from(groups.values());
 }
 \`\`\`

@@ -127,14 +127,23 @@ class ListNode:
         self.next = next
 
 def reverseList(head: ListNode) -> ListNode:
-    # Reverse pointers in O(1) auxiliary space
+    # We need to reverse pointers, so we keep track of the previous and current nodes
     prev = None
     curr = head
+    
+    # Traverse the list until the end
     while curr:
-        nxt = curr.next  # Save reference to next node
-        curr.next = prev # Reverse the link
-        prev = curr      # Move prev forward
-        curr = nxt       # Move curr forward
+        # Save the next node before overwriting the link
+        nxt = curr.next  
+        
+        # Reverse the link: point current node backwards
+        curr.next = prev 
+        
+        # Shift both pointers one step forward for the next iteration
+        prev = curr      
+        curr = nxt       
+        
+    # prev becomes the new head of the reversed list
     return prev
 \`\`\`
 
@@ -148,14 +157,24 @@ public class ListNode {
 
 class LinkedListSolver {
     public ListNode reverseList(ListNode head) {
+        // We need to reverse pointers, so we keep track of the previous and current nodes
         ListNode prev = null;
         ListNode curr = head;
+        
+        // Traverse the list until the end
         while (curr != null) {
+            // Save the next node before overwriting the link
             ListNode nxt = curr.next;
+            
+            // Reverse the link: point current node backwards
             curr.next = prev;
+            
+            // Shift both pointers one step forward for the next iteration
             prev = curr;
             curr = nxt;
         }
+        
+        // prev becomes the new head of the reversed list
         return prev;
     }
 }
@@ -172,14 +191,24 @@ struct ListNode {
 class LinkedListSolver {
 public:
     ListNode* reverseList(ListNode* head) {
+        // We need to reverse pointers, so we keep track of the previous and current nodes
         ListNode* prev = nullptr;
         ListNode* curr = head;
+        
+        // Traverse the list until the end
         while (curr != nullptr) {
+            // Save the next node before overwriting the link
             ListNode* nxt = curr->next;
+            
+            // Reverse the link: point current node backwards
             curr->next = prev;
+            
+            // Shift both pointers one step forward for the next iteration
             prev = curr;
             curr = nxt;
         }
+        
+        // prev becomes the new head of the reversed list
         return prev;
     }
 };
@@ -197,14 +226,24 @@ class ListNode {
 }
 
 function reverseList(head: ListNode | null): ListNode | null {
+  // We need to reverse pointers, so we keep track of the previous and current nodes
   let prev: ListNode | null = null;
   let curr = head;
+  
+  // Traverse the list until the end
   while (curr !== null) {
+    // Save the next node before overwriting the link
     const nxt: ListNode | null = curr.next;
+    
+    // Reverse the link: point current node backwards
     curr.next = prev;
+    
+    // Shift both pointers one step forward for the next iteration
     prev = curr;
     curr = nxt;
   }
+  
+  // prev becomes the new head of the reversed list
   return prev;
 }
 \`\`\`
@@ -239,12 +278,21 @@ What if two different keys generate the same number? This is called a **Hash Col
 \`\`\`python
 def two_sum_hash(nums, target):
     # O(n) time, O(n) space
+    # Dictionary to map numbers to their indices
     seen = {}
+    
+    # Iterate through the array once
     for i, num in enumerate(nums):
+        # Calculate the number needed to reach the target
         complement = target - num
+        
+        # If the complement exists in our map, we have a pair
         if complement in seen:
             return [seen[complement], i]
+            
+        # Store the current number and its index in the map
         seen[num] = i
+        
     return []
 \`\`\`
 
@@ -255,12 +303,20 @@ import java.util.Map;
 
 public class HashSolver {
     public int[] twoSum(int[] nums, int target) {
+        // Hash map to map numbers to their indices
         Map<Integer, Integer> seen = new HashMap<>();
+        
+        // Iterate through the array once
         for (int i = 0; i < nums.length; i++) {
+            // Calculate the number needed to reach the target
             int complement = target - nums[i];
+            
+            // If the complement exists in our map, we have a pair
             if (seen.containsKey(complement)) {
                 return new int[] { seen.get(complement), i };
             }
+            
+            // Store the current number and its index in the map
             seen.put(nums[i], i);
         }
         return new int[] {};
@@ -276,12 +332,20 @@ public class HashSolver {
 class HashSolver {
 public:
     std::vector<int> twoSum(std::vector<int>& nums, int target) {
+        // Hash map to map numbers to their indices
         std::unordered_map<int, int> seen;
+        
+        // Iterate through the array once
         for (int i = 0; i < nums.size(); ++i) {
+            // Calculate the number needed to reach the target
             int complement = target - nums[i];
+            
+            // If the complement exists in our map, we have a pair
             if (seen.find(complement) != seen.end()) {
                 return {seen[complement], i};
             }
+            
+            // Store the current number and its index in the map
             seen[nums[i]] = i;
         }
         return {};
@@ -292,14 +356,23 @@ public:
 #### TypeScript
 \`\`\`typescript
 function twoSumHash(nums: number[], target: number): number[] {
+  // Map to store numbers and their corresponding indices
   const seen = new Map<number, number>();
+  
+  // Iterate through the array once
   for (let i = 0; i < nums.length; i++) {
+    // Calculate the number needed to reach the target
     const complement = target - nums[i];
+    
+    // If the complement exists in our map, we have a pair
     if (seen.has(complement)) {
       return [seen.get(complement)!, i];
     }
+    
+    // Store the current number and its index in the map
     seen.set(nums[i], i);
   }
+  
   return [];
 }
 \`\`\`
@@ -334,15 +407,26 @@ Stacks are critical in computers. The CPU uses a "Call Stack" to track active fu
 #### Python
 \`\`\`python
 def isValidParentheses(s: str) -> bool:
+    # Use a list as a stack to keep track of opening brackets
     stack = []
+    
+    # Map closing brackets to their corresponding opening brackets
     mapping = {")": "(", "}": "{", "]": "["}
+    
     for char in s:
+        # If the character is a closing bracket
         if char in mapping:
+            # Pop the topmost element if stack is not empty, else use a dummy '#'
             top = stack.pop() if stack else '#'
+            
+            # If the popped bracket doesn't match the required opening bracket, it's invalid
             if mapping[char] != top:
                 return False
+        # If it's an opening bracket, push it onto the stack
         else:
             stack.append(char)
+            
+    # Valid if the stack is completely empty at the end
     return len(stack) == 0
 \`\`\`
 
@@ -352,18 +436,29 @@ import java.util.Stack;
 
 public class StackSolver {
     public boolean isValid(String s) {
+        // Stack to store opening brackets
         Stack<Character> stack = new Stack<>();
+        
         for (char c : s.toCharArray()) {
+            // Check if it's a closing parenthesis matching the top of the stack
             if (c == ')' && !stack.isEmpty() && stack.peek() == '(') {
                 stack.pop();
-            } else if (c == '}' && !stack.isEmpty() && stack.peek() == '{') {
+            } 
+            // Check if it's a closing curly brace matching the top of the stack
+            else if (c == '}' && !stack.isEmpty() && stack.peek() == '{') {
                 stack.pop();
-            } else if (c == ']' && !stack.isEmpty() && stack.peek() == '[') {
+            } 
+            // Check if it's a closing square bracket matching the top of the stack
+            else if (c == ']' && !stack.isEmpty() && stack.peek() == '[') {
                 stack.pop();
-            } else {
+            } 
+            // If it doesn't match a closing bracket, push it (it should be an open bracket)
+            else {
                 stack.push(c);
             }
         }
+        
+        // If the stack is empty, all brackets were matched correctly
         return stack.isEmpty();
     }
 }
@@ -377,18 +472,28 @@ public class StackSolver {
 class StackSolver {
 public:
     bool isValid(std::string s) {
+        // Stack to store opening brackets
         std::stack<char> st;
+        
         for (char c : s) {
+            // Push any opening bracket onto the stack
             if (c == '(' || c == '{' || c == '[') {
                 st.push(c);
             } else {
+                // If the stack is empty but we have a closing bracket, it's invalid
                 if (st.empty()) return false;
+                
+                // If the closing bracket doesn't match the top of the stack, it's invalid
                 if (c == ')' && st.top() != '(') return false;
                 if (c == '}' && st.top() != '{') return false;
                 if (c == ']' && st.top() != '[') return false;
+                
+                // Matched successfully, pop the opening bracket
                 st.pop();
             }
         }
+        
+        // Valid if no unmatched opening brackets are left
         return st.empty();
     }
 };
@@ -397,18 +502,29 @@ public:
 #### TypeScript
 \`\`\`typescript
 function isValidParentheses(s: string): boolean {
+  // Use an array as a stack for tracking opening brackets
   const stack: string[] = [];
+  
+  // Map closing brackets to their corresponding opening brackets
   const mapping: Record<string, string> = { ")": "(", "}": "{", "]": "[" };
+  
   for (const char of s) {
+    // If the character is a closing bracket
     if (char in mapping) {
+      // Pop the topmost element or use '#' if the stack is empty
       const top = stack.length > 0 ? stack.pop() : "#";
+      
+      // Check if it matches the required opening bracket
       if (mapping[char] !== top) {
         return false;
       }
     } else {
+      // If it's an opening bracket, push it
       stack.push(char);
     }
   }
+  
+  // Valid if no elements are left in the stack
   return stack.length === 0;
 }
 \`\`\`
@@ -453,20 +569,31 @@ class TreeNode:
 def levelOrder(root: TreeNode) -> list[list[int]]:
     if not root:
         return []
+        
     result = []
-    queue = deque([root])  # Double-ended queue for O(1) pops
+    # Use a double-ended queue for O(1) pops from the front
+    queue = deque([root])  
     
+    # Process nodes layer by layer
     while queue:
+        # The number of nodes currently in the queue is the size of the current level
         level_size = len(queue)
         current_level = []
+        
+        # Dequeue all nodes for this level
         for _ in range(level_size):
             node = queue.popleft()  # Dequeue from front
             current_level.append(node.val)
+            
+            # Enqueue the children for the next level
             if node.left:
-                queue.append(node.left)  # Enqueue left child
+                queue.append(node.left)
             if node.right:
-                queue.append(node.right) # Enqueue right child
+                queue.append(node.right)
+                
+        # Store the completed level
         result.append(current_level)
+        
     return result
 \`\`\`
 
@@ -484,18 +611,28 @@ class QueueSolver {
     public List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> result = new ArrayList<>();
         if (root == null) return result;
+        
+        // Standard queue implementation using a LinkedList for O(1) poll/add
         Queue<TreeNode> queue = new LinkedList<>();
         queue.add(root);
         
+        // Process nodes layer by layer
         while (!queue.isEmpty()) {
+            // The number of nodes currently in the queue is the size of the current level
             int levelSize = queue.size();
             List<Integer> currentLevel = new ArrayList<>();
+            
+            // Dequeue all nodes for this level
             for (int i = 0; i < levelSize; i++) {
-                TreeNode node = queue.poll(); // Dequeue
+                TreeNode node = queue.poll(); // Dequeue from the front
                 currentLevel.add(node.val);
+                
+                // Enqueue the children for the next level
                 if (node.left != null) queue.add(node.left);
                 if (node.right != null) queue.add(node.right);
             }
+            
+            // Store the completed level
             result.add(currentLevel);
         }
         return result;
@@ -519,19 +656,30 @@ public:
     std::vector<std::vector<int>> levelOrder(TreeNode* root) {
         std::vector<std::vector<int>> result;
         if (!root) return result;
+        
+        // Standard queue for level-order traversal
         std::queue<TreeNode*> q;
         q.push(root);
         
+        // Process nodes layer by layer
         while (!q.empty()) {
+            // The number of nodes currently in the queue is the size of the current level
             int levelSize = q.size();
             std::vector<int> currentLevel;
+            
+            // Dequeue all nodes for this level
             for (int i = 0; i < levelSize; ++i) {
                 TreeNode* node = q.front();
-                q.pop(); // Dequeue
+                q.pop(); // Dequeue from the front
+                
                 currentLevel.push_back(node->val);
+                
+                // Enqueue the children for the next level
                 if (node->left) q.push(node->left);
                 if (node->right) q.push(node->right);
             }
+            
+            // Store the completed level
             result.push_back(currentLevel);
         }
         return result;
@@ -555,17 +703,27 @@ class TreeNode {
 function levelOrder(root: TreeNode | null): number[][] {
   if (!root) return [];
   const result: number[][] = [];
+  
+  // Array acting as a queue for level-order traversal
   const queue: TreeNode[] = [root];
   
+  // Process nodes layer by layer
   while (queue.length > 0) {
+    // The number of nodes currently in the queue is the size of the current level
     const levelSize = queue.length;
     const currentLevel: number[] = [];
+    
+    // Dequeue all nodes for this level
     for (let i = 0; i < levelSize; i++) {
-      const node = queue.shift()!; // Dequeue from front
+      const node = queue.shift()!; // Dequeue from front (O(n) in TS, but fine for small n)
       currentLevel.push(node.val);
+      
+      // Enqueue the children for the next level
       if (node.left) queue.push(node.left);
       if (node.right) queue.push(node.right);
     }
+    
+    // Store the completed level
     result.push(currentLevel);
   }
   return result;
@@ -605,16 +763,21 @@ import heapq
 from collections import Counter
 
 def topKFrequent(nums: list[int], k: int) -> list[int]:
-    # Count frequencies O(n)
+    # Count frequencies of each number: O(n) time
     counts = Counter(nums)
     
     # Maintain a min-heap of size K -> O(n log k) time
     heap = []
+    
     for num, freq in counts.items():
+        # Push the current (frequency, number) pair into the heap
         heapq.heappush(heap, (freq, num))
+        
+        # If the heap size exceeds K, pop the smallest frequency element
         if len(heap) > k:
-            heapq.heappop(heap) # Pop element with lowest frequency
+            heapq.heappop(heap) 
             
+    # The heap now contains the top K frequent elements
     return [item[1] for item in heap]
 \`\`\`
 
@@ -624,19 +787,24 @@ import java.util.*;
 
 class HeapSolver {
     public int[] topKFrequent(int[] nums, int k) {
+        // Count frequencies of each number
         Map<Integer, Integer> count = new HashMap<>();
         for (int n: nums) {
             count.put(n, count.getOrDefault(n, 0) + 1);
         }
 
-        // Min-heap based on frequency
+        // Min-heap based on frequency (smallest frequency at the top)
         PriorityQueue<Integer> heap = new PriorityQueue<>((n1, n2) -> count.get(n1) - count.get(n2));
 
         for (int n: count.keySet()) {
+            // Push the current number into the heap
             heap.add(n);
-            if (heap.size() > k) heap.poll(); // Remove least frequent
+            
+            // If the heap size exceeds K, poll (remove) the least frequent element
+            if (heap.size() > k) heap.poll(); 
         }
 
+        // The heap now contains the top K frequent elements
         int[] top = new int[k];
         for(int i = k - 1; i >= 0; --i) {
             top[i] = heap.poll();
@@ -655,19 +823,24 @@ class HeapSolver {
 class HeapSolver {
 public:
     std::vector<int> topKFrequent(std::vector<int>& nums, int k) {
+        // Count frequencies of each number
         std::unordered_map<int, int> counts;
         for (int num : nums) counts[num]++;
 
-        // Min-heap storing pairs: {frequency, num}
+        // Min-heap storing pairs: {frequency, num} (smallest frequency at the top)
         std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> heap;
 
         for (auto& entry : counts) {
+            // Push the current {frequency, number} pair into the heap
             heap.push({entry.second, entry.first});
+            
+            // If the heap size exceeds K, pop the least frequent element
             if (heap.size() > k) {
-                heap.pop(); // Remove least frequent
+                heap.pop(); 
             }
         }
 
+        // The heap now contains the top K frequent elements
         std::vector<int> result;
         while (!heap.empty()) {
             result.push_back(heap.top().second);
@@ -682,12 +855,15 @@ public:
 \`\`\`typescript
 // Mock implementation of a Min-Heap element mapping in JS/TS
 function topKFrequent(nums: number[], k: number): number[] {
+  // Count frequencies of each number
   const counts = new Map<number, number>();
   for (const num of nums) {
     counts.set(num, (counts.get(num) || 0) + 1);
   }
 
   // Sorting array of entries (simple workaround for missing JS built-in heap)
+  // In a real scenario with very large N, we would implement a true Min-Heap class.
+  // Here we sort descending by frequency and take the top K.
   const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
   return sorted.slice(0, k).map(entry => entry[0]);
 }

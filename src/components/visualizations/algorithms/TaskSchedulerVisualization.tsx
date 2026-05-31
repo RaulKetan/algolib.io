@@ -202,11 +202,6 @@ export const TaskSchedulerVisualization = () => {
                         totalSteps={steps.length}
                         onStepChange={setCurrentStep}
                     />
-                    
-                    <Card className="p-4 bg-primary/5 border-primary/20">
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Algorithm Logic</h4>
-                        <p className="text-sm text-foreground leading-relaxed font-medium">{step.explanation}</p>
-                    </Card>
 
                     <Card className="p-6 bg-card/50 backdrop-blur-sm border-primary/20">
                         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -280,6 +275,11 @@ export const TaskSchedulerVisualization = () => {
                     </Card>
 
                     <VariablePanel variables={step.variables} />
+
+                    <Card className="p-4 bg-primary/5 border-primary/20 mt-auto">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Algorithm Logic</h4>
+                        <p className="text-sm text-foreground leading-relaxed font-medium">{step.explanation}</p>
+                    </Card>
                 </div>
             }
             rightContent={

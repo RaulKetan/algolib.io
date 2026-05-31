@@ -201,18 +201,24 @@ class Trie:
 
     def insert(self, word: str) -> None:
         curr = self.root
+        # Walk through each letter in the word
         for char in word:
+            # If there is no door for this letter, build a new room!
             if char not in curr.children:
                 curr.children[char] = TrieNode()
+            # Step into the room for this letter
             curr = curr.children[char]
+        # We finished walking, so put a star sticker here!
         curr.is_end_of_word = True
 
     def search(self, word: str) -> bool:
         curr = self.root
         for char in word:
+            # If we hit a dead end, the word doesn't exist
             if char not in curr.children:
                 return False
             curr = curr.children[char]
+        # We reached the end of the path. Is there a star sticker?
         return curr.is_end_of_word
 
     def startsWith(self, prefix: str) -> bool:
@@ -225,10 +231,16 @@ class Trie:
 
     def delete(self, word: str) -> None:
         def _delete(node: TrieNode, word: str, depth: int) -> bool:
+            # Base Case: We reached the end of the word
             if depth == len(word):
+                # If there's no star sticker, the word wasn't here anyway
                 if not node.is_end_of_word:
                     return False # Word doesn't exist
+                
+                # Peel off the star sticker
                 node.is_end_of_word = False
+                
+                # If this room has no other doors (children), it's safe to destroy it!
                 return len(node.children) == 0 # True if safe to delete this node
 
             char = word[depth]
@@ -265,21 +277,27 @@ class Trie {
 
     public void insert(String word) {
         TrieNode curr = root;
+        // Walk through each letter in the word
         for (char ch : word.toCharArray()) {
+            // If there is no door for this letter, build a new room!
             curr.children.putIfAbsent(ch, new TrieNode());
+            // Step into the room for this letter
             curr = curr.children.get(ch);
         }
+        // We finished walking, so put a star sticker here!
         curr.isEndOfWord = true;
     }
 
     public boolean search(String word) {
         TrieNode curr = root;
         for (char ch : word.toCharArray()) {
+            // If we hit a dead end, the word doesn't exist
             if (!curr.children.containsKey(ch)) {
                 return false;
             }
             curr = curr.children.get(ch);
         }
+        // We reached the end of the path. Is there a star sticker?
         return curr.isEndOfWord;
     }
 
@@ -299,11 +317,17 @@ class Trie {
     }
 
     private boolean delete(TrieNode current, String word, int index) {
+        // Base Case: We reached the end of the word
         if (index == word.length()) {
+            // If there's no star sticker, the word wasn't here anyway
             if (!current.isEndOfWord) {
                 return false;
             }
+            
+            // Peel off the star sticker
             current.isEndOfWord = false;
+            
+            // If this room has no other doors (children), it's safe to destroy it!
             return current.children.isEmpty();
         }
         char ch = word.charAt(index);
@@ -336,11 +360,15 @@ private:
     TrieNode* root;
 
     bool deleteHelper(TrieNode* curr, const std::string& word, int depth) {
+        // Base Case: We reached the end of the word
         if (depth == word.length()) {
+            // If there's no star sticker, the word wasn't here anyway
             if (!curr->isEndOfWord) {
                 return false;
             }
+            // Peel off the star sticker
             curr->isEndOfWord = false;
+            // If this room has no other doors (children), it's safe to destroy it!
             return curr->children.empty();
         }
         char ch = word[depth];
@@ -364,23 +392,29 @@ public:
 
     void insert(std::string word) {
         TrieNode* curr = root;
+        // Walk through each letter in the word
         for (char ch : word) {
+            // If there is no door for this letter, build a new room!
             if (curr->children.find(ch) == curr->children.end()) {
                 curr->children[ch] = new TrieNode();
             }
+            // Step into the room for this letter
             curr = curr->children[ch];
         }
+        // We finished walking, so put a star sticker here!
         curr->isEndOfWord = true;
     }
 
     bool search(std::string word) {
         TrieNode* curr = root;
         for (char ch : word) {
+            // If we hit a dead end, the word doesn't exist
             if (curr->children.find(ch) == curr->children.end()) {
                 return false;
             }
             curr = curr->children[ch];
         }
+        // We reached the end of the path. Is there a star sticker?
         return curr->isEndOfWord;
     }
 
@@ -422,23 +456,29 @@ class Trie {
 
   insert(word: string): void {
     let curr = this.root;
+    // Walk through each letter in the word
     for (const char of word) {
+      // If there is no door for this letter, build a new room!
       if (!curr.children.has(char)) {
         curr.children.set(char, new TrieNode());
       }
+      // Step into the room for this letter
       curr = curr.children.get(char)!;
     }
+    // We finished walking, so put a star sticker here!
     curr.isEndOfWord = true;
   }
 
   search(word: string): boolean {
     let curr = this.root;
     for (const char of word) {
+      // If we hit a dead end, the word doesn't exist
       if (!curr.children.has(char)) {
         return false;
       }
       curr = curr.children.get(char)!;
     }
+    // We reached the end of the path. Is there a star sticker?
     return curr.isEndOfWord;
   }
 
@@ -458,11 +498,15 @@ class Trie {
   }
 
   private deleteNode(curr: TrieNode, word: string, depth: number): boolean {
+    // Base Case: We reached the end of the word
     if (depth === word.length) {
+      // If there's no star sticker, the word wasn't here anyway
       if (!curr.isEndOfWord) {
         return false;
       }
+      // Peel off the star sticker
       curr.isEndOfWord = false;
+      // If this room has no other doors (children), it's safe to destroy it!
       return curr.children.size === 0;
     }
 

@@ -423,7 +423,16 @@ const formatJavaArrayLiteral = (arr: any[], targetJavaType?: string): string => 
         while (Array.isArray(current) && current.length > 0) current = current[0];
 
         if (typeof current === 'string') {
-            type = current.length === 1 ? 'char' : 'String';
+            // Check first element as a quick hint, but then verify ALL leaf strings
+            // to avoid 'aa' being formatted as an invalid char literal
+            const allStrings: string[] = [];
+            const collectStrings = (a: any): void => {
+                if (Array.isArray(a)) { a.forEach(collectStrings); }
+                else if (typeof a === 'string') { allStrings.push(a); }
+            };
+            collectStrings(arr);
+            const allSingleChar = allStrings.every(s => s.length === 1);
+            type = allSingleChar ? 'char' : 'String';
         } else if (typeof current === 'boolean') {
             type = 'boolean';
         } else if (typeof current === 'number' && !Number.isInteger(current)) {

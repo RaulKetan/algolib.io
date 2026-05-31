@@ -20,6 +20,9 @@ export const PATTERN_IDS = [
   "sliding-window",
   "stack",
   "binary-search",
+  "recursion",
+  "backtracking",
+  "merge-intervals",
 ] as const;
 
 export function getGuideUrl(categoryId: string, slug: string): string {

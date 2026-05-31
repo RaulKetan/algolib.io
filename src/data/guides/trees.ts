@@ -211,29 +211,47 @@ class TreeNode:
 
 # 1. Inorder DFS (Recursive)
 def inorder(root: Optional[TreeNode], result: List[int]):
+    # Base Case: If the nest is empty, we hit the bottom. Stop going deeper!
     if not root:
         return
+        
+    # Step 1: Go as deep as possible into the LEFT branch
     inorder(root.left, result)
+    
+    # Step 2: Record the toy inside the current nest
     result.append(root.val)
+    
+    # Step 3: Explore the RIGHT branch
     inorder(root.right, result)
 
 # 2. Level Order BFS
 def levelOrder(root: Optional[TreeNode]) -> List[List[int]]:
     if not root:
         return []
+        
     result = []
+    # A queue helps us explore the tree level-by-level (FIFO)
     queue = deque([root])
+    
     while queue:
+        # How many nests are on this specific level?
         level_size = len(queue)
         current_level = []
+        
+        # Process every single nest on this level before moving down
         for _ in range(level_size):
             node = queue.popleft()
             current_level.append(node.val)
+            
+            # If the current nest has children, queue them up for the NEXT level
             if node.left:
                 queue.append(node.left)
             if node.right:
                 queue.append(node.right)
+                
+        # We finished exploring this level, so we save it
         result.append(current_level)
+        
     return result
 \`\`\`
 
@@ -257,9 +275,16 @@ public class TreeSolutions {
     }
 
     private void inorderHelper(TreeNode node, List<Integer> res) {
+        // Base Case: If the nest is empty, we hit the bottom. Stop going deeper!
         if (node == null) return;
+        
+        // Step 1: Go as deep as possible into the LEFT branch
         inorderHelper(node.left, res);
+        
+        // Step 2: Record the toy inside the current nest
         res.add(node.val);
+        
+        // Step 3: Explore the RIGHT branch
         inorderHelper(node.right, res);
     }
 
@@ -267,17 +292,27 @@ public class TreeSolutions {
     public List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> result = new ArrayList<>();
         if (root == null) return result;
+        
+        // A queue helps us explore the tree level-by-level (FIFO)
         Queue<TreeNode> queue = new LinkedList<>();
         queue.add(root);
+        
         while (!queue.isEmpty()) {
+            // How many nests are on this specific level?
             int levelSize = queue.size();
             List<Integer> currentLevel = new ArrayList<>();
+            
+            // Process every single nest on this level before moving down
             for (int i = 0; i < levelSize; i++) {
                 TreeNode node = queue.poll();
                 currentLevel.add(node.val);
+                
+                // If the current nest has children, queue them up for the NEXT level
                 if (node.left != null) queue.add(node.left);
                 if (node.right != null) queue.add(node.right);
             }
+            
+            // We finished exploring this level, so we save it
             result.add(currentLevel);
         }
         return result;
@@ -302,9 +337,16 @@ class TreeSolutions {
 public:
     // 1. Inorder DFS
     void inorder(TreeNode* root, vector<int>& res) {
+        // Base Case: If the nest is empty, we hit the bottom. Stop going deeper!
         if (!root) return;
+        
+        // Step 1: Go as deep as possible into the LEFT branch
         inorder(root->left, res);
+        
+        // Step 2: Record the toy inside the current nest
         res.push_back(root->val);
+        
+        // Step 3: Explore the RIGHT branch
         inorder(root->right, res);
     }
 
@@ -312,18 +354,28 @@ public:
     vector<vector<int>> levelOrder(TreeNode* root) {
         vector<vector<int>> result;
         if (!root) return result;
+        
+        // A queue helps us explore the tree level-by-level (FIFO)
         queue<TreeNode*> q;
         q.push(root);
+        
         while (!q.empty()) {
+            // How many nests are on this specific level?
             int levelSize = q.size();
             vector<int> currentLevel;
+            
+            // Process every single nest on this level before moving down
             for (int i = 0; i < levelSize; i++) {
                 TreeNode* node = q.front();
                 q.pop();
                 currentLevel.push_back(node->val);
+                
+                // If the current nest has children, queue them up for the NEXT level
                 if (node->left) q.push(node->left);
                 if (node->right) q.push(node->right);
             }
+            
+            // We finished exploring this level, so we save it
             result.push_back(currentLevel);
         }
         return result;
@@ -346,9 +398,16 @@ class TreeNode {
 
 // 1. Inorder DFS
 function inorder(root: TreeNode | null, result: number[]): void {
+  // Base Case: If the nest is empty, we hit the bottom. Stop going deeper!
   if (!root) return;
+  
+  // Step 1: Go as deep as possible into the LEFT branch
   inorder(root.left, result);
+  
+  // Step 2: Record the toy inside the current nest
   result.push(root.val);
+  
+  // Step 3: Explore the RIGHT branch
   inorder(root.right, result);
 }
 
@@ -356,16 +415,26 @@ function inorder(root: TreeNode | null, result: number[]): void {
 function levelOrder(root: TreeNode | null): number[][] {
   const result: number[][] = [];
   if (!root) return result;
+  
+  // A queue helps us explore the tree level-by-level (FIFO)
   const queue: TreeNode[] = [root];
+  
   while (queue.length > 0) {
+    // How many nests are on this specific level?
     const levelSize = queue.length;
     const currentLevel: number[] = [];
+    
+    // Process every single nest on this level before moving down
     for (let i = 0; i < levelSize; i++) {
       const node = queue.shift()!;
       currentLevel.push(node.val);
+      
+      // If the current nest has children, queue them up for the NEXT level
       if (node.left) queue.push(node.left);
       if (node.right) queue.push(node.right);
     }
+    
+    // We finished exploring this level, so we save it
     result.push(currentLevel);
   }
   return result;
@@ -386,25 +455,37 @@ Inverting a binary tree (creating its mirror image) is the classic interview que
 ##### Python
 \`\`\`python
 def invertTree(root: Optional[TreeNode]) -> Optional[TreeNode]:
+    # Base Case: If the nest is empty, there is nothing to invert!
     if not root:
         return None
-    # Swap left and right child pointers
+        
+    # Swap the left and right child pointers of the current nest
     root.left, root.right = root.right, root.left
-    # Recursively invert children
+    
+    # Magically tell our clones to go invert all the nests in the left branch
     invertTree(root.left)
+    # Magically tell our clones to go invert all the nests in the right branch
     invertTree(root.right)
+    
     return root
 \`\`\`
 
 ##### Java
 \`\`\`java
 public TreeNode invertTree(TreeNode root) {
+    // Base Case: If the nest is empty, there is nothing to invert!
     if (root == null) return null;
+    
+    // Swap the left and right child pointers of the current nest
     TreeNode temp = root.left;
     root.left = root.right;
     root.right = temp;
+    
+    // Magically tell our clones to go invert all the nests in the left branch
     invertTree(root.left);
+    // Magically tell our clones to go invert all the nests in the right branch
     invertTree(root.right);
+    
     return root;
 }
 \`\`\`
@@ -412,12 +493,19 @@ public TreeNode invertTree(TreeNode root) {
 ##### C++
 \`\`\`cpp
 TreeNode* invertTree(TreeNode* root) {
+    // Base Case: If the nest is empty, there is nothing to invert!
     if (!root) return nullptr;
+    
+    // Swap the left and right child pointers of the current nest
     TreeNode* temp = root->left;
     root->left = root->right;
     root->right = temp;
+    
+    // Magically tell our clones to go invert all the nests in the left branch
     invertTree(root->left);
+    // Magically tell our clones to go invert all the nests in the right branch
     invertTree(root->right);
+    
     return root;
 }
 \`\`\`
@@ -425,12 +513,19 @@ TreeNode* invertTree(TreeNode* root) {
 ##### TypeScript
 \`\`\`typescript
 function invertTree(root: TreeNode | null): TreeNode | null {
+  // Base Case: If the nest is empty, there is nothing to invert!
   if (root === null) return null;
+  
+  // Swap the left and right child pointers of the current nest
   const temp = root.left;
   root.left = root.right;
   root.right = temp;
+  
+  // Magically tell our clones to go invert all the nests in the left branch
   invertTree(root.left);
+  // Magically tell our clones to go invert all the nests in the right branch
   invertTree(root.right);
+  
   return root;
 }
 \`\`\`
@@ -464,12 +559,15 @@ Because it is a BST, we can use the sorting property to find the LCA in a single
 def lowestCommonAncestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
     curr = root
     while curr:
+        # If BOTH targets are smaller than current, the LCA must be in the LEFT subtree
         if p.val < curr.val and q.val < curr.val:
             curr = curr.left
+        # If BOTH targets are larger than current, the LCA must be in the RIGHT subtree
         elif p.val > curr.val and q.val > curr.val:
             curr = curr.right
+        # One is smaller, one is larger! We found the exact split point!
         else:
-            return curr  # Split point found!
+            return curr  
 \`\`\`
 
 ##### Java
@@ -477,10 +575,13 @@ def lowestCommonAncestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
 public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
     TreeNode curr = root;
     while (curr != null) {
+        // If BOTH targets are smaller than current, the LCA must be in the LEFT subtree
         if (p.val < curr.val && q.val < curr.val) {
             curr = curr.left;
+        // If BOTH targets are larger than current, the LCA must be in the RIGHT subtree
         } else if (p.val > curr.val && q.val > curr.val) {
             curr = curr.right;
+        // One is smaller, one is larger! We found the exact split point!
         } else {
             return curr;
         }
@@ -494,10 +595,13 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
     TreeNode* curr = root;
     while (curr) {
+        // If BOTH targets are smaller than current, the LCA must be in the LEFT subtree
         if (p->val < curr->val && q->val < curr->val) {
             curr = curr->left;
+        // If BOTH targets are larger than current, the LCA must be in the RIGHT subtree
         } else if (p->val > curr->val && q->val > curr->val) {
             curr = curr->right;
+        // One is smaller, one is larger! We found the exact split point!
         } else {
             return curr;
         }
@@ -511,10 +615,13 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 function lowestCommonAncestor(root: TreeNode | null, p: TreeNode | null, q: TreeNode | null): TreeNode | null {
   let curr = root;
   while (curr !== null) {
+    // If BOTH targets are smaller than current, the LCA must be in the LEFT subtree
     if (p!.val < curr.val && q!.val < curr.val) {
       curr = curr.left;
+    // If BOTH targets are larger than current, the LCA must be in the RIGHT subtree
     } else if (p!.val > curr.val && q!.val > curr.val) {
       curr = curr.right;
+    // One is smaller, one is larger! We found the exact split point!
     } else {
       return curr;
     }

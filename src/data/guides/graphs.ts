@@ -201,23 +201,27 @@ def numIslands(grid: List[List[str]]) -> int:
     islands = 0
     
     def dfs(r, c):
-        # Base Cases: out of bounds or water cell
+        # Base Cases: Stop if we go out of bounds or if we hit water
         if r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] == '0':
             return
             
-        grid[r][c] = '0'  # Mark as visited to save space
+        # Mark the current land cell as visited (turn it into water to save space)
+        grid[r][c] = '0'  
         
-        # Explore 4 directions: Down, Up, Right, Left
-        dfs(r + 1, c)
-        dfs(r - 1, c)
-        dfs(r, c + 1)
-        dfs(r, c - 1)
+        # Recursively explore all 4 adjacent directions to find connected land
+        dfs(r + 1, c) # Down
+        dfs(r - 1, c) # Up
+        dfs(r, c + 1) # Right
+        dfs(r, c - 1) # Left
         
     for r in range(rows):
         for c in range(cols):
+            # When we find unvisited land, it's a new island
             if grid[r][c] == '1':
                 islands += 1
-                dfs(r, c)  # Destroy/sink the island
+                
+                # Sink this entire island so we don't count it again
+                dfs(r, c)  
                 
     return islands
 \`\`\`
@@ -235,8 +239,11 @@ class Solution {
         
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
+                // When we find unvisited land, it's a new island
                 if (grid[r][c] == '1') {
                     islands++;
+                    
+                    // Sink this entire island so we don't count it again
                     dfs(grid, r, c);
                 }
             }
@@ -248,15 +255,19 @@ class Solution {
         int rows = grid.length;
         int cols = grid[0].length;
         
+        // Base Cases: Stop if we go out of bounds or if we hit water
         if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] == '0') {
             return;
         }
         
+        // Mark the current land cell as visited (turn it into water to save space)
         grid[r][c] = '0';
-        dfs(grid, r + 1, c);
-        dfs(grid, r - 1, c);
-        dfs(grid, r, c + 1);
-        dfs(grid, r, c - 1);
+        
+        // Recursively explore all 4 adjacent directions to find connected land
+        dfs(grid, r + 1, c); // Down
+        dfs(grid, r - 1, c); // Up
+        dfs(grid, r, c + 1); // Right
+        dfs(grid, r, c - 1); // Left
     }
 }
 \`\`\`
@@ -271,15 +282,19 @@ private:
         int rows = grid.size();
         int cols = grid[0].size();
         
+        // Base Cases: Stop if we go out of bounds or if we hit water
         if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] == '0') {
             return;
         }
         
+        // Mark the current land cell as visited (turn it into water to save space)
         grid[r][c] = '0';
-        dfs(grid, r + 1, c);
-        dfs(grid, r - 1, c);
-        dfs(grid, r, c + 1);
-        dfs(grid, r, c - 1);
+        
+        // Recursively explore all 4 adjacent directions to find connected land
+        dfs(grid, r + 1, c); // Down
+        dfs(grid, r - 1, c); // Up
+        dfs(grid, r, c + 1); // Right
+        dfs(grid, r, c - 1); // Left
     }
 
 public:
@@ -291,8 +306,11 @@ public:
         
         for (int r = 0; r < rows; ++r) {
             for (int c = 0; c < cols; ++c) {
+                // When we find unvisited land, it's a new island
                 if (grid[r][c] == '1') {
                     islands++;
+                    
+                    // Sink this entire island so we don't count it again
                     dfs(grid, r, c);
                 }
             }
@@ -312,21 +330,28 @@ function numIslands(grid: string[][]): number {
   let islands = 0;
   
   const dfs = (r: number, c: number) => {
+    // Base Cases: Stop if we go out of bounds or if we hit water
     if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] === '0') {
       return;
     }
     
+    // Mark the current land cell as visited (turn it into water to save space)
     grid[r][c] = '0';
-    dfs(r + 1, c);
-    dfs(r - 1, c);
-    dfs(r, c + 1);
-    dfs(r, c - 1);
+    
+    // Recursively explore all 4 adjacent directions to find connected land
+    dfs(r + 1, c); // Down
+    dfs(r - 1, c); // Up
+    dfs(r, c + 1); // Right
+    dfs(r, c - 1); // Left
   };
   
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
+      // When we find unvisited land, it's a new island
       if (grid[r][c] === '1') {
         islands++;
+        
+        // Sink this entire island so we don't count it again
         dfs(r, c);
       }
     }
@@ -358,25 +383,34 @@ from collections import deque
 from typing import List
 
 def canFinishCourses(numCourses: int, prerequisites: List[List[int]]) -> bool:
+    # in_degree tracks how many prerequisites a course has
     in_degree = [0] * numCourses
+    # adj_list maps a prerequisite to the courses that depend on it
     adj_list = {i: [] for i in range(numCourses)}
     
+    # Build the graph and calculate in-degrees
     for course, pre in prerequisites:
         adj_list[pre].append(course)
         in_degree[course] += 1
         
+    # Start with all courses that have NO prerequisites
     queue = deque([i for i in range(numCourses) if in_degree[i] == 0])
     visited_count = 0
     
+    # Process courses in valid order
     while queue:
+        # Take a course
         node = queue.popleft()
         visited_count += 1
         
+        # Now that we've taken this course, reduce the prerequisite count for its dependents
         for neighbor in adj_list[node]:
             in_degree[neighbor] -= 1
+            # If a dependent course now has 0 prerequisites, we can take it!
             if in_degree[neighbor] == 0:
                 queue.append(neighbor)
                 
+    # If we were able to take all courses, there are no unresolvable cycles
     return visited_count == numCourses
 \`\`\`
 
@@ -386,13 +420,16 @@ import java.util.*;
 
 class Solution {
     public boolean canFinishCourses(int numCourses, int[][] prerequisites) {
+        // inDegree tracks how many prerequisites a course has
         int[] inDegree = new int[numCourses];
+        // adjList maps a prerequisite to the courses that depend on it
         Map<Integer, List<Integer>> adjList = new HashMap<>();
         
         for (int i = 0; i < numCourses; i++) {
             adjList.put(i, new ArrayList<>());
         }
         
+        // Build the graph and calculate in-degrees
         for (int[] pair : prerequisites) {
             int course = pair[0];
             int pre = pair[1];
@@ -400,6 +437,7 @@ class Solution {
             inDegree[course]++;
         }
         
+        // Start with all courses that have NO prerequisites
         Queue<Integer> queue = new LinkedList<>();
         for (int i = 0; i < numCourses; i++) {
             if (inDegree[i] == 0) {
@@ -408,18 +446,24 @@ class Solution {
         }
         
         int visitedCount = 0;
+        
+        // Process courses in valid order
         while (!queue.isEmpty()) {
+            // Take a course
             int node = queue.poll();
             visitedCount++;
             
+            // Now that we've taken this course, reduce the prerequisite count for its dependents
             for (int neighbor : adjList.get(node)) {
                 inDegree[neighbor]--;
+                // If a dependent course now has 0 prerequisites, we can take it!
                 if (inDegree[neighbor] == 0) {
                     queue.add(neighbor);
                 }
             }
         }
         
+        // If we were able to take all courses, there are no unresolvable cycles
         return visitedCount == numCourses;
     }
 }
@@ -434,13 +478,16 @@ class Solution {
 class Solution {
 public:
     bool canFinishCourses(int numCourses, std::vector<std::vector<int>>& prerequisites) {
+        // inDegree tracks how many prerequisites a course has
         std::vector<int> inDegree(numCourses, 0);
+        // adjList maps a prerequisite to the courses that depend on it
         std::unordered_map<int, std::vector<int>> adjList;
         
         for (int i = 0; i < numCourses; ++i) {
             adjList[i] = std::vector<int>();
         }
         
+        // Build the graph and calculate in-degrees
         for (const auto& pair : prerequisites) {
             int course = pair[0];
             int pre = pair[1];
@@ -448,6 +495,7 @@ public:
             inDegree[course]++;
         }
         
+        // Start with all courses that have NO prerequisites
         std::queue<int> q;
         for (int i = 0; i < numCourses; ++i) {
             if (inDegree[i] == 0) {
@@ -456,19 +504,25 @@ public:
         }
         
         int visitedCount = 0;
+        
+        // Process courses in valid order
         while (!q.empty()) {
+            // Take a course
             int node = q.front();
             q.pop();
             visitedCount++;
             
+            // Now that we've taken this course, reduce the prerequisite count for its dependents
             for (int neighbor : adjList[node]) {
                 inDegree[neighbor]--;
+                // If a dependent course now has 0 prerequisites, we can take it!
                 if (inDegree[neighbor] == 0) {
                     q.push(neighbor);
                 }
             }
         }
         
+        // If we were able to take all courses, there are no unresolvable cycles
         return visitedCount == numCourses;
     }
 };
@@ -477,7 +531,9 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function canFinishCourses(numCourses: number, prerequisites: number[][]): boolean {
+  // inDegree tracks how many prerequisites a course has
   const inDegree: number[] = new Array(numCourses).fill(0);
+  // adjList maps a prerequisite to the courses that depend on it
   const adjList: Map<number, number[]> = new Map();
 
   for (let i = 0; i < numCourses; i++) {
@@ -490,6 +546,7 @@ function canFinishCourses(numCourses: number, prerequisites: number[][]): boolea
     inDegree[course]++;
   }
 
+  // Start with all courses that have NO prerequisites
   const queue: number[] = [];
   for (let i = 0; i < numCourses; i++) {
     if (inDegree[i] === 0) {
@@ -498,19 +555,25 @@ function canFinishCourses(numCourses: number, prerequisites: number[][]): boolea
   }
 
   let visitedCount = 0;
+  
+  // Process courses in valid order
   while (queue.length > 0) {
+    // Take a course
     const node = queue.shift()!;
     visitedCount++;
 
+    // Now that we've taken this course, reduce the prerequisite count for its dependents
     const neighbors = adjList.get(node) || [];
     for (const neighbor of neighbors) {
       inDegree[neighbor]--;
+      // If a dependent course now has 0 prerequisites, we can take it!
       if (inDegree[neighbor] === 0) {
         queue.push(neighbor);
       }
     }
   }
 
+  // If we were able to take all courses, there are no unresolvable cycles
   return visitedCount === numCourses;
 }
 \`\`\`
@@ -531,20 +594,29 @@ import heapq
 
 def dijkstra(graph: dict, start: str) -> dict:
     # graph format: { 'A': [('B', 3), ('C', 5)] } -> neighbor, weight
-    min_heap = [(0, start)]  # (current_distance, node)
+    # min_heap stores tuples of (current_distance_from_start, node)
+    min_heap = [(0, start)]  
+    
+    # Initialize all distances to infinity, except the start node which is 0
     distances = {node: float('inf') for node in graph}
     distances[start] = 0
     visited = set()
     
     while min_heap:
+        # Always explore the unvisited node with the smallest known distance
         dist, node = heapq.heappop(min_heap)
         
+        # If we've already finalized the shortest path to this node, skip it
         if node in visited:
             continue
         visited.add(node)
         
+        # Check all neighboring paths
         for neighbor, weight in graph[node]:
+            # Calculate the total distance to reach the neighbor through the current node
             new_dist = dist + weight
+            
+            # If we found a faster path to the neighbor, update it and add to heap
             if new_dist < distances[neighbor]:
                 distances[neighbor] = new_dist
                 heapq.heappush(min_heap, (new_dist, neighbor))
@@ -567,9 +639,11 @@ class Dijkstra {
     }
 
     public Map<String, Integer> dijkstra(Map<String, List<NodeDist>> graph, String start) {
+        // minHeap stores nodes ordered by their current shortest distance from start
         PriorityQueue<NodeDist> minHeap = new PriorityQueue<>(Comparator.comparingInt(nd -> nd.distance));
         minHeap.add(new NodeDist(start, 0));
         
+        // Initialize all distances to infinity, except the start node which is 0
         Map<String, Integer> distances = new HashMap<>();
         for (String node : graph.keySet()) {
             distances.put(node, Integer.MAX_VALUE);
@@ -579,18 +653,24 @@ class Dijkstra {
         Set<String> visited = new HashSet<>();
         
         while (!minHeap.isEmpty()) {
+            // Always explore the unvisited node with the smallest known distance
             NodeDist curr = minHeap.poll();
             String node = curr.node;
             int dist = curr.distance;
             
+            // If we've already finalized the shortest path to this node, skip it
             if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);
             
             if (graph.containsKey(node)) {
+                // Check all neighboring paths
                 for (NodeDist edge : graph.get(node)) {
+                    // Calculate the total distance to reach the neighbor through the current node
                     int newDist = dist + edge.distance;
+                    
+                    // If we found a faster path to the neighbor, update it and add to heap
                     if (newDist < distances.getOrDefault(edge.node, Integer.MAX_VALUE)) {
                         distances.put(edge.node, newDist);
                         minHeap.add(new NodeDist(edge.node, newDist));
@@ -626,9 +706,11 @@ std::unordered_map<std::string, int> dijkstra(
     std::unordered_map<std::string, std::vector<std::pair<std::string, int>>>& graph, 
     std::string start
 ) {
+    // minHeap stores nodes ordered by their current shortest distance from start
     std::priority_queue<NodeDist, std::vector<NodeDist>, std::greater<NodeDist>> minHeap;
     minHeap.push({start, 0});
     
+    // Initialize all distances to infinity, except the start node which is 0
     std::unordered_map<std::string, int> distances;
     for (const auto& pair : graph) {
         distances[pair.first] = std::numeric_limits<int>::max();
@@ -638,22 +720,28 @@ std::unordered_map<std::string, int> dijkstra(
     std::unordered_set<std::string> visited;
     
     while (!minHeap.empty()) {
+        // Always explore the unvisited node with the smallest known distance
         NodeDist curr = minHeap.top();
         minHeap.pop();
         
         std::string node = curr.node;
         int dist = curr.distance;
         
+        // If we've already finalized the shortest path to this node, skip it
         if (visited.find(node) != visited.end()) {
             continue;
         }
         visited.insert(node);
         
+        // Check all neighboring paths
         for (const auto& edge : graph[node]) {
             std::string neighbor = edge.first;
             int weight = edge.second;
             
+            // Calculate the total distance to reach the neighbor through the current node
             int newDist = dist + weight;
+            
+            // If we found a faster path to the neighbor, update it and add to heap
             if (newDist < distances[neighbor]) {
                 distances[neighbor] = newDist;
                 minHeap.push({neighbor, newDist});
@@ -672,27 +760,36 @@ interface Edge {
 }
 
 function dijkstra(graph: Record<string, Edge[]>, start: string): Record<string, number> {
+  // Initialize all distances to infinity, except the start node which is 0
   const distances: Record<string, number> = {};
   for (const node of Object.keys(graph)) {
     distances[node] = Infinity;
   }
   distances[start] = 0;
   
+  // minHeap stores nodes ordered by their current shortest distance from start
+  // In TS we simulate a heap with an array and sort it (fine for small inputs, real heap needed for large N)
   const minHeap: [number, string][] = [[0, start]];
   const visited = new Set<string>();
   
   while (minHeap.length > 0) {
+    // Sort to ensure we always explore the node with the smallest known distance
     minHeap.sort((a, b) => a[0] - b[0]);
     const [dist, node] = minHeap.shift()!;
     
+    // If we've already finalized the shortest path to this node, skip it
     if (visited.has(node)) {
       continue;
     }
     visited.add(node);
     
+    // Check all neighboring paths
     const neighbors = graph[node] || [];
     for (const { node: neighbor, weight } of neighbors) {
+      // Calculate the total distance to reach the neighbor through the current node
       const newDist = dist + weight;
+      
+      // If we found a faster path to the neighbor, update it and add to heap
       if (newDist < distances[neighbor]) {
         distances[neighbor] = newDist;
         minHeap.push([newDist, neighbor]);
@@ -728,30 +825,39 @@ Without optimization, DSU find operations can degrade to \`O(n)\` if elements fo
 \`\`\`python
 class UnionFind:
     def __init__(self, size: int):
+        # Initially, each element is its own parent (its own set)
         self.parent = [i for i in range(size)]
+        # Rank helps keep the tree flat during union operations
         self.rank = [1] * size
 
     def find(self, i: int) -> int:
+        # If the element is its own parent, we found the root of the set
         if self.parent[i] == i:
             return i
-        self.parent[i] = self.find(self.parent[i])  # Path Compression
+            
+        # Path Compression: Point the node directly to the root to speed up future lookups
+        self.parent[i] = self.find(self.parent[i])  
         return self.parent[i]
 
     def union(self, i: int, j: int) -> bool:
+        # Find the roots of both elements
         root_i = self.find(i)
         root_j = self.find(j)
         
+        # If they have different roots, they belong to different sets
         if root_i != root_j:
-            # Union by Rank
+            # Union by Rank: Attach the smaller tree under the larger tree
             if self.rank[root_i] > self.rank[root_j]:
                 self.parent[root_j] = root_i
             elif self.rank[root_i] < self.rank[root_j]:
                 self.parent[root_i] = root_j
             else:
+                # If ranks are equal, attach one to the other and increase its rank
                 self.parent[root_j] = root_i
                 self.rank[root_i] += 1
             return True # Successfully joined
-        return False # They were already in the same set (cycle detected!)
+            
+        return False # They were already in the same set (a cycle exists!)
 \`\`\`
 
 ##### Java
@@ -763,37 +869,45 @@ class UnionFind {
     public UnionFind(int size) {
         parent = new int[size];
         rank = new int[size];
+        
+        // Initially, each element is its own parent (its own set)
         for (int i = 0; i < size; i++) {
             parent[i] = i;
-            rank[i] = 1;
+            rank[i] = 1; // Rank helps keep the tree flat
         }
     }
 
     public int find(int i) {
+        // If the element is its own parent, we found the root of the set
         if (parent[i] == i) {
             return i;
         }
-        parent[i] = find(parent[i]); // Path Compression
+        
+        // Path Compression: Point the node directly to the root to speed up future lookups
+        parent[i] = find(parent[i]); 
         return parent[i];
     }
 
     public boolean union(int i, int j) {
+        // Find the roots of both elements
         int rootI = find(i);
         int rootJ = find(j);
         
+        // If they have different roots, they belong to different sets
         if (rootI != rootJ) {
-            // Union by Rank
+            // Union by Rank: Attach the smaller tree under the larger tree
             if (rank[rootI] > rank[rootJ]) {
                 parent[rootJ] = rootI;
             } else if (rank[rootI] < rank[rootJ]) {
                 parent[rootI] = rootJ;
             } else {
+                // If ranks are equal, attach one to the other and increase its rank
                 parent[rootJ] = rootI;
                 rank[rootI] += 1;
             }
             return true; // Successfully joined
         }
-        return false; // Already in the same set
+        return false; // Already in the same set (a cycle exists!)
     }
 }
 \`\`\`
@@ -811,36 +925,44 @@ public:
     UnionFind(int size) {
         parent.resize(size);
         rank.assign(size, 1);
+        
+        // Initially, each element is its own parent (its own set)
         for (int i = 0; i < size; ++i) {
             parent[i] = i;
         }
     }
 
     int find(int i) {
+        // If the element is its own parent, we found the root of the set
         if (parent[i] == i) {
             return i;
         }
-        parent[i] = find(parent[i]); // Path Compression
+        
+        // Path Compression: Point the node directly to the root to speed up future lookups
+        parent[i] = find(parent[i]); 
         return parent[i];
     }
 
     bool unionSets(int i, int j) {
+        // Find the roots of both elements
         int rootI = find(i);
         int rootJ = find(j);
         
+        // If they have different roots, they belong to different sets
         if (rootI != rootJ) {
-            // Union by Rank
+            // Union by Rank: Attach the smaller tree under the larger tree
             if (rank[rootI] > rank[rootJ]) {
                 parent[rootJ] = rootI;
             } else if (rank[rootI] < rank[rootJ]) {
                 parent[rootI] = rootJ;
             } else {
+                // If ranks are equal, attach one to the other and increase its rank
                 parent[rootJ] = rootI;
                 rank[rootI] += 1;
             }
             return true; // Successfully joined
         }
-        return false; // Already in the same set
+        return false; // Already in the same set (a cycle exists!)
     }
 };
 \`\`\`
@@ -852,35 +974,43 @@ class UnionFind {
   private rank: number[];
 
   constructor(size: number) {
+    // Initially, each element is its own parent (its own set)
     this.parent = Array.from({ length: size }, (_, i) => i);
+    // Rank helps keep the tree flat during union operations
     this.rank = new Array(size).fill(1);
   }
 
   find(i: number): number {
+    // If the element is its own parent, we found the root of the set
     if (this.parent[i] === i) {
       return i;
     }
-    this.parent[i] = this.find(this.parent[i]); // Path Compression
+    
+    // Path Compression: Point the node directly to the root to speed up future lookups
+    this.parent[i] = this.find(this.parent[i]); 
     return this.parent[i];
   }
 
   union(i: number, j: number): boolean {
+    // Find the roots of both elements
     const rootI = this.find(i);
     const rootJ = this.find(j);
 
+    // If they have different roots, they belong to different sets
     if (rootI !== rootJ) {
-      // Union by Rank
+      // Union by Rank: Attach the smaller tree under the larger tree
       if (this.rank[rootI] > this.rank[rootJ]) {
         this.parent[rootJ] = rootI;
       } else if (this.rank[rootI] < this.rank[rootJ]) {
         this.parent[rootI] = rootJ;
       } else {
+        // If ranks are equal, attach one to the other and increase its rank
         this.parent[rootJ] = rootI;
         this.rank[rootI] += 1;
       }
       return true; // Successfully joined
     }
-    return false; // Already in the same set
+    return false; // Already in the same set (a cycle exists!)
   }
 }
 \`\`\`
@@ -896,17 +1026,23 @@ Let's write standard BFS on an adjacency list in Python, Java, C++, and TypeScri
 from collections import deque
 
 def bfs(graph: dict, start: str) -> list:
+    # A set to keep track of where we've been to avoid infinite loops
     visited = set([start])
+    # A queue to process nodes level-by-level
     queue = deque([start])
     order = []
     
     while queue:
+        # Dequeue the first node in line
         node = queue.popleft()
         order.append(node)
+        
+        # Enqueue all unvisited neighbors
         for neighbor in graph.get(node, []):
             if neighbor not in visited:
                 visited.add(neighbor)
                 queue.append(neighbor)
+                
     return order
 \`\`\`
 
@@ -916,7 +1052,9 @@ import java.util.*;
 
 public class GraphBFS {
     public List<String> bfs(Map<String, List<String>> graph, String start) {
+        // A set to keep track of where we've been to avoid infinite loops
         Set<String> visited = new HashSet<>();
+        // A queue to process nodes level-by-level
         Queue<String> queue = new LinkedList<>();
         List<String> order = new ArrayList<>();
 
@@ -924,8 +1062,11 @@ public class GraphBFS {
         queue.add(start);
 
         while (!queue.isEmpty()) {
+            // Dequeue the first node in line
             String node = queue.poll();
             order.add(node);
+            
+            // Enqueue all unvisited neighbors
             for (String neighbor : graph.getOrDefault(node, new ArrayList<>())) {
                 if (!visited.contains(neighbor)) {
                     visited.add(neighbor);
@@ -950,7 +1091,9 @@ public class GraphBFS {
 using namespace std;
 
 vector<string> bfs(unordered_map<string, vector<string>>& graph, string start) {
+    // A set to keep track of where we've been to avoid infinite loops
     unordered_set<string> visited;
+    // A queue to process nodes level-by-level
     queue<string> q;
     vector<string> order;
 
@@ -958,10 +1101,12 @@ vector<string> bfs(unordered_map<string, vector<string>>& graph, string start) {
     q.push(start);
 
     while (!q.empty()) {
+        // Dequeue the first node in line
         string node = q.front();
         q.pop();
         order.push_back(node);
 
+        // Enqueue all unvisited neighbors
         for (const string& neighbor : graph[node]) {
             if (visited.find(neighbor) == visited.end()) {
                 visited.insert(neighbor);
@@ -976,16 +1121,20 @@ vector<string> bfs(unordered_map<string, vector<string>>& graph, string start) {
 ##### TypeScript
 \`\`\`typescript
 function bfs(graph: Map<string, string[]>, start: string): string[] {
+  // A set to keep track of where we've been to avoid infinite loops
   const visited = new Set<string>();
+  // A queue to process nodes level-by-level
   const queue: string[] = [start];
   const order: string[] = [];
 
   visited.add(start);
 
   while (queue.length > 0) {
+    // Dequeue the first node in line
     const node = queue.shift()!;
     order.push(node);
 
+    // Enqueue all unvisited neighbors
     const neighbors = graph.get(node) || [];
     for (const neighbor of neighbors) {
       if (!visited.has(neighbor)) {
@@ -994,6 +1143,7 @@ function bfs(graph: Map<string, string[]>, start: string): string[] {
       }
     }
   }
+  
   return order;
 }
 \`\`\`
