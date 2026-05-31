@@ -104,6 +104,8 @@ Wow! It worked perfectly, and we only had to walk through the list one single ti
 
 This is the most famous interval problem, and the exact implementation of the steps we just discussed. Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
 
+[Visualize Merge Intervals in the Interactive Simulator](viz:merge-intervals)
+
 ### The Strategy
 We will implement the exact two magic steps: Sort by the start index, and then iterate through, merging overlapping ones and pushing non-overlapping ones to an output array.
 
@@ -259,6 +261,8 @@ What if you already have a perfectly sorted, non-overlapping list of intervals, 
 Instead of adding it and re-sorting everything (which is slow!), we can use a highly optimized approach called the **Three-Phase Approach**. 
 
 Imagine a VIP guest arriving at a theater where everyone is already seated. You don't ask everyone to stand up and re-organize! You just walk down the aisle, find the right spot, shift a few people if needed, and let the VIP sit down.
+
+[Visualize Insert Interval in the Interactive Simulator](viz:interval-scheduling)
 
 ### The Three Phases
 1.  **Phase 1: Add all the intervals that come completely BEFORE the new interval.** If an interval ends before the new one even begins, it has nothing to do with the new interval. We just safely add it to our result list.

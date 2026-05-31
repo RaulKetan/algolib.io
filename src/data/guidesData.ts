@@ -475,6 +475,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
+        visualizations: ["merge-intervals", "interval-scheduling"],
         content: mergeIntervalsContent,
         questions: [
           { id: "merge-intervals", name: "Merge Intervals", difficulty: "Medium" },
