@@ -87,6 +87,7 @@ export const visualizationMap: Record<string, any> = {
   'combinations': dynamic(() => import('@/components/visualizations/algorithms/CombinationsVisualization').then(m => m.CombinationsVisualization), { ssr: false }),
   'combination-sum': dynamic(() => import('@/components/visualizations/algorithms/CombinationSumVisualization').then(m => m.CombinationSumVisualization), { ssr: false }),
   'combination-sum-ii': dynamic(() => import('@/components/visualizations/algorithms/CombinationSumIIVisualization').then(m => m.CombinationSumIIVisualization), { ssr: false }),
+  'letter-combinations-of-a-phone-number': dynamic(() => import('@/components/visualizations/algorithms/LetterCombinationsVisualization').then(m => m.LetterCombinationsVisualization), { ssr: false }),
   'word-search': dynamic(() => import('@/components/visualizations/algorithms/WordSearchVisualization').then(m => m.WordSearchVisualization), { ssr: false }),
   'word-search-grid': dynamic(() => import('@/components/visualizations/algorithms/WordSearchVisualization').then(m => m.WordSearchVisualization), { ssr: false }),
   'n-queens': dynamic(() => import('@/components/visualizations/algorithms/NQueensVisualization').then(m => m.NQueensVisualization), { ssr: false }),
@@ -264,6 +265,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'best-time-to-buy-and-sell-stock-with-cooldown': {
     title: 'Best Time to Buy and Sell Stock with Cooldown',
     description: 'Visualize a dynamic programming state machine to maximize profit from trading stocks, subject to a 1-day cooldown period after selling.'
+  },
+  'letter-combinations-of-a-phone-number': {
+    title: 'Letter Combinations of a Phone Number',
+    description: 'Visualize recursive backtracking on an interactive phone keypad — watch the algorithm explore every letter path for each digit, building combinations character-by-character and backtracking when a branch is exhausted.'
   },
   'lru-cache': {
     title: 'LRU Cache',
