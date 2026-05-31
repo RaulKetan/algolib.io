@@ -8,7 +8,10 @@ import { content as frequencyCounterContent } from "./guides/frequency-counter";
 import { content as slidingWindowContent } from "./guides/sliding-window";
 import { content as stackContent } from "./guides/stack";
 import { content as binarySearchContent } from "./guides/binary-search";
+import { content as recursionContent } from "./guides/recursion";
+import { content as backtrackingContent } from "./guides/backtracking";
 import { content as coreDataStructuresContent } from "./guides/core-data-structures";
+import { content as mergeIntervalsContent } from "./guides/merge-intervals";
 
 export interface RelatedQuestion {
   id: string;
@@ -261,7 +264,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
     guides: [
       {
         slug: "arrays-hashing",
-        title: "Arrays & Hashing Deep Dive",
+        title: "Arrays & Hashing",
         description: "Learn frequency counting, prefix sums, and element mapping tactics.",
         category: "arrays-hashing",
         heroImage: "core-pattern-arrays",
@@ -287,7 +290,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
     guides: [
       {
         slug: "two-pointers",
-        title: "Two Pointers Deep Dive",
+        title: "Two Pointers",
         description: "Master opposing pointers, fast-slow pointers, and sorted partition tactics.",
         category: "two-pointers",
         heroImage: "core-pattern-two-pointer",
@@ -313,7 +316,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
     guides: [
       {
         slug: "frequency-counter",
-        title: "Frequency Counter Pattern",
+        title: "Frequency Counter",
         description: "Master character inventories, count matching, and element frequency caching.",
         category: "frequency-counter",
         heroImage: "core-pattern-frequency-counter",
@@ -338,7 +341,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
     guides: [
       {
         slug: "sliding-window",
-        title: "Sliding Window Deep Dive",
+        title: "Sliding Window",
         description: "Master fixed and variable-sized windows to optimize subarray/substring searches.",
         category: "sliding-window",
         heroImage: "core-pattern-slidng-window",
@@ -363,7 +366,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
     guides: [
       {
         slug: "stack",
-        title: "Stack Deep Dive & Monotonic Stack",
+        title: "Stack & Monotonic Stack",
         description: "LIFO concepts, bracket pairing, and next-greater-element monotonic templates.",
         category: "stack",
         heroImage: "core-pattern-stack-deep",
@@ -388,7 +391,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
     guides: [
       {
         slug: "binary-search",
-        title: "Binary Search Deep Dive",
+        title: "Binary Search",
         description: "Learn standard templates, range search, and binary search on solution space.",
         category: "binary-search",
         heroImage: "core-pattern-bineary",
@@ -403,6 +406,81 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           { id: "binary-search", name: "Binary Search", difficulty: "Easy" },
           { id: "search-a-2d-matrix", name: "Search a 2D Matrix", difficulty: "Medium" },
           { id: "find-minimum-in-rotated-sorted-array", name: "Find Min in Rotated Sorted Array", difficulty: "Medium" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "recursion",
+    title: "Recursion",
+    guides: [
+      {
+        slug: "recursion",
+        title: "Recursion",
+        description: "Learn the fundamentals of recursion, base cases, and call stack management.",
+        category: "recursion",
+        heroImage: "recursion-hero",
+        author: {
+          name: "Rahul Mahale",
+          role: "Senior SLB Engineer",
+          linkedin: "https://linkedin.com/in/rkmahale"
+        },
+        visualizations: ["climbing-stairs", "reverse-linked-list"],
+        content: recursionContent,
+        questions: [
+          { id: "climbing-stairs", name: "Climbing Stairs", difficulty: "Easy" },
+          { id: "fibonacci-number", name: "Fibonacci Number", difficulty: "Easy" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "backtracking",
+    title: "Backtracking",
+    guides: [
+      {
+        slug: "backtracking",
+        title: "Backtracking",
+        description: "Master exhaustive search, state reversal, and pruning techniques.",
+        category: "backtracking",
+        heroImage: "backtraking-hero",
+        author: {
+          name: "Rahul Mahale",
+          role: "Senior SLB Engineer",
+          linkedin: "https://linkedin.com/in/rkmahale"
+        },
+        visualizations: ["subsets", "permutations", "n-queens", "sudoku-solver"],
+        content: backtrackingContent,
+        questions: [
+          { id: "subsets", name: "Subsets", difficulty: "Medium" },
+          { id: "permutations", name: "Permutations", difficulty: "Medium" },
+          { id: "combination-sum", name: "Combination Sum", difficulty: "Medium" },
+          { id: "n-queens", name: "N-Queens", difficulty: "Hard" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "merge-intervals",
+    title: "Merge Intervals",
+    guides: [
+      {
+        slug: "merge-intervals",
+        title: "Merge Intervals",
+        description: "Master overlapping times, schedules, and continuous ranges.",
+        category: "merge-intervals",
+        heroImage: "merge-intervals-hero",
+        author: {
+          name: "Rahul Mahale",
+          role: "Senior SLB Engineer",
+          linkedin: "https://linkedin.com/in/rkmahale"
+        },
+        visualizations: ["merge-intervals", "interval-scheduling"],
+        content: mergeIntervalsContent,
+        questions: [
+          { id: "merge-intervals", name: "Merge Intervals", difficulty: "Medium" },
+          { id: "insert-interval", name: "Insert Interval", difficulty: "Medium" },
+          { id: "non-overlapping-intervals", name: "Non-overlapping Intervals", difficulty: "Medium" }
         ]
       }
     ]

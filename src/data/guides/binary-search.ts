@@ -88,41 +88,60 @@ Here is the clean implementation of standard binary search that searches for a \
 from typing import List
 
 def binary_search(nums: List[int], target: int) -> int:
+    # Initialize search boundaries
     left = 0
     right = len(nums) - 1
     
+    # Loop until the search space is exhausted
     while left <= right:
+        # Calculate the middle index safely to avoid integer overflow
         mid = left + (right - left) // 2
         
+        # Check if we found the target
         if nums[mid] == target:
             return mid  # Target found, return its index
-        elif nums[mid] < target:
-            left = mid + 1  # Target is in the right half, discard left half
-        else:
-            right = mid - 1  # Target is in the left half, discard right half
             
-    return -1  # Target is not in the array
+        # If the target is greater, discard the left half
+        elif nums[mid] < target:
+            left = mid + 1  
+            
+        # If the target is smaller, discard the right half
+        else:
+            right = mid - 1  
+            
+    # Target is not present in the array
+    return -1
 \`\`\`
 
 ##### Java
 \`\`\`java
 public class BinarySearch {
     public static int search(int[] nums, int target) {
+        // Initialize search boundaries
         int left = 0;
         int right = nums.length - 1;
         
+        // Loop until the search space is exhausted
         while (left <= right) {
+            // Calculate the middle index safely to avoid integer overflow
             int mid = left + (right - left) / 2;
             
+            // Check if we found the target
             if (nums[mid] == target) {
                 return mid; // Target found
-            } else if (nums[mid] < target) {
+            } 
+            // If the target is greater, discard the left half
+            else if (nums[mid] < target) {
                 left = mid + 1; // Search right half
-            } else {
+            } 
+            // If the target is smaller, discard the right half
+            else {
                 right = mid - 1; // Search left half
             }
         }
-        return -1; // Target not found
+        
+        // Target not found
+        return -1; 
     }
 }
 \`\`\`
@@ -134,20 +153,30 @@ public class BinarySearch {
 class Solution {
 public:
     int search(std::vector<int>& nums, int target) {
+        // Initialize search boundaries
         int left = 0;
         int right = nums.size() - 1;
         
+        // Loop until the search space is exhausted
         while (left <= right) {
+            // Calculate the middle index safely to avoid integer overflow
             int mid = left + (right - left) / 2;
             
+            // Check if we found the target
             if (nums[mid] == target) {
                 return mid;
-            } else if (nums[mid] < target) {
+            } 
+            // If the target is greater, discard the left half
+            else if (nums[mid] < target) {
                 left = mid + 1;
-            } else {
+            } 
+            // If the target is smaller, discard the right half
+            else {
                 right = mid - 1;
             }
         }
+        
+        // Target not found
         return -1;
     }
 };
@@ -156,21 +185,30 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function binarySearch(nums: number[], target: number): number {
+  // Initialize search boundaries
   let left = 0;
   let right = nums.length - 1;
 
+  // Loop until the search space is exhausted
   while (left <= right) {
+    // Calculate the middle index safely to avoid integer overflow
     const mid = left + Math.floor((right - left) / 2);
 
+    // Check if we found the target
     if (nums[mid] === target) {
       return mid;
-    } else if (nums[mid] < target) {
+    } 
+    // If the target is greater, discard the left half
+    else if (nums[mid] < target) {
       left = mid + 1;
-    } else {
+    } 
+    // If the target is smaller, discard the right half
+    else {
       right = mid - 1;
     }
   }
 
+  // Target not found
   return -1;
 }
 \`\`\`
@@ -221,14 +259,103 @@ def find_leftmost(nums: List[int], target: int) -> int:
         mid = left + (right - left) // 2
         
         if nums[mid] == target:
-            result = mid       # Record this index as our current best candidate
-            right = mid - 1    # Keep looking to the left to find an even earlier index
+            # We found the target, but we are not sure if it's the FIRST one.
+            # Record this index as our current best candidate.
+            result = mid       
+            # Continue searching in the left half to see if an earlier instance exists.
+            right = mid - 1    
         elif nums[mid] < target:
+            # Target must be in the right half.
             left = mid + 1
         else:
+            # Target must be in the left half.
             right = mid - 1
             
     return result
+\`\`\`
+
+##### Java
+\`\`\`java
+public class Solution {
+    public int findLeftmost(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        int result = -1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (nums[mid] == target) {
+                // Record candidate but keep searching to the left for an earlier occurrence.
+                result = mid;
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                // Target is larger, so it must be to the right.
+                left = mid + 1;
+            } else {
+                // Target is smaller, so it must be to the left.
+                right = mid - 1;
+            }
+        }
+        
+        return result;
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+#include <vector>
+
+class Solution {
+public:
+    int findLeftmost(std::vector<int>& nums, int target) {
+        int left = 0;
+        int right = nums.size() - 1;
+        int result = -1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (nums[mid] == target) {
+                // Found a match, store it, but force search to the left half.
+                result = mid;
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        
+        return result;
+    }
+};
+\`\`\`
+
+##### TypeScript
+\`\`\`typescript
+function findLeftmost(nums: number[], target: number): number {
+  let left = 0;
+  let right = nums.length - 1;
+  let result = -1;
+  
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+    
+    if (nums[mid] === target) {
+      // This might be the leftmost target, but let's verify the left subarray.
+      result = mid;
+      right = mid - 1;
+    } else if (nums[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+  
+  return result;
+}
 \`\`\`
 
 ---
@@ -251,14 +378,99 @@ def find_rightmost(nums: List[int], target: int) -> int:
         mid = left + (right - left) // 2
         
         if nums[mid] == target:
-            result = mid       # Record this index as our current best candidate
-            left = mid + 1     # Keep looking to the right to find a later index
+            # We found the target, but maybe there's another one further right.
+            # Record this index as our current best candidate.
+            result = mid       
+            # Continue searching in the right half.
+            left = mid + 1     
         elif nums[mid] < target:
             left = mid + 1
         else:
             right = mid - 1
             
     return result
+\`\`\`
+
+##### Java
+\`\`\`java
+public class Solution {
+    public int findRightmost(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        int result = -1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (nums[mid] == target) {
+                // Record candidate but keep searching to the right for a later occurrence.
+                result = mid;
+                left = mid + 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        
+        return result;
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+#include <vector>
+
+class Solution {
+public:
+    int findRightmost(std::vector<int>& nums, int target) {
+        int left = 0;
+        int right = nums.size() - 1;
+        int result = -1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (nums[mid] == target) {
+                // Found a match, store it, but force search to the right half.
+                result = mid;
+                left = mid + 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        
+        return result;
+    }
+};
+\`\`\`
+
+##### TypeScript
+\`\`\`typescript
+function findRightmost(nums: number[], target: number): number {
+  let left = 0;
+  let right = nums.length - 1;
+  let result = -1;
+  
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+    
+    if (nums[mid] === target) {
+      // This might be the rightmost target, but let's verify the right subarray.
+      result = mid;
+      left = mid + 1;
+    } else if (nums[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+  
+  return result;
+}
 \`\`\`
 
 ---
@@ -304,12 +516,107 @@ def binary_search_solution_space(min_val: int, max_val: int) -> int:
         mid = left + (right - left) // 2
         
         if check_feasible(mid):
+            # This speed works! But maybe a smaller, more optimal speed works too.
             best_ans = mid      # Save mid as a valid solution
-            right = mid - 1     # Try to find a smaller value that also works
+            right = mid - 1     # Try to find a smaller value in the left half
         else:
-            left = mid + 1      # mid is too small, make the search space larger
+            # This speed is too slow. We must search for a larger speed in the right half.
+            left = mid + 1
             
     return best_ans
+\`\`\`
+
+##### Java
+\`\`\`java
+public class Solution {
+    private boolean checkFeasible(int candidate) {
+        // Evaluate if this candidate value satisfies our criteria.
+        return true;
+    }
+
+    public int binarySearchSolutionSpace(int minVal, int maxVal) {
+        int left = minVal;
+        int right = maxVal;
+        int bestAns = maxVal;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (checkFeasible(mid)) {
+                // Valid solution! Record it, but try to optimize by finding a smaller one.
+                bestAns = mid;
+                right = mid - 1;
+            } else {
+                // Invalid solution! It's too small, increase our search boundaries.
+                left = mid + 1;
+            }
+        }
+        
+        return bestAns;
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+class Solution {
+private:
+    bool checkFeasible(int candidate) {
+        // Implement the condition logic here
+        return true;
+    }
+
+public:
+    int binarySearchSolutionSpace(int minVal, int maxVal) {
+        int left = minVal;
+        int right = maxVal;
+        int bestAns = maxVal;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (checkFeasible(mid)) {
+                // If feasible, we update our best answer and look for a tighter (smaller) bound.
+                bestAns = mid;
+                right = mid - 1;
+            } else {
+                // If not feasible, our candidate is too small. Shift left boundary up.
+                left = mid + 1;
+            }
+        }
+        
+        return bestAns;
+    }
+};
+\`\`\`
+
+##### TypeScript
+\`\`\`typescript
+function checkFeasible(candidate: number): boolean {
+  // Logic to determine if 'candidate' is valid.
+  return true;
+}
+
+function binarySearchSolutionSpace(minVal: number, maxVal: number): number {
+  let left = minVal;
+  let right = maxVal;
+  let bestAns = maxVal;
+  
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+    
+    if (checkFeasible(mid)) {
+      // The current candidate works. Save it and explore if smaller values also work.
+      bestAns = mid;
+      right = mid - 1;
+    } else {
+      // The current candidate fails. We need a larger value.
+      left = mid + 1;
+    }
+  }
+  
+  return bestAns;
+}
 \`\`\`
 
 ---
@@ -340,25 +647,149 @@ def search_rotated(nums: List[int], target: int) -> int:
     while left <= right:
         mid = left + (right - left) // 2
         
+        # We found the target instantly!
         if nums[mid] == target:
             return mid
             
-        # Case 1: Left half is normally sorted
+        # Case 1: Check if the left half is perfectly sorted
+        # If nums[left] <= nums[mid], there's no "cliff" or rotation in this half.
         if nums[left] <= nums[mid]:
-            # Check if target is inside the sorted left half
+            # Since the left half is sorted, we can safely check if the target falls in this range.
             if nums[left] <= target < nums[mid]:
+                # Target is mathematically guaranteed to be in this left half.
                 right = mid - 1
             else:
+                # Target must be in the right half.
                 left = mid + 1
-        # Case 2: Right half is normally sorted
+                
+        # Case 2: The right half must be the perfectly sorted one.
         else:
-            # Check if target is inside the sorted right half
+            # Since the right half is sorted, check if target falls in this range.
             if nums[mid] < target <= nums[right]:
+                # Target is mathematically guaranteed to be in this right half.
                 left = mid + 1
             else:
+                # Target must be in the left half.
                 right = mid - 1
                 
     return -1
+\`\`\`
+
+##### Java
+\`\`\`java
+public class Solution {
+    public int searchRotated(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            // Check for direct match
+            if (nums[mid] == target) {
+                return mid;
+            }
+            
+            // Determine which half is monotonically strictly sorted
+            if (nums[left] <= nums[mid]) { // Left half is sorted
+                // Does target fall within the minimum and maximum of this sorted left half?
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1; // It does, narrow search to left.
+                } else {
+                    left = mid + 1; // It doesn't, must be in the right half.
+                }
+            } else { // Right half is sorted
+                // Does target fall within the minimum and maximum of this sorted right half?
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1; // It does, narrow search to right.
+                } else {
+                    right = mid - 1; // It doesn't, must be in the left half.
+                }
+            }
+        }
+        
+        return -1; // Target not found
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+#include <vector>
+
+class Solution {
+public:
+    int searchRotated(std::vector<int>& nums, int target) {
+        int left = 0;
+        int right = nums.size() - 1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (nums[mid] == target) {
+                return mid;
+            }
+            
+            // If the left side from left to mid is continuously increasing
+            if (nums[left] <= nums[mid]) {
+                // Verify if the target sits within this cleanly sorted segment
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            } 
+            // Otherwise, the right side from mid to right must be continuously increasing
+            else {
+                // Verify if the target sits within this cleanly sorted segment
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+        }
+        
+        return -1;
+    }
+};
+\`\`\`
+
+##### TypeScript
+\`\`\`typescript
+function searchRotated(nums: number[], target: number): number {
+  let left = 0;
+  let right = nums.length - 1;
+  
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+    
+    if (nums[mid] === target) {
+      return mid;
+    }
+    
+    // Check if the left portion is sorted normally
+    if (nums[left] <= nums[mid]) {
+      // Is target between the lowest and highest values of the left portion?
+      if (nums[left] <= target && target < nums[mid]) {
+        right = mid - 1; // Discard right portion
+      } else {
+        left = mid + 1; // Discard left portion
+      }
+    } 
+    // Right portion must be sorted normally
+    else {
+      // Is target between the lowest and highest values of the right portion?
+      if (nums[mid] < target && target <= nums[right]) {
+        left = mid + 1; // Discard left portion
+      } else {
+        right = mid - 1; // Discard right portion
+      }
+    }
+  }
+  
+  return -1;
+}
 \`\`\`
 
 ### Trace Table for Rotated Search

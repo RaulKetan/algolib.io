@@ -97,11 +97,15 @@ def maxSubarraySum(nums: list[int], k: int) -> int:
     if len(nums) < k:
         return 0
         
+    # Build the initial window of size K
     window_sum = sum(nums[:k])
     max_sum = window_sum
     
+    # Slide the window one element at a time
     for i in range(k, len(nums)):
-        window_sum += nums[i] - nums[i - k]  # Add right, remove left
+        # To get the new window sum, add the new element coming into the frame
+        # and subtract the old element falling out of the frame
+        window_sum += nums[i] - nums[i - k]  
         max_sum = max(max_sum, window_sum)
         
     return max_sum
@@ -115,6 +119,7 @@ public class Solution {
             return 0;
         }
         
+        // Build the initial window of size K
         int windowSum = 0;
         for (int i = 0; i < k; i++) {
             windowSum += nums[i];
@@ -122,8 +127,11 @@ public class Solution {
         
         int maxSum = windowSum;
         
+        // Slide the window one element at a time
         for (int i = k; i < nums.length; i++) {
-            windowSum += nums[i] - nums[i - k]; // Add right, remove left
+            // To get the new window sum, add the new element coming into the frame
+            // and subtract the old element falling out of the frame
+            windowSum += nums[i] - nums[i - k]; 
             maxSum = Math.max(maxSum, windowSum);
         }
         
@@ -143,11 +151,15 @@ public:
     int maxSubarraySum(std::vector<int>& nums, int k) {
         if (nums.size() < k) return 0;
         
+        // Build the initial window of size K
         int windowSum = std::accumulate(nums.begin(), nums.begin() + k, 0);
         int maxSum = windowSum;
         
+        // Slide the window one element at a time
         for (size_t i = k; i < nums.size(); ++i) {
-            windowSum += nums[i] - nums[i - k]; // Add right, remove left
+            // To get the new window sum, add the new element coming into the frame
+            // and subtract the old element falling out of the frame
+            windowSum += nums[i] - nums[i - k]; 
             maxSum = std::max(maxSum, windowSum);
         }
         
@@ -161,6 +173,7 @@ public:
 function maxSubarraySum(nums: number[], k: number): number {
   if (nums.length < k) return 0;
 
+  // Build the initial window of size K
   let windowSum = 0;
   for (let i = 0; i < k; i++) {
     windowSum += nums[i];
@@ -168,8 +181,11 @@ function maxSubarraySum(nums: number[], k: number): number {
 
   let maxSum = windowSum;
 
+  // Slide the window one element at a time
   for (let i = k; i < nums.length; i++) {
-    windowSum += nums[i] - nums[i - k]; // Add right, remove left
+    // To get the new window sum, add the new element coming into the frame
+    // and subtract the old element falling out of the frame
+    windowSum += nums[i] - nums[i - k]; 
     maxSum = Math.max(maxSum, windowSum);
   }
 
@@ -213,11 +229,15 @@ def lengthOfLongestSubstring(s: str) -> int:
     left = 0
     max_len = 0
     
+    # The 'right' pointer stretches the window to the right, hunting for new characters
     for right in range(len(s)):
+        # If we hit a duplicate character, our window is breaking the rules!
+        # We must squeeze the window from the left until the duplicate is gone.
         while s[right] in char_set:
             char_set.remove(s[left])
             left += 1
             
+        # The window is valid again, so we can add the new character
         char_set.add(s[right])
         max_len = max(max_len, right - left + 1)
         
@@ -235,11 +255,15 @@ public class Solution {
         int left = 0;
         int maxLen = 0;
         
+        // The 'right' pointer stretches the window to the right, hunting for new characters
         for (int right = 0; right < s.length(); right++) {
+            // If we hit a duplicate character, our window is breaking the rules!
+            // We must squeeze the window from the left until the duplicate is gone.
             while (charSet.contains(s.charAt(right))) {
                 charSet.remove(s.charAt(left));
                 left++;
             }
+            // The window is valid again, so we can add the new character
             charSet.add(s.charAt(right));
             maxLen = Math.max(maxLen, right - left + 1);
         }
@@ -262,11 +286,15 @@ public:
         int left = 0;
         int maxLen = 0;
         
+        // The 'right' pointer stretches the window to the right, hunting for new characters
         for (int right = 0; right < s.length(); ++right) {
+            // If we hit a duplicate character, our window is breaking the rules!
+            // We must squeeze the window from the left until the duplicate is gone.
             while (charSet.find(s[right]) != charSet.end()) {
                 charSet.erase(s[left]);
                 left++;
             }
+            // The window is valid again, so we can add the new character
             charSet.insert(s[right]);
             maxLen = std::max(maxLen, right - left + 1);
         }
@@ -283,11 +311,15 @@ function lengthOfLongestSubstring(s: string): number {
   let left = 0;
   let maxLen = 0;
 
+  // The 'right' pointer stretches the window to the right, hunting for new characters
   for (let right = 0; right < s.length; right++) {
+    // If we hit a duplicate character, our window is breaking the rules!
+    // We must squeeze the window from the left until the duplicate is gone.
     while (charSet.has(s[right])) {
       charSet.delete(s[left]);
       left++;
     }
+    // The window is valid again, so we can add the new character
     charSet.add(s[right]);
     maxLen = Math.max(maxLen, right - left + 1);
   }
@@ -317,25 +349,30 @@ def minWindow(s: str, t: str) -> str:
     if not t or not s:
         return ""
         
+    # Build a dictionary to map the target string characters to their required counts
     dict_t = {}
     for c in t:
         dict_t[c] = dict_t.get(c, 0) + 1
         
     required = len(dict_t)
     left, right = 0, 0
-    formed = 0
+    formed = 0 # Tracks how many unique characters have met their target frequency
     window_counts = {}
     
     # ans: [window_length, left_index, right_index]
     ans = float("inf"), None, None
     
+    # Expand the window to the right, bringing characters into our frame
     while right < len(s):
         character = s[right]
         window_counts[character] = window_counts.get(character, 0) + 1
         
+        # If this character reached the exact required amount, we formed one target!
         if character in dict_t and window_counts[character] == dict_t[character]:
             formed += 1
             
+        # If all targets are met, the window is valid! 
+        # Now, shrink it from the left to find the absolute minimum size.
         while left <= right and formed == required:
             character = s[left]
             
@@ -343,11 +380,14 @@ def minWindow(s: str, t: str) -> str:
             if right - left + 1 < ans[0]:
                 ans = (right - left + 1, left, right)
                 
+            # Remove the left character from our frame
             window_counts[character] -= 1
+            # If removing this character breaks our valid window, we lose a formed target
             if character in dict_t and window_counts[character] < dict_t[character]:
                 formed -= 1
                 
             left += 1
+            
         right += 1
         
     return "" if ans[0] == float("inf") else s[ans[1]:ans[2] + 1]
@@ -362,6 +402,7 @@ public class Solution {
     public String minWindow(String s, String t) {
         if (s == null || t == null || s.length() < t.length()) return "";
         
+        // Build a dictionary to map the target string characters to their required counts
         Map<Character, Integer> dictT = new HashMap<>();
         for (char c : t.toCharArray()) {
             dictT.put(c, dictT.getOrDefault(c, 0) + 1);
@@ -369,29 +410,36 @@ public class Solution {
         
         int required = dictT.size();
         int left = 0, right = 0;
-        int formed = 0;
+        int formed = 0; // Tracks how many unique characters have met their target frequency
         
         Map<Character, Integer> windowCounts = new HashMap<>();
         int[] ans = {-1, 0, 0}; // window length, left, right
         
+        // Expand the window to the right, bringing characters into our frame
         while (right < s.length()) {
             char c = s.charAt(right);
             windowCounts.put(c, windowCounts.getOrDefault(c, 0) + 1);
             
+            // If this character reached the exact required amount, we formed one target!
             if (dictT.containsKey(c) && windowCounts.get(c).intValue() == dictT.get(c).intValue()) {
                 formed++;
             }
             
+            // If all targets are met, the window is valid! 
+            // Now, shrink it from the left to find the absolute minimum size.
             while (left <= right && formed == required) {
                 c = s.charAt(left);
                 
+                // Save smallest window
                 if (ans[0] == -1 || right - left + 1 < ans[0]) {
                     ans[0] = right - left + 1;
                     ans[1] = left;
                     ans[2] = right;
                 }
                 
+                // Remove the left character from our frame
                 windowCounts.put(c, windowCounts.get(c) - 1);
+                // If removing this character breaks our valid window, we lose a formed target
                 if (dictT.containsKey(c) && windowCounts.get(c) < dictT.get(c)) {
                     formed--;
                 }
@@ -416,34 +464,42 @@ public:
     std::string minWindow(std::string s, std::string t) {
         if (s.empty() || t.empty() || s.length() < t.length()) return "";
         
+        // Build a dictionary to map the target string characters to their required counts
         std::unordered_map<char, int> dictT;
         for (char c : t) dictT[c]++;
         
         int required = dictT.size();
         int left = 0, right = 0;
-        int formed = 0;
+        int formed = 0; // Tracks how many unique characters have met their target frequency
         
         std::unordered_map<char, int> windowCounts;
         int minLen = INT_MAX;
         int startIdx = 0;
         
+        // Expand the window to the right, bringing characters into our frame
         while (right < s.length()) {
             char c = s[right];
             windowCounts[c]++;
             
+            // If this character reached the exact required amount, we formed one target!
             if (dictT.find(c) != dictT.end() && windowCounts[c] == dictT[c]) {
                 formed++;
             }
             
+            // If all targets are met, the window is valid! 
+            // Now, shrink it from the left to find the absolute minimum size.
             while (left <= right && formed == required) {
                 char leftChar = s[left];
                 
+                // Save smallest window
                 if (right - left + 1 < minLen) {
                     minLen = right - left + 1;
                     startIdx = left;
                 }
                 
+                // Remove the left character from our frame
                 windowCounts[leftChar]--;
+                // If removing this character breaks our valid window, we lose a formed target
                 if (dictT.find(leftChar) != dictT.end() && windowCounts[leftChar] < dictT[leftChar]) {
                     formed--;
                 }
@@ -462,6 +518,7 @@ public:
 function minWindow(s: string, t: string): string {
   if (!s || !t || s.length < t.length) return "";
 
+  // Build a dictionary to map the target string characters to their required counts
   const dictT = new Map<string, number>();
   for (const c of t) {
     dictT.set(c, (dictT.get(c) || 0) + 1);
@@ -470,29 +527,36 @@ function minWindow(s: string, t: string): string {
   const required = dictT.size;
   let left = 0;
   let right = 0;
-  let formed = 0;
+  let formed = 0; // Tracks how many unique characters have met their target frequency
 
   const windowCounts = new Map<string, number>();
   let minLen = Infinity;
   let startIdx = 0;
 
+  // Expand the window to the right, bringing characters into our frame
   while (right < s.length) {
     const c = s[right];
     windowCounts.set(c, (windowCounts.get(c) || 0) + 1);
 
+    // If this character reached the exact required amount, we formed one target!
     if (dictT.has(c) && windowCounts.get(c) === dictT.get(c)) {
       formed++;
     }
 
+    // If all targets are met, the window is valid! 
+    // Now, shrink it from the left to find the absolute minimum size.
     while (left <= right && formed === required) {
       const leftChar = s[left];
 
+      // Save smallest window
       if (right - left + 1 < minLen) {
         minLen = right - left + 1;
         startIdx = left;
       }
 
+      // Remove the left character from our frame
       windowCounts.set(leftChar, windowCounts.get(leftChar)! - 1);
+      // If removing this character breaks our valid window, we lose a formed target
       if (dictT.has(leftChar) && windowCounts.get(leftChar)! < dictT.get(leftChar)!) {
         formed--;
       }

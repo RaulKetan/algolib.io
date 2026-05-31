@@ -220,13 +220,24 @@ class ListNode:
         self.next = next
 
 def reverseList(head: ListNode) -> ListNode:
+    # prev tracks the node behind us; initially there is nothing behind the head
     prev = None
+    # curr is the node we are currently turning around
     curr = head
+    
+    # Keep walking down the line until we run out of nodes
     while curr:
-        nxt = curr.next  # Save next node reference
-        curr.next = prev  # Change pointer direction
-        prev = curr      # Move prev pointer forward
-        curr = nxt       # Move curr pointer forward
+        # Save the next node so we don't lose the rest of the list
+        nxt = curr.next  
+        
+        # Turn the current node around to face the node behind it
+        curr.next = prev  
+        
+        # Move both pointers one step forward for the next iteration
+        prev = curr      
+        curr = nxt       
+        
+    # At the end, prev is pointing to the last node, which is now the new head
     return prev
 \`\`\`
 
@@ -240,14 +251,25 @@ public class Solution {
     }
 
     public ListNode reverseList(ListNode head) {
+        // prev tracks the node behind us; initially there is nothing behind the head
         ListNode prev = null;
+        // curr is the node we are currently turning around
         ListNode curr = head;
+        
+        // Keep walking down the line until we run out of nodes
         while (curr != null) {
-            ListNode nxt = curr.next; // Save next node reference
-            curr.next = prev;        // Change pointer direction
-            prev = curr;             // Move prev pointer forward
-            curr = nxt;              // Move curr pointer forward
+            // Save the next node so we don't lose the rest of the list
+            ListNode nxt = curr.next; 
+            
+            // Turn the current node around to face the node behind it
+            curr.next = prev;        
+            
+            // Move both pointers one step forward for the next iteration
+            prev = curr;             
+            curr = nxt;              
         }
+        
+        // At the end, prev is pointing to the last node, which is now the new head
         return prev;
     }
 }
@@ -264,14 +286,25 @@ struct ListNode {
 class Solution {
 public:
     ListNode* reverseList(ListNode* head) {
+        // prev tracks the node behind us; initially there is nothing behind the head
         ListNode* prev = nullptr;
+        // curr is the node we are currently turning around
         ListNode* curr = head;
+        
+        // Keep walking down the line until we run out of nodes
         while (curr != nullptr) {
-            ListNode* nxt = curr->next; // Save next node reference
-            curr->next = prev;         // Change pointer direction
-            prev = curr;               // Move prev pointer forward
-            curr = nxt;                // Move curr pointer forward
+            // Save the next node so we don't lose the rest of the list
+            ListNode* nxt = curr->next; 
+            
+            // Turn the current node around to face the node behind it
+            curr->next = prev;         
+            
+            // Move both pointers one step forward for the next iteration
+            prev = curr;               
+            curr = nxt;                
         }
+        
+        // At the end, prev is pointing to the last node, which is now the new head
         return prev;
     }
 };
@@ -289,14 +322,25 @@ class ListNode {
 }
 
 function reverseList(head: ListNode | null): ListNode | null {
+  // prev tracks the node behind us; initially there is nothing behind the head
   let prev: ListNode | null = null;
+  // curr is the node we are currently turning around
   let curr: ListNode | null = head;
+  
+  // Keep walking down the line until we run out of nodes
   while (curr !== null) {
-    const nxt: ListNode | null = curr.next; // Save next node reference
-    curr.next = prev;                       // Change pointer direction
-    prev = curr;                            // Move prev pointer forward
-    curr = nxt;                             // Move curr pointer forward
+    // Save the next node so we don't lose the rest of the list
+    const nxt: ListNode | null = curr.next; 
+    
+    // Turn the current node around to face the node behind it
+    curr.next = prev;                       
+    
+    // Move both pointers one step forward for the next iteration
+    prev = curr;                            
+    curr = nxt;                             
   }
+  
+  // At the end, prev is pointing to the last node, which is now the new head
   return prev;
 }
 \`\`\`
@@ -334,24 +378,30 @@ If a list has a cycle (meaning the last node points back to an earlier node, for
 ##### Python
 \`\`\`python
 def hasCycle(head: ListNode) -> bool:
+    # An empty list or a single node cannot have a cycle
     if not head or not head.next:
         return False
         
     slow = head
     fast = head
     
+    # The fast pointer moves twice as fast; if there's no cycle, it will hit the end (null)
     while fast and fast.next:
-        slow = slow.next
-        fast = fast.next.next
+        slow = slow.next          # Tortoise takes 1 step
+        fast = fast.next.next     # Hare takes 2 steps
+        
+        # If they ever land on the same node, the Hare lapped the Tortoise!
         if slow == fast:
-            return True  # Fast pointer lapped the slow pointer!
+            return True  
             
+    # The fast pointer reached the end of the track, so there's no cycle
     return False
 \`\`\`
 
 ##### Java
 \`\`\`java
 public boolean hasCycle(ListNode head) {
+    // An empty list or a single node cannot have a cycle
     if (head == null || head.next == null) {
         return false;
     }
@@ -359,14 +409,18 @@ public boolean hasCycle(ListNode head) {
     ListNode slow = head;
     ListNode fast = head;
     
+    // The fast pointer moves twice as fast; if there's no cycle, it will hit the end (null)
     while (fast != null && fast.next != null) {
-        slow = slow.next;
-        fast = fast.next.next;
+        slow = slow.next;          // Tortoise takes 1 step
+        fast = fast.next.next;     // Hare takes 2 steps
+        
+        // If they ever land on the same node, the Hare lapped the Tortoise!
         if (slow == fast) {
-            return true; // Cycle detected
+            return true; 
         }
     }
     
+    // The fast pointer reached the end of the track, so there's no cycle
     return false;
 }
 \`\`\`
@@ -374,6 +428,7 @@ public boolean hasCycle(ListNode head) {
 ##### C++
 \`\`\`cpp
 bool hasCycle(ListNode *head) {
+    // An empty list or a single node cannot have a cycle
     if (!head || !head->next) {
         return false;
     }
@@ -381,14 +436,18 @@ bool hasCycle(ListNode *head) {
     ListNode *slow = head;
     ListNode *fast = head;
     
+    // The fast pointer moves twice as fast; if there's no cycle, it will hit the end (null)
     while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
+        slow = slow->next;          // Tortoise takes 1 step
+        fast = fast->next->next;    // Hare takes 2 steps
+        
+        // If they ever land on the same node, the Hare lapped the Tortoise!
         if (slow == fast) {
-            return true; // Cycle detected
+            return true; 
         }
     }
     
+    // The fast pointer reached the end of the track, so there's no cycle
     return false;
 }
 \`\`\`
@@ -396,6 +455,7 @@ bool hasCycle(ListNode *head) {
 ##### TypeScript
 \`\`\`typescript
 function hasCycle(head: ListNode | null): boolean {
+  // An empty list or a single node cannot have a cycle
   if (head === null || head.next === null) {
     return false;
   }
@@ -403,14 +463,18 @@ function hasCycle(head: ListNode | null): boolean {
   let slow: ListNode | null = head;
   let fast: ListNode | null = head;
 
+  // The fast pointer moves twice as fast; if there's no cycle, it will hit the end (null)
   while (fast !== null && fast.next !== null) {
-    slow = slow!.next;
-    fast = fast.next.next;
+    slow = slow!.next;          // Tortoise takes 1 step
+    fast = fast.next.next;      // Hare takes 2 steps
+    
+    // If they ever land on the same node, the Hare lapped the Tortoise!
     if (slow === fast) {
-      return true; // Cycle detected
+      return true; 
     }
   }
 
+  // The fast pointer reached the end of the track, so there's no cycle
   return false;
 }
 \`\`\`
@@ -435,40 +499,56 @@ Let's see this in action for merging:
 ##### Python
 \`\`\`python
 def mergeTwoLists(list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+    # We use a dummy node to avoid messy edge cases when the new list is initially empty
     dummy = ListNode(-1)
+    # curr is our pen, writing the links of the new merged list
     curr = dummy
     
+    # While both lists have nodes left to compare
     while list1 and list2:
         if list1.val <= list2.val:
-            curr.next = list1
-            list1 = list1.next
+            curr.next = list1     # Connect the smaller node
+            list1 = list1.next    # Move the pointer of the selected list forward
         else:
             curr.next = list2
             list2 = list2.next
+            
+        # Move our pen forward to the newly added node
         curr = curr.next
         
+    # If one list ran out first, just attach the entire rest of the other list
     curr.next = list1 if list1 else list2
+    
+    # The actual merged list starts after the dummy node
     return dummy.next
 \`\`\`
 
 ##### Java
 \`\`\`java
 public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+    // We use a dummy node to avoid messy edge cases when the new list is initially empty
     ListNode dummy = new ListNode(-1);
+    // curr is our pen, writing the links of the new merged list
     ListNode curr = dummy;
     
+    // While both lists have nodes left to compare
     while (list1 != null && list2 != null) {
         if (list1.val <= list2.val) {
-            curr.next = list1;
-            list1 = list1.next;
+            curr.next = list1;     // Connect the smaller node
+            list1 = list1.next;    // Move the pointer of the selected list forward
         } else {
             curr.next = list2;
             list2 = list2.next;
         }
+        
+        // Move our pen forward to the newly added node
         curr = curr.next;
     }
     
+    // If one list ran out first, just attach the entire rest of the other list
     curr.next = (list1 != null) ? list1 : list2;
+    
+    // The actual merged list starts after the dummy node
     return dummy.next;
 }
 \`\`\`
@@ -476,21 +556,29 @@ public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
 ##### C++
 \`\`\`cpp
 ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+    // We use a dummy node to avoid messy edge cases when the new list is initially empty
     ListNode dummy(-1);
+    // curr is our pen, writing the links of the new merged list
     ListNode* curr = &dummy;
     
+    // While both lists have nodes left to compare
     while (list1 && list2) {
         if (list1->val <= list2->val) {
-            curr->next = list1;
-            list1 = list1->next;
+            curr->next = list1;     // Connect the smaller node
+            list1 = list1->next;    // Move the pointer of the selected list forward
         } else {
             curr->next = list2;
             list2 = list2->next;
         }
+        
+        // Move our pen forward to the newly added node
         curr = curr->next;
     }
     
+    // If one list ran out first, just attach the entire rest of the other list
     curr->next = list1 ? list1 : list2;
+    
+    // The actual merged list starts after the dummy node
     return dummy.next;
 }
 \`\`\`
@@ -498,24 +586,30 @@ ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
 ##### TypeScript
 \`\`\`typescript
 function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {
-  const dummy = new ListNode(-1); // Anchored dummy
+  // We use a dummy node to avoid messy edge cases when the new list is initially empty
+  const dummy = new ListNode(-1); 
+  // curr is our pen, writing the links of the new merged list
   let curr = dummy;
 
+  // While both lists have nodes left to compare
   while (list1 !== null && list2 !== null) {
     if (list1.val <= list2.val) {
-      curr.next = list1;
-      list1 = list1.next;
+      curr.next = list1;     // Connect the smaller node
+      list1 = list1.next;    // Move the pointer of the selected list forward
     } else {
       curr.next = list2;
       list2 = list2.next;
     }
+    
+    // Move our pen forward to the newly added node
     curr = curr.next;
   }
 
-  // If one list is longer, attach the rest of it
+  // If one list ran out first, just attach the entire rest of the other list
   curr.next = list1 !== null ? list1 : list2;
 
-  return dummy.next; // Return actual head
+  // The actual merged list starts after the dummy node
+  return dummy.next; 
 }
 \`\`\`
 
@@ -547,18 +641,24 @@ Since it is a singly linked list, you cannot find the previous node to bypass th
 ##### Python
 \`\`\`python
 def deleteNode(node: ListNode) -> None:
-    # Copy next node's value
+    # 1. Steal the value from the NEXT node and overwrite our own value
+    # Now this node is identical to the next node in data
     node.val = node.next.val
-    # Skip next node
+    
+    # 2. Bypass the actual next node by pointing our next pointer to the node after it
+    # We effectively deleted the next node, completing the illusion that 'we' were deleted!
     node.next = node.next.next
 \`\`\`
 
 ##### Java
 \`\`\`java
 public void deleteNode(ListNode node) {
-    // Copy next node's value
+    // 1. Steal the value from the NEXT node and overwrite our own value
+    // Now this node is identical to the next node in data
     node.val = node.next.val;
-    // Skip next node
+    
+    // 2. Bypass the actual next node by pointing our next pointer to the node after it
+    // We effectively deleted the next node, completing the illusion that 'we' were deleted!
     node.next = node.next.next;
 }
 \`\`\`
@@ -566,21 +666,27 @@ public void deleteNode(ListNode node) {
 ##### C++
 \`\`\`cpp
 void deleteNode(ListNode* node) {
-    // Copy next node's value
+    // 1. Steal the value from the NEXT node and overwrite our own value
     node->val = node->next->val;
-    // Skip next node
-    ListNode* temp = node->next;
+    
+    // 2. Bypass the actual next node by pointing our next pointer to the node after it
+    ListNode* temp = node->next; // Keep a reference so we can free the memory
     node->next = node->next->next;
-    delete temp; // Free memory
+    
+    // Clean up to prevent memory leaks!
+    delete temp; 
 }
 \`\`\`
 
 ##### TypeScript
 \`\`\`typescript
 function deleteNode(node: ListNode): void {
-  // Copy next node's value
+  // 1. Steal the value from the NEXT node and overwrite our own value
+  // Now this node is identical to the next node in data
   node.val = node.next!.val;
-  // Skip next node
+  
+  // 2. Bypass the actual next node by pointing our next pointer to the node after it
+  // We effectively deleted the next node, completing the illusion that 'we' were deleted!
   node.next = node.next!.next;
 }
 \`\`\`

@@ -81,18 +81,22 @@ Given a string containing just the characters \`'('\`, \`')'\`, \`'{'\`, \`'}'\`
 \`\`\`python
 def isValid(s: str) -> bool:
     stack = []
+    # Map each right sock to its corresponding left sock
     mapping = {")": "(", "}": "{", "]": "["}
     
     for char in s:
         if char in mapping:
-            # Closing bracket
+            # It's a closing bracket (Right sock)! 
+            # Pop the top of the stack if it exists, otherwise use a dummy '#'
             top_element = stack.pop() if stack else '#'
+            # If the popped bracket doesn't match the required left bracket, it's invalid
             if mapping[char] != top_element:
                 return False
         else:
-            # Opening bracket
+            # It's an opening bracket (Left sock)! Throw it onto the stack
             stack.append(char)
             
+    # If the stack is perfectly empty at the end, all socks matched!
     return not stack
 \`\`\`
 
@@ -105,16 +109,22 @@ public class Solution {
         Stack<Character> stack = new Stack<>();
         
         for (char c : s.toCharArray()) {
+            // It's an opening bracket (Left sock)! Throw it onto the stack
             if (c == '(' || c == '{' || c == '[') {
                 stack.push(c);
             } else {
+                // It's a closing bracket (Right sock)!
+                // If the bed is empty, we have a right sock with no left sock. Invalid!
                 if (stack.isEmpty()) return false;
+                
+                // Check if the top left sock matches our current right sock
                 char top = stack.pop();
                 if (c == ')' && top != '(') return false;
                 if (c == '}' && top != '{') return false;
                 if (c == ']' && top != '[') return false;
             }
         }
+        // If the stack is perfectly empty at the end, all socks matched!
         return stack.isEmpty();
     }
 }
@@ -130,10 +140,15 @@ public:
     bool isValid(std::string s) {
         std::stack<char> st;
         for (char c : s) {
+            // It's an opening bracket (Left sock)! Throw it onto the stack
             if (c == '(' || c == '{' || c == '[') {
                 st.push(c);
             } else {
+                // It's a closing bracket (Right sock)!
+                // If the bed is empty, we have a right sock with no left sock. Invalid!
                 if (st.empty()) return false;
+                
+                // Check if the top left sock matches our current right sock
                 char top = st.top();
                 st.pop();
                 if (c == ')' && top != '(') return false;
@@ -141,6 +156,7 @@ public:
                 if (c == ']' && top != '[') return false;
             }
         }
+        // If the stack is perfectly empty at the end, all socks matched!
         return st.empty();
     }
 };
@@ -150,6 +166,7 @@ public:
 \`\`\`typescript
 function isValid(s: string): boolean {
   const stack: string[] = [];
+  // Map each right sock to its corresponding left sock
   const mapping: Record<string, string> = {
     ")": "(",
     "}": "{",
@@ -158,15 +175,20 @@ function isValid(s: string): boolean {
 
   for (const char of s) {
     if (char in mapping) {
+      // It's a closing bracket (Right sock)! 
+      // Pop the top of the stack if it exists, otherwise use a dummy '#'
       const top = stack.pop() || "#";
+      // If the popped bracket doesn't match the required left bracket, it's invalid
       if (mapping[char] !== top) {
         return false;
       }
     } else {
+      // It's an opening bracket (Left sock)! Throw it onto the stack
       stack.push(char);
     }
   }
 
+  // If the stack is perfectly empty at the end, all socks matched!
   return stack.length === 0;
 }
 \`\`\`
@@ -191,16 +213,19 @@ To get the minimum value in \`O(1)\` time, we cannot scan the stack (which would
 class MinStack:
     def __init__(self):
         self.stack = []
+        # The secondary stack to keep track of the minimum at every level
         self.min_stack = []
 
     def push(self, val: int) -> None:
         self.stack.append(val)
+        # Push the minimum between the new value and the current minimum
         if not self.min_stack or val <= self.min_stack[-1]:
             self.min_stack.append(val)
         else:
             self.min_stack.append(self.min_stack[-1])
 
     def pop(self) -> None:
+        # Pop from both stacks to keep them perfectly synced!
         self.stack.pop()
         self.min_stack.pop()
 
@@ -208,6 +233,7 @@ class MinStack:
         return self.stack[-1]
 
     def getMin(self) -> int:
+        # The top of the min_stack is ALWAYS the minimum value
         return self.min_stack[-1]
 \`\`\`
 
@@ -217,10 +243,12 @@ import java.util.Stack;
 
 class MinStack {
     private Stack<Integer> stack = new Stack<>();
+    // The secondary stack to keep track of the minimum at every level
     private Stack<Integer> minStack = new Stack<>();
 
     public void push(int val) {
         stack.push(val);
+        // Push the minimum between the new value and the current minimum
         if (minStack.isEmpty() || val <= minStack.peek()) {
             minStack.push(val);
         } else {
@@ -229,6 +257,7 @@ class MinStack {
     }
 
     public void pop() {
+        // Pop from both stacks to keep them perfectly synced!
         stack.pop();
         minStack.pop();
     }
@@ -238,6 +267,7 @@ class MinStack {
     }
 
     public int getMin() {
+        // The top of the minStack is ALWAYS the minimum value
         return minStack.peek();
     }
 }
@@ -251,11 +281,13 @@ class MinStack {
 class MinStack {
 private:
     std::stack<int> st;
+    // The secondary stack to keep track of the minimum at every level
     std::stack<int> minSt;
 
 public:
     void push(int val) {
         st.push(val);
+        // Push the minimum between the new value and the current minimum
         if (minSt.empty() || val <= minSt.top()) {
             minSt.push(val);
         } else {
@@ -264,6 +296,7 @@ public:
     }
 
     void pop() {
+        // Pop from both stacks to keep them perfectly synced!
         st.pop();
         minSt.pop();
     }
@@ -273,6 +306,7 @@ public:
     }
 
     int getMin() {
+        // The top of the minSt is ALWAYS the minimum value
         return minSt.top();
     }
 };
@@ -282,10 +316,12 @@ public:
 \`\`\`typescript
 class MinStack {
   private stack: number[] = [];
+  // The secondary stack to keep track of the minimum at every level
   private minStack: number[] = [];
 
   push(val: number): void {
     this.stack.push(val);
+    // Push the minimum between the new value and the current minimum
     if (this.minStack.length === 0 || val <= this.getMin()) {
       this.minStack.push(val);
     } else {
@@ -294,6 +330,7 @@ class MinStack {
   }
 
   pop(): void {
+    // Pop from both stacks to keep them perfectly synced!
     this.stack.pop();
     this.minStack.pop();
   }
@@ -303,6 +340,7 @@ class MinStack {
   }
 
   getMin(): number {
+    // The top of the minStack is ALWAYS the minimum value
     return this.minStack[this.minStack.length - 1];
   }
 }
@@ -340,13 +378,20 @@ Every element is pushed onto the stack exactly once and popped at most once, whi
 ##### Python
 \`\`\`python
 def nextGreaterElement(nums: list[int]) -> list[int]:
+    # Initialize result array with -1 (meaning "not found yet")
     result = [-1] * len(nums)
-    stack = []  # Stores indices
+    stack = []  # Stores indices of the elements, NOT the values!
     
+    # Loop through all elements from left to right
     for i in range(len(nums)):
+        # While our stack is not empty AND the current person is TALLER 
+        # than the person represented by the index at the top of the stack:
         while stack and nums[i] > nums[stack[-1]]:
+            # We found the next greater element for the person at 'prev_idx'!
             prev_idx = stack.pop()
             result[prev_idx] = nums[i]
+            
+        # Push the current person's index onto the stack to find their next greater element later
         stack.append(i)
         
     return result
@@ -359,15 +404,21 @@ import java.util.Stack;
 
 public class Solution {
     public int[] nextGreaterElement(int[] nums) {
+        // Initialize result array with -1 (meaning "not found yet")
         int[] result = new int[nums.length];
         Arrays.fill(result, -1);
-        Stack<Integer> stack = new Stack<>(); // Stores indices
+        Stack<Integer> stack = new Stack<>(); // Stores indices of the elements, NOT the values!
         
+        // Loop through all elements from left to right
         for (int i = 0; i < nums.length; i++) {
+            // While our stack is not empty AND the current person is TALLER 
+            // than the person represented by the index at the top of the stack:
             while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
+                // We found the next greater element for the person at 'prevIdx'!
                 int prevIdx = stack.pop();
                 result[prevIdx] = nums[i];
             }
+            // Push the current person's index onto the stack to find their next greater element later
             stack.push(i);
         }
         return result;
@@ -383,15 +434,21 @@ public class Solution {
 class Solution {
 public:
     std::vector<int> nextGreaterElement(std::vector<int>& nums) {
+        // Initialize result array with -1 (meaning "not found yet")
         std::vector<int> result(nums.size(), -1);
-        std::stack<int> st; // Stores indices
+        std::stack<int> st; // Stores indices of the elements, NOT the values!
         
+        // Loop through all elements from left to right
         for (int i = 0; i < nums.size(); ++i) {
+            // While our stack is not empty AND the current person is TALLER 
+            // than the person represented by the index at the top of the stack:
             while (!st.empty() && nums[i] > nums[st.top()]) {
+                // We found the next greater element for the person at 'prevIdx'!
                 int prevIdx = st.top();
                 st.pop();
                 result[prevIdx] = nums[i];
             }
+            // Push the current person's index onto the stack to find their next greater element later
             st.push(i);
         }
         return result;
@@ -402,14 +459,20 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function nextGreaterElement(nums: number[]): number[] {
+  // Initialize result array with -1 (meaning "not found yet")
   const result: number[] = new Array(nums.length).fill(-1);
-  const stack: number[] = []; // Stores indices
+  const stack: number[] = []; // Stores indices of the elements, NOT the values!
 
+  // Loop through all elements from left to right
   for (let i = 0; i < nums.length; i++) {
+    // While our stack is not empty AND the current person is TALLER 
+    // than the person represented by the index at the top of the stack:
     while (stack.length > 0 && nums[i] > nums[stack[stack.length - 1]]) {
+      // We found the next greater element for the person at 'prevIdx'!
       const prevIdx = stack.pop()!;
       result[prevIdx] = nums[i];
     }
+    // Push the current person's index onto the stack to find their next greater element later
     stack.push(i);
   }
 

@@ -111,16 +111,120 @@ Given two strings \`S\` and \`T\`, return \`true\` if \`T\` is an anagram of \`S
 ##### Python
 \`\`\`python
 def is_anagram(s: str, t: str) -> bool:
+    # If the strings have different lengths, they cannot be anagrams
     if len(s) != len(t):
         return False
     
+    # Hash maps to store the character counts for both strings
     count_s, count_t = {}, {}
     
+    # Iterate through both strings simultaneously
     for i in range(len(s)):
+        # Increment the count for the character from string 's'
         count_s[s[i]] = count_s.get(s[i], 0) + 1
+        
+        # Increment the count for the character from string 't'
         count_t[t[i]] = count_t.get(t[i], 0) + 1
         
+    # Python dictionaries can be compared directly for equality
     return count_s == count_t
+\`\`\`
+
+##### Java
+\`\`\`java
+import java.util.HashMap;
+import java.util.Map;
+
+public class Solution {
+    public boolean isAnagram(String s, String t) {
+        // If lengths differ, it's impossible to be an anagram
+        if (s.length() != t.length()) {
+            return false;
+        }
+        
+        // Maps to hold frequency of each character
+        Map<Character, Integer> countS = new HashMap<>();
+        Map<Character, Integer> countT = new HashMap<>();
+        
+        for (int i = 0; i < s.length(); i++) {
+            // Get characters at the current index
+            char charS = s.charAt(i);
+            char charT = t.charAt(i);
+            
+            // Update counts for string 's'
+            countS.put(charS, countS.getOrDefault(charS, 0) + 1);
+            
+            // Update counts for string 't'
+            countT.put(charT, countT.getOrDefault(charT, 0) + 1);
+        }
+        
+        // HashMap's equals() method compares all keys and values
+        return countS.equals(countT);
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+#include <string>
+#include <unordered_map>
+
+class Solution {
+public:
+    bool isAnagram(std::string s, std::string t) {
+        // Guard against mismatched lengths
+        if (s.length() != t.length()) {
+            return false;
+        }
+        
+        // Unordered maps for character frequencies
+        std::unordered_map<char, int> countS;
+        std::unordered_map<char, int> countT;
+        
+        for (int i = 0; i < s.length(); ++i) {
+            // Increment the frequency of characters at index 'i'
+            countS[s[i]]++;
+            countT[t[i]]++;
+        }
+        
+        // Unordered maps support direct equality comparison in C++
+        return countS == countT;
+    }
+};
+\`\`\`
+
+##### TypeScript
+\`\`\`typescript
+function isAnagram(s: string, t: string): boolean {
+  // Guard clause for length mismatch
+  if (s.length !== t.length) {
+    return false;
+  }
+
+  // Maps to record the frequency of each character
+  const countS = new Map<string, number>();
+  const countT = new Map<string, number>();
+
+  for (let i = 0; i < s.length; i++) {
+    // Add or update the character count for string 's'
+    countS.set(s[i], (countS.get(s[i]) || 0) + 1);
+    
+    // Add or update the character count for string 't'
+    countT.set(t[i], (countT.get(t[i]) || 0) + 1);
+  }
+
+  // In TypeScript/JavaScript, Maps cannot be compared with \`===\`.
+  // We must verify that all keys and values in countS match countT.
+  if (countS.size !== countT.size) return false;
+  
+  for (const [char, count] of countS) {
+    if (countT.get(char) !== count) {
+      return false;
+    }
+  }
+
+  return true;
+}
 \`\`\`
 
 ##### Trace Table of Character Counts for \`s = "rat"\`, \`t = "car"\`
@@ -144,16 +248,98 @@ As you iterate through the array, treat the current element as \`A\`. Calculate 
 #### Two Sum
 Find the indexes of the two numbers that add up to \`target\`.
 
+##### Python
+\`\`\`python
+def two_sum(nums: List[int], target: int) -> List[int]:
+    # Dictionary to store the value as the key and its index as the value
+    seen = {}
+    
+    for i, num in enumerate(nums):
+        # Calculate the complement we need to reach the target
+        complement = target - num
+        
+        # If the complement is already in our dictionary, we found a valid pair
+        if complement in seen:
+            return [seen[complement], i]
+            
+        # Otherwise, record the current number and its index for future numbers to check against
+        seen[num] = i
+        
+    return []
+\`\`\`
+
+##### Java
+\`\`\`java
+import java.util.HashMap;
+import java.util.Map;
+
+public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        // HashMap to store the numbers we've seen and their original indices
+        Map<Integer, Integer> seen = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            // The value we need to find to sum up to the target
+            int complement = target - nums[i];
+            
+            // Check if we've encountered the required complement before
+            if (seen.containsKey(complement)) {
+                return new int[] { seen.get(complement), i };
+            }
+            
+            // Record the current number and index into the map
+            seen.put(nums[i], i);
+        }
+        
+        return new int[0];
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+#include <vector>
+#include <unordered_map>
+
+class Solution {
+public:
+    std::vector<int> twoSum(std::vector<int>& nums, int target) {
+        // Hash map for O(1) lookups of complement values
+        std::unordered_map<int, int> seen;
+        
+        for (int i = 0; i < nums.size(); ++i) {
+            // What number do we need to reach the target?
+            int complement = target - nums[i];
+            
+            // If the complement is in the map, return both indices
+            if (seen.find(complement) != seen.end()) {
+                return {seen[complement], i};
+            }
+            
+            // Record the current value and index
+            seen[nums[i]] = i;
+        }
+        return {};
+    }
+};
+\`\`\`
+
 ##### TypeScript
 \`\`\`typescript
 function twoSum(nums: number[], target: number): number[] {
-  const seen = new Map<number, number>(); // Value -> Index
+  // Map stores value -> index
+  const seen = new Map<number, number>();
 
   for (let i = 0; i < nums.length; i++) {
+    // The value we need to find to sum up to the target
     const complement = target - nums[i];
+    
+    // Check if we've seen the complement before
     if (seen.has(complement)) {
       return [seen.get(complement)!, i];
     }
+    
+    // Add current number and its index to the map
     seen.set(nums[i], i);
   }
 
@@ -187,19 +373,140 @@ Current Sum - Past Sum = K  ==>  Past Sum = Current Sum - K
 def subarray_sum(nums: List[int], k: int) -> int:
     count = 0
     current_sum = 0
-    # Map stores frequency of prefix sums seen so far
-    prefix_sums = {0: 1} # Base case: sum of 0 has occurred once
+    # Dictionary to store the frequency of each prefix sum we've seen.
+    # Base case: a prefix sum of 0 has been seen exactly once (empty subarray).
+    prefix_sums = {0: 1}
     
     for num in nums:
+        # Update the running sum with the current element.
         current_sum += num
+        
+        # We want to find if there was a past prefix sum such that:
+        # current_sum - past_sum = k
+        # Which algebraically means: past_sum = current_sum - k
         difference = current_sum - k
         
+        # If we have seen this past prefix sum, it means the subarray between
+        # that past point and our current point exactly sums up to 'k'.
         if difference in prefix_sums:
+            # Add the number of times we've seen this past sum to our total count.
             count += prefix_sums[difference]
             
+        # Record the current prefix sum into our dictionary for future elements to use.
         prefix_sums[current_sum] = prefix_sums.get(current_sum, 0) + 1
         
     return count
+\`\`\`
+
+##### Java
+\`\`\`java
+import java.util.HashMap;
+import java.util.Map;
+
+public class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count = 0;
+        int currentSum = 0;
+        
+        // HashMap to track the frequencies of prefix sums.
+        Map<Integer, Integer> prefixSums = new HashMap<>();
+        
+        // Base case: a prefix sum of 0 is seen exactly once initially.
+        prefixSums.put(0, 1);
+        
+        for (int num : nums) {
+            // Update the running total.
+            currentSum += num;
+            
+            // Calculate the prefix sum we need to have seen in the past
+            // in order for the current subarray to sum to k.
+            int difference = currentSum - k;
+            
+            // If the required past prefix sum exists, add its frequency to our answer count.
+            if (prefixSums.containsKey(difference)) {
+                count += prefixSums.get(difference);
+            }
+            
+            // Add the current prefix sum to the map, incrementing its count.
+            prefixSums.put(currentSum, prefixSums.getOrDefault(currentSum, 0) + 1);
+        }
+        
+        return count;
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+#include <vector>
+#include <unordered_map>
+
+class Solution {
+public:
+    int subarraySum(std::vector<int>& nums, int k) {
+        int count = 0;
+        int currentSum = 0;
+        
+        // Unordered map for O(1) average time lookups of prefix sum frequencies.
+        std::unordered_map<int, int> prefixSums;
+        
+        // Initialize base case: prefix sum 0 has occurred 1 time.
+        prefixSums[0] = 1;
+        
+        for (int num : nums) {
+            // Continuously add elements to our running sum.
+            currentSum += num;
+            
+            // The required past sum that would make the difference equal to k.
+            int difference = currentSum - k;
+            
+            // Check if we have previously encountered this exact prefix sum.
+            if (prefixSums.find(difference) != prefixSums.end()) {
+                // Increment our count by the number of times this past sum occurred.
+                count += prefixSums[difference];
+            }
+            
+            // Update the frequency of our current running sum.
+            prefixSums[currentSum]++;
+        }
+        
+        return count;
+    }
+};
+\`\`\`
+
+##### TypeScript
+\`\`\`typescript
+function subarraySum(nums: number[], k: number): number {
+  let count = 0;
+  let currentSum = 0;
+  
+  // Map stores frequency of each prefix sum.
+  const prefixSums = new Map<number, number>();
+  
+  // Base case: a sum of 0 is seen once before processing any elements.
+  prefixSums.set(0, 1);
+  
+  for (const num of nums) {
+    // Add current element to the cumulative sum.
+    currentSum += num;
+    
+    // We want: currentSum - pastSum = k
+    // Therefore: pastSum = currentSum - k
+    const difference = currentSum - k;
+    
+    // If we've seen this 'pastSum' before, valid subarrays exist!
+    if (prefixSums.has(difference)) {
+      // Increase our answer by the number of valid past subarrays.
+      count += prefixSums.get(difference)!;
+    }
+    
+    // Record the current sum for future elements to use.
+    prefixSums.set(currentSum, (prefixSums.get(currentSum) || 0) + 1);
+  }
+  
+  return count;
+}
 \`\`\`
 
 ---
@@ -212,14 +519,20 @@ Here is the code to check if two strings are anagrams of each other:
 \`\`\`python
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
+        # If lengths differ, they cannot be anagrams
         if len(s) != len(t):
             return False
         
+        # Hash map to count character frequencies
         count = {}
+        
+        # Build frequency map for the first string
         for char in s:
             count[char] = count.get(char, 0) + 1
             
+        # Decrement counts using the second string
         for char in t:
+            # If char is missing or count drops below 0, not an anagram
             if char not in count or count[char] == 0:
                 return False
             count[char] -= 1
@@ -233,16 +546,21 @@ import java.util.HashMap;
 
 public class Solution {
     public boolean isAnagram(String s, String t) {
+        // If lengths differ, they cannot be anagrams
         if (s.length() != t.length()) {
             return false;
         }
         
-        int[] counts = new int[26]; // Optimized count array for lowercase alphabets
+        // Use an array of size 26 for constant space O(1) character counting
+        int[] counts = new int[26]; 
+        
+        // Increment for string s and decrement for string t
         for (int i = 0; i < s.length(); i++) {
             counts[s.charAt(i) - 'a']++;
             counts[t.charAt(i) - 'a']--;
         }
         
+        // If all counts are zero, the strings are anagrams
         for (int count : counts) {
             if (count != 0) {
                 return false;
@@ -261,16 +579,21 @@ public class Solution {
 class Solution {
 public:
     bool isAnagram(std::string s, std::string t) {
+        // If lengths differ, they cannot be anagrams
         if (s.length() != t.length()) {
             return false;
         }
         
+        // Track frequencies of 26 lowercase English letters
         int counts[26] = {0};
+        
+        // Tally up characters from s, and subtract characters from t
         for (int i = 0; i < s.length(); ++i) {
             counts[s[i] - 'a']++;
             counts[t[i] - 'a']--;
         }
         
+        // Check if any character count is unbalanced
         for (int count : counts) {
             if (count != 0) {
                 return false;
@@ -284,17 +607,22 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function isAnagram(s: string, s2: string): boolean {
+  // If lengths differ, they cannot be anagrams
   if (s.length !== s2.length) {
     return false;
   }
 
+  // Hash map to count occurrences of each character
   const charCounts = new Map<string, number>();
 
+  // Count characters in the first string
   for (const char of s) {
     charCounts.set(char, (charCounts.get(char) || 0) + 1);
   }
 
+  // Subtract counts using the second string
   for (const char of s2) {
+    // If char doesn't exist or is already 0, strings don't match
     if (!charCounts.has(char) || charCounts.get(char) === 0) {
       return false;
     }
@@ -315,12 +643,21 @@ Here is the code to solve the Two Sum problem using a Hash Map:
 \`\`\`python
 class Solution:
     def twoSum(self, nums: List[int], target: int) -> List[int]:
+        # Hash map to store the value and its index
         seen = {}
+        
+        # Iterate through the array once (O(n) time)
         for i, num in enumerate(nums):
+            # The number we need to reach the target
             complement = target - num
+            
+            # If the complement is already in the map, we found our pair!
             if complement in seen:
                 return [seen[complement], i]
+            
+            # Otherwise, add the current number and its index to the map
             seen[num] = i
+            
         return []
 \`\`\`
 
@@ -331,12 +668,19 @@ import java.util.Map;
 
 public class Solution {
     public int[] twoSum(int[] nums, int target) {
+        // Hash map to store previously seen numbers and their indices
         Map<Integer, Integer> seen = new HashMap<>();
+        
         for (int i = 0; i < nums.length; i++) {
+            // Calculate the required complement for the current number
             int complement = target - nums[i];
+            
+            // Check if we have already encountered the complement
             if (seen.containsKey(complement)) {
                 return new int[] { seen.get(complement), i };
             }
+            
+            // Store the current number and index for future lookups
             seen.put(nums[i], i);
         }
         return new int[0];
@@ -352,12 +696,19 @@ public class Solution {
 class Solution {
 public:
     std::vector<int> twoSum(std::vector<int>& nums, int target) {
+        // Hash map for O(1) lookups of complement values
         std::unordered_map<int, int> seen;
+        
         for (int i = 0; i < nums.size(); ++i) {
+            // What number do we need to reach the target?
             int complement = target - nums[i];
+            
+            // If the complement is in the map, return both indices
             if (seen.find(complement) != seen.end()) {
                 return {seen[complement], i};
             }
+            
+            // Record the current value and index
             seen[nums[i]] = i;
         }
         return {};
@@ -368,13 +719,19 @@ public:
 ##### TypeScript
 \`\`\`typescript
 function twoSum(nums: number[], target: number): number[] {
+  // Map stores value -> index
   const seen = new Map<number, number>();
 
   for (let i = 0; i < nums.length; i++) {
+    // The value we need to find to sum up to the target
     const complement = target - nums[i];
+    
+    // Check if we've seen the complement before
     if (seen.has(complement)) {
       return [seen.get(complement)!, i];
     }
+    
+    // Add current number and its index to the map
     seen.set(nums[i], i);
   }
 
