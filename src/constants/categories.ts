@@ -45,6 +45,10 @@ const STRING_TAGS = new Set([
 
 // Mapping for non-ambiguous single tags
 export const CATEGORY_MAP: Record<string, string> = {
+  // ─── Arrays & Hashing ─────────────────────────────────────────────────────
+  "arrays & hashing": "Arrays & Hashing",
+  "arrays and hashing": "Arrays & Hashing",
+
   // ─── Trees ────────────────────────────────────────────────────────────────
   "tree": "Trees",
   "trees": "Trees",
@@ -57,6 +61,8 @@ export const CATEGORY_MAP: Record<string, string> = {
   "heap": "Heap / Priority Queue",
   "priority queue": "Heap / Priority Queue",
   "heap / priority queue": "Heap / Priority Queue",
+  "heap priority queue": "Heap / Priority Queue",
+  "heap-priority-queue": "Heap / Priority Queue",
   "data stream": "Heap / Priority Queue",
 
   // ─── Backtracking ─────────────────────────────────────────────────────────
@@ -154,12 +160,37 @@ export const CATEGORY_MAP: Record<string, string> = {
   "linked list": "Linked List",
 };
 
+export const slugifyCategory = (cat: string): string => {
+  return cat
+    .toLowerCase()
+    .replace(/&/g, 'and')        // Replace & with and to prevent URL breaking
+    .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with -
+    .replace(/^-+|-+$/g, '');    // Trim leading/trailing hyphens
+};
+
 export const normalizeCategory = (cat: string | null | undefined): string => {
   if (!cat) return 'Other';
   const trimmed = cat.trim().toLowerCase();
 
   // Check explicit map first
   if (CATEGORY_MAP[trimmed]) return CATEGORY_MAP[trimmed];
+
+  // If it's a hyphenated slug (e.g. "arrays-&-hashing", "two-pointers", "prefix-sum")
+  if (trimmed.includes('-')) {
+    // 1. Replace hyphens with spaces and check map
+    const spaced = trimmed.replace(/-/g, ' ');
+    if (CATEGORY_MAP[spaced]) return CATEGORY_MAP[spaced];
+
+    // 2. Collapse multiple spaces and trim
+    const deSlugged = trimmed.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+    if (CATEGORY_MAP[deSlugged]) return CATEGORY_MAP[deSlugged];
+
+    // 3. Handle cases where "and" was replaced by "&"
+    const withAmp = deSlugged.replace(/\band\b/g, '&');
+    if (CATEGORY_MAP[withAmp]) return CATEGORY_MAP[withAmp];
+    const withAnd = deSlugged.replace(/&/g, 'and');
+    if (CATEGORY_MAP[withAnd]) return CATEGORY_MAP[withAnd];
+  }
 
   // Array or Hash or String tags individually resolve to their base groups
   if (ARRAY_TAGS.has(trimmed)) return "_Array";   // internal placeholder

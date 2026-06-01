@@ -57,7 +57,7 @@ export const ProblemList = ({
   algorithms,
   emptyMessage = "No algorithms found.",
   defaultListType = "all",
-  availableListTypes = ["all", ListType.Core, ListType.Blind75, ListType.Blind150],
+  availableListTypes = ["all", ListType.Core, ListType.Blind75],
   hideListSelection = false,
   isLoading = false,
   variant = 'default',
@@ -260,7 +260,6 @@ export const ProblemList = ({
                         {availableListTypes.includes("all") && <SelectItem value="all">All Lists</SelectItem>}
                         {availableListTypes.includes(ListType.Core) && <SelectItem value={ListType.Core}>{LIST_TYPE_LABELS[ListType.Core]}</SelectItem>}
                         {availableListTypes.includes(ListType.Blind75) && <SelectItem value={ListType.Blind75}>{LIST_TYPE_LABELS[ListType.Blind75]}</SelectItem>}
-                        {availableListTypes.includes(ListType.Blind150) && <SelectItem value={ListType.Blind150}>{LIST_TYPE_LABELS[ListType.Blind150]}</SelectItem>}
                       </SelectContent>
                     </Select>
                   )}
