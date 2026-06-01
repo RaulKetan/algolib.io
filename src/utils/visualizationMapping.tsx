@@ -78,6 +78,8 @@ export const visualizationMap: Record<string, any> = {
   'best-time-to-buy-and-sell-stock-with-cooldown': dynamic(() => import('@/components/visualizations/algorithms/BestTimeToBuyAndSellStockWithCooldownVisualization').then(m => m.BestTimeToBuyAndSellStockWithCooldownVisualization), { ssr: false }),
   'climbing-stairs': dynamic(() => import('@/components/visualizations/algorithms/ClimbingStairsVisualization').then(m => m.ClimbingStairsVisualization), { ssr: false }),
   'partition-equal-subset': dynamic(() => import('@/components/visualizations/algorithms/PartitionEqualSubsetVisualization').then(m => m.PartitionEqualSubsetVisualization), { ssr: false }),
+  'target-sum': dynamic(() => import('@/components/visualizations/algorithms/TargetSumVisualization').then(m => m.TargetSumVisualization), { ssr: false }),
+  'target-sum-ways': dynamic(() => import('@/components/visualizations/algorithms/TargetSumVisualization').then(m => m.TargetSumVisualization), { ssr: false }),
   'word-break': dynamic(() => import('@/components/visualizations/algorithms/WordBreakVisualization').then(m => m.WordBreakVisualization), { ssr: false }),
 
   // Backtracking
@@ -293,6 +295,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'time-based-key-value-store': {
     title: 'Time-Based Key-Value Store',
     description: 'Visualize how a hash map of dynamically growing arrays combined with binary search allows efficient retrieval of time-versioned values.'
+  },
+  'target-sum': {
+    title: 'Target Sum',
+    description: 'Visualize the dynamic programming approach to find the number of ways to assign +/- signs to an array to reach a specific target sum.'
   }
 };
 
