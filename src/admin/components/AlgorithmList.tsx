@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAlgorithms, useCategories, useDeleteAlgorithm, useUpdateAlgorithm } from '@/hooks/useAlgorithms';
+import { useAlgorithms, useDeleteAlgorithm, useUpdateAlgorithm } from '@/hooks/useAlgorithms';
 import { TOP_COMPANIES } from '@/constants/companies';
 import { CompanyIcon } from '@/components/CompanyIcon';
 import { ListType, LIST_TYPE_LABELS } from '@/types/algorithm';
@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/command';
 import { Pencil, Trash2, Plus, Search, ArrowLeft, Check, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { CATEGORY_ORDER } from '@/constants/categories';
+import { ADMIN_CATEGORIES } from '@/constants/categories';
 
 export function AlgorithmList() {
   const router = useRouter();
@@ -56,7 +56,6 @@ export function AlgorithmList() {
 
   const { data, isLoading } = useAlgorithms(searchQuery, categoryFilter === 'all' ? '' : categoryFilter);
   const algorithms = data?.algorithms ?? [];
-  const { data: categories } = useCategories();
   const deleteMutation = useDeleteAlgorithm();
   const updateMutation = useUpdateAlgorithm();
 
@@ -167,7 +166,7 @@ export function AlgorithmList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
-            {categories?.map((category) => (
+            {ADMIN_CATEGORIES.map((category) => (
               <SelectItem key={category} value={category}>
                 {category}
               </SelectItem>
@@ -292,7 +291,7 @@ export function AlgorithmList() {
                               <CommandList className="max-h-[300px]">
                                 <CommandEmpty>No category found.</CommandEmpty>
                                 <CommandGroup className="overflow-auto max-h-[220px]">
-                                  {CATEGORY_ORDER.map((cat) => {
+                                  {ADMIN_CATEGORIES.map((cat) => {
                                     const algoCats = algo.categories || (algo.category ? algo.category.split(',').map((c: string) => c.trim()) : []);
                                     const isSelected = algoCats.includes(cat);
                                     return (

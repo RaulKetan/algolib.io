@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Loader2, Save, X } from "lucide-react";
 import { toast } from "sonner";
-import { CATEGORY_ORDER } from "@/constants/categories";
+import { ADMIN_CATEGORIES } from "@/constants/categories";
 import { Badge } from "@/components/ui/badge";
 
 import dynamic from "next/dynamic";
@@ -525,7 +525,7 @@ export function AlgorithmFormBuilder({
                               <SelectValue placeholder="Add category..." />
                             </SelectTrigger>
                             <SelectContent>
-                              {CATEGORY_ORDER.filter(c => !categories.includes(c)).map(cat => (
+                              {ADMIN_CATEGORIES.filter(c => !categories.includes(c)).map(cat => (
                                 <SelectItem key={cat} value={cat} className="capitalize">
                                   {cat}
                                 </SelectItem>

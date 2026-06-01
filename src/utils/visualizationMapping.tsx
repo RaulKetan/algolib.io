@@ -81,6 +81,8 @@ export const visualizationMap: Record<string, any> = {
   'target-sum': dynamic(() => import('@/components/visualizations/algorithms/TargetSumVisualization').then(m => m.TargetSumVisualization), { ssr: false }),
   'target-sum-ways': dynamic(() => import('@/components/visualizations/algorithms/TargetSumVisualization').then(m => m.TargetSumVisualization), { ssr: false }),
   'word-break': dynamic(() => import('@/components/visualizations/algorithms/WordBreakVisualization').then(m => m.WordBreakVisualization), { ssr: false }),
+  'distinct-subsequences': dynamic(() => import('@/components/visualizations/algorithms/DistinctSubsequencesVisualization').then(m => m.DistinctSubsequencesVisualization), { ssr: false }),
+  'burst-balloons': dynamic(() => import('@/components/visualizations/algorithms/BurstBalloonsVisualization').then(m => m.BurstBalloonsVisualization), { ssr: false }),
 
   // Backtracking
   'subsets': dynamic(() => import('@/components/visualizations/algorithms/SubsetsVisualization').then(m => m.SubsetsVisualization), { ssr: false }),
@@ -299,6 +301,14 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'target-sum': {
     title: 'Target Sum',
     description: 'Visualize the dynamic programming approach to find the number of ways to assign +/- signs to an array to reach a specific target sum.'
+  },
+  'distinct-subsequences': {
+    title: 'Distinct Subsequences',
+    description: 'Visualize how a 2D dynamic programming table tracks the number of ways a short string can be formed from a long string by deleting characters.'
+  },
+  'burst-balloons': {
+    title: 'Burst Balloons',
+    description: 'Visualize a "reverse time" dynamic programming approach where you determine the maximum coins by recursively deciding which balloon pops last.'
   }
 };
 

@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
           <strong>Time Complexity:</strong> [Complexity]<br>
           <strong>Space Complexity:</strong> [Complexity]<br>
           <br>
-          <AlgoLink url="/complexity" className="m-4">Learn Complexity</AlgoLink>
+          <AlgoLink url="/guides/time-complexity" className="m-4">Learn Complexity</AlgoLink>
           <br><br>
         </p>
         `;

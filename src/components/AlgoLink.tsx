@@ -13,13 +13,16 @@ interface AlgoLinkProps {
 }
 
 export const AlgoLink: React.FC<AlgoLinkProps> = ({
-  url,
+  url: initialUrl,
   label,
   className,
   children,
   iconClassName,
   hideIcon = false
 }) => {
+  // Map old /complexity routes to new guides route
+  const url = initialUrl === '/complexity' ? '/guides/time-complexity' : initialUrl;
+
   const content = children || label || url || 'Link';
 
   // Guard against missing URL
@@ -75,13 +78,18 @@ export const AlgoLink: React.FC<AlgoLinkProps> = ({
   }
 
   // Internal Link
+  const isComplexityLink = url === '/guides/time-complexity';
+  const target = isComplexityLink ? "_blank" : undefined;
+
   return (
     <Link
       href={url}
+      target={target}
+      rel={target === "_blank" ? "noopener noreferrer" : undefined}
       className={cn("inline-flex items-center hover:underline text-primary", className)}
     >
       {content}
-      {!hideIcon && <ArrowRight className={iconBaseClass} />}
+      {!hideIcon && (target === "_blank" ? <ExternalLink className={iconBaseClass} /> : <ArrowRight className={iconBaseClass} />)}
     </Link>
   );
 };

@@ -25,6 +25,14 @@ export const CATEGORY_ORDER = [
   "Design Pattern",
 ];
 
+export const ADMIN_CATEGORIES = [
+  ...CATEGORY_ORDER,
+  "Array",
+  "String",
+  "Single",
+  "Other"
+];
+
 // Tags that are considered "Array" type (prefix sum is its OWN category now)
 const ARRAY_TAGS = new Set([
   "array", "arrays", "arrays and sorting", "sorting", "merg sort",
