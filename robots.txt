@@ -1,7 +1,0 @@
-User-agent: *
-Disallow: /maps/
-Disallow: /dsa/query*
-Disallow: /*?category=*
-Disallow: /*?search=*
-Disallow: /*?topic=*
-Sitemap: https://rulcode.com/sitemap.xml

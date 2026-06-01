@@ -1,9 +1,35 @@
 User-agent: Googlebot
 Allow: /
+Allow: /llms.txt
 Disallow: /dsa/query*
 Disallow: /*?category=*
 Disallow: /*?search=*
 Disallow: /*?topic=*
+Disallow: /maps/
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: Omgilibot
+Allow: /
+Allow: /llms.txt
 
 User-agent: Bingbot
 Allow: /
@@ -24,4 +50,6 @@ Disallow: /dsa/query*
 Disallow: /*?category=*
 Disallow: /*?search=*
 Disallow: /*?topic=*
+Disallow: /maps/
+
 Sitemap: https://rulcode.com/sitemap.xml
