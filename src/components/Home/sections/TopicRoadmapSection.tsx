@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { slugifyCategory } from "@/constants/categories";
 
 interface TopicNode {
   name: string;
@@ -37,7 +38,7 @@ interface TopicNode {
 const TOPIC_NODES: TopicNode[] = [
   {
     name: "Arrays & Hashing",
-    count: 12,
+    count: 18,
     icon: Layers,
     colorClass: "text-orange-500 dark:text-orange-400",
     bgClass: "from-orange-500/10 to-amber-500/10 dark:from-orange-500/5 dark:to-amber-500/5",
@@ -45,67 +46,83 @@ const TOPIC_NODES: TopicNode[] = [
   },
   {
     name: "Two Pointers",
-    count: 8,
+    count: 12,
     icon: Compass,
     colorClass: "text-blue-500 dark:text-blue-400",
     bgClass: "from-blue-500/10 to-indigo-500/10 dark:from-blue-500/5 dark:to-indigo-500/5",
     glowColor: "rgba(59,130,246,0.08)"
   },
   {
+    name: "Prefix Sum",
+    count: 3,
+    icon: TrendingUp,
+    colorClass: "text-emerald-500 dark:text-emerald-400",
+    bgClass: "from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/5 dark:to-teal-500/5",
+    glowColor: "rgba(16,185,129,0.08)"
+  },
+  {
     name: "Sliding Window",
-    count: 6,
+    count: 5,
     icon: Zap,
     colorClass: "text-yellow-600 dark:text-yellow-400",
     bgClass: "from-yellow-500/10 to-amber-500/10 dark:from-yellow-500/5 dark:to-amber-500/5",
     glowColor: "rgba(234,179,8,0.08)"
   },
   {
-    name: "Stack",
-    count: 7,
-    icon: Layers,
-    colorClass: "text-purple-500 dark:text-purple-400",
-    bgClass: "from-purple-500/10 to-pink-500/10 dark:from-purple-500/5 dark:to-pink-500/5",
-    glowColor: "rgba(168,85,247,0.08)"
-  },
-  {
     name: "Binary Search",
-    count: 9,
+    count: 5,
     icon: Target,
     colorClass: "text-emerald-500 dark:text-emerald-400",
     bgClass: "from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/5 dark:to-teal-500/5",
     glowColor: "rgba(16,185,129,0.08)"
   },
   {
+    name: "Stack",
+    count: 5,
+    icon: Layers,
+    colorClass: "text-purple-500 dark:text-purple-400",
+    bgClass: "from-purple-500/10 to-pink-500/10 dark:from-purple-500/5 dark:to-pink-500/5",
+    glowColor: "rgba(168,85,247,0.08)"
+  },
+  {
     name: "Linked List",
-    count: 8,
+    count: 10,
     icon: Activity,
     colorClass: "text-cyan-500 dark:text-cyan-400",
-    bgClass: "from-cyan-500/10 to-blue-500/10 dark:from-cyan-500/5 dark:to-cyan-500/5",
+    bgClass: "from-cyan-500/10 to-blue-500/10 dark:from-cyan-500/5 dark:to-blue-500/5",
     glowColor: "rgba(6,182,212,0.08)"
   },
   {
-    name: "Trees",
+    name: "Intervals",
+    count: 5,
+    icon: Activity,
+    colorClass: "text-violet-500 dark:text-violet-400",
+    bgClass: "from-violet-500/10 to-purple-500/10 dark:from-violet-500/5 dark:to-purple-500/5",
+    glowColor: "rgba(139,92,246,0.08)"
+  },
+  {
+    name: "Backtracking",
     count: 15,
+    icon: Sparkles,
+    colorClass: "text-fuchsia-500 dark:text-fuchsia-400",
+    bgClass: "from-fuchsia-500/10 to-pink-500/10 dark:from-fuchsia-500/5 dark:to-pink-500/5",
+    glowColor: "rgba(217,70,239,0.08)"
+  },
+  {
+    name: "Trees",
+    count: 24,
     icon: Globe,
     colorClass: "text-rose-500 dark:text-rose-400",
     bgClass: "from-rose-500/10 to-red-500/10 dark:from-rose-500/5 dark:to-red-500/5",
     glowColor: "rgba(244,63,94,0.08)"
   },
   {
-    name: "Heap / Priority Queue",
-    count: 6,
-    icon: Trophy,
-    colorClass: "text-violet-500 dark:text-violet-400",
-    bgClass: "from-violet-500/10 to-indigo-500/10 dark:from-violet-500/5 dark:to-indigo-500/5",
-    glowColor: "rgba(139,92,246,0.08)"
-  },
-  {
-    name: "Backtracking",
-    count: 9,
-    icon: Sparkles,
-    colorClass: "text-fuchsia-500 dark:text-fuchsia-400",
-    bgClass: "from-fuchsia-500/10 to-pink-500/10 dark:from-fuchsia-500/5 dark:to-pink-500/5",
-    glowColor: "rgba(217,70,239,0.08)"
+    name: "Graphs",
+    count: 30,
+    icon: Globe,
+    colorClass: "text-indigo-500 dark:text-indigo-400",
+    bgClass: "from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/5 dark:to-purple-500/5",
+    glowColor: "rgba(99,102,241,0.08)"
   },
   {
     name: "Tries",
@@ -116,56 +133,24 @@ const TOPIC_NODES: TopicNode[] = [
     glowColor: "rgba(14,165,233,0.08)"
   },
   {
-    name: "Graphs",
-    count: 14,
-    icon: Globe,
-    colorClass: "text-indigo-500 dark:text-indigo-400",
-    bgClass: "from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/5 dark:to-purple-500/5",
-    glowColor: "rgba(99,102,241,0.08)"
-  },
-  {
-    name: "Advanced Graphs",
-    count: 6,
-    icon: Brain,
-    colorClass: "text-red-500 dark:text-red-400",
-    bgClass: "from-red-500/10 to-orange-500/10 dark:from-red-500/5 dark:to-orange-500/5",
-    glowColor: "rgba(239,68,68,0.08)"
-  },
-  {
-    name: "1-D Dynamic Programming",
-    count: 13,
-    icon: TrendingUp,
-    colorClass: "text-green-500 dark:text-green-400",
-    bgClass: "from-green-500/10 to-emerald-500/10 dark:from-green-500/5 dark:to-emerald-500/5",
-    glowColor: "rgba(34,197,94,0.08)"
-  },
-  {
-    name: "2-D Dynamic Programming",
-    count: 9,
-    icon: Layers,
-    colorClass: "text-blue-500 dark:text-blue-400",
-    bgClass: "from-blue-500/10 to-cyan-500/10 dark:from-blue-500/5 dark:to-cyan-500/5",
-    glowColor: "rgba(59,130,246,0.08)"
-  },
-  {
     name: "Greedy",
-    count: 8,
+    count: 9,
     icon: Sparkles,
     colorClass: "text-amber-500 dark:text-amber-400",
     bgClass: "from-amber-500/10 to-yellow-500/10 dark:from-amber-500/5 dark:to-yellow-500/5",
     glowColor: "rgba(245,158,11,0.08)"
   },
   {
-    name: "Intervals",
-    count: 6,
-    icon: Activity,
-    colorClass: "text-violet-500 dark:text-violet-400",
-    bgClass: "from-violet-500/10 to-purple-500/10 dark:from-violet-500/5 dark:to-purple-500/5",
-    glowColor: "rgba(139,92,246,0.08)"
+    name: "Dynamic Programming",
+    count: 30,
+    icon: TrendingUp,
+    colorClass: "text-green-500 dark:text-green-400",
+    bgClass: "from-green-500/10 to-emerald-500/10 dark:from-green-500/5 dark:to-emerald-500/5",
+    glowColor: "rgba(34,197,94,0.08)"
   },
   {
     name: "Math & Geometry",
-    count: 8,
+    count: 17,
     icon: Shield,
     colorClass: "text-orange-500 dark:text-orange-400",
     bgClass: "from-orange-500/10 to-red-500/10 dark:from-orange-500/5 dark:to-red-500/5",
@@ -173,11 +158,35 @@ const TOPIC_NODES: TopicNode[] = [
   },
   {
     name: "Bit Manipulation",
-    count: 7,
+    count: 9,
     icon: Zap,
     colorClass: "text-teal-500 dark:text-teal-400",
     bgClass: "from-teal-500/10 to-cyan-500/10 dark:from-teal-500/5 dark:to-cyan-500/5",
     glowColor: "rgba(20,184,166,0.08)"
+  },
+  {
+    name: "Heap / Priority Queue",
+    count: 13,
+    icon: Trophy,
+    colorClass: "text-violet-500 dark:text-violet-400",
+    bgClass: "from-violet-500/10 to-indigo-500/10 dark:from-violet-500/5 dark:to-indigo-500/5",
+    glowColor: "rgba(139,92,246,0.08)"
+  },
+  {
+    name: "Advanced Algorithms",
+    count: 15,
+    icon: Brain,
+    colorClass: "text-red-500 dark:text-red-400",
+    bgClass: "from-red-500/10 to-orange-500/10 dark:from-red-500/5 dark:to-orange-500/5",
+    glowColor: "rgba(239,68,68,0.08)"
+  },
+  {
+    name: "Design Pattern",
+    count: 7,
+    icon: LayoutGrid,
+    colorClass: "text-pink-500 dark:text-pink-400",
+    bgClass: "from-pink-500/10 to-rose-500/10 dark:from-pink-500/5 dark:to-rose-500/5",
+    glowColor: "rgba(236,72,153,0.08)"
   }
 ];
 
@@ -316,8 +325,8 @@ export function TopicRoadmapSection() {
                     transition={{ duration: 0.3, delay: index * 0.015 }}
                   >
                     <Link
-                      href={`/dsa/query?topic=${encodeURIComponent(topic.name)}`}
-                      onClick={() => handleCtaClick(topic.name, `/dsa/query?topic=${encodeURIComponent(topic.name)}`, "learning_canvas_node")}
+                      href={`/dsa/query?topic=${slugifyCategory(topic.name)}`}
+                      onClick={() => handleCtaClick(topic.name, `/dsa/query?topic=${slugifyCategory(topic.name)}`, "learning_canvas_node")}
                       className="group block"
                     >
                       <Card
