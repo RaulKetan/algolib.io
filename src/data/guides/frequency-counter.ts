@@ -374,6 +374,8 @@ Frequency counters are highly efficient but can break due to language-specific m
 
 ---
 
+[Visualize Top K Frequent Elements in the Interactive Simulator](viz:top-k-frequent-elements)
+
 ## Practice Problems & Website Verifications
 
 Verify your frequency counter implementations with these interactive challenges:

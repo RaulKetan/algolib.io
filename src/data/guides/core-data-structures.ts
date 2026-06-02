@@ -1,5 +1,5 @@
 export const content = `
-# Core Data Structures Overview
+# Core Data Structures
 
 ## Introduction: The Magical Toy Playroom
 
@@ -25,6 +25,10 @@ Imagine a long row of toy cubbies glued together in a straight line. Each cubby 
 * **Adding things**: What if you want to squeeze a new cubby right in the middle? You can't! Since they are glued together, you have to move all the toys in the cubbies to the right by one slot to make space, which takes a lot of work (\`O(n)\`).
 * **Running out of space**: If you fill up all the cubbies and want more, you have to buy a whole new, bigger set of cubbies and copy all your toys over to the new row!
 
+\`\`\`array
+[10, 20, 30, 40, 50]
+\`\`\`
+
 ### 💻 Array Deep Dive (For Older Coders)
 An **Array** is a contiguous block of memory cells. Contiguous means the cells are placed directly next to each other in memory, with absolutely no gaps.
 
@@ -39,6 +43,8 @@ However, this static layout has trade-offs. If you want to insert a new element 
 | **Search by Value (Unsorted)** | O(n) | Must scan from beginning to end in the worst case. |
 | **Insert / Delete at End** | O(1) (Amortized) | Fast push/pop, occasional memory reallocation. |
 | **Insert / Delete in Middle** | O(n) | Must shift all subsequent elements to maintain continuity. |
+
+[Visualize Binary Search Array](viz:binary-search)
 
 ### Code Implementations: Array
 
@@ -105,6 +111,10 @@ Imagine you are on a birthday treasure hunt! You start at the first clue card un
 * **Finding things**: To find the 5th toy, you *must* start at the first card and follow them one by one. You cannot skip! That takes time (\`O(n)\`).
 * **Adding/Removing**: It is super easy to add a new clue card in the middle! You don't slide any toys around. You just rewrite the note on one card to point to your new card, and make your new card point to the next one. It takes just one quick step (\`O(1)\`).
 
+\`\`\`linkedlist
+[5, 10, 15, 20, 25]
+\`\`\`
+
 ### 💻 Linked List Deep Dive (For Older Coders)
 A **Linked List** is a non-contiguous sequence of **Nodes**. Each node contains a value (the data) and a pointer reference (\`next\`) containing the memory address of the next node. Because nodes are scattered anywhere in memory, we do not have index offsets. Accessing the N-th node requires traversing the links sequentially from the head, resulting in **\`O(n)\` linear access time**.
 
@@ -116,6 +126,8 @@ The huge advantage of linked lists is pointer flexibility. If you want to insert
 | **Access / Search by Index** | O(n) | Must traverse sequentially node-by-node. |
 | **Insert / Delete at Head** | O(1) | Instant link update, no elements shifted. |
 | **Insert / Delete at Pointer** | O(1) | Re-routing references takes constant steps. |
+
+[Visualize Middle of Linked List](viz:middle-node)
 
 ### Code Implementations: Linked List
 
@@ -272,6 +284,8 @@ What if two different keys generate the same number? This is called a **Hash Col
 | **Delete Key Entry** | O(1) | Locates index bucket and removes element. |
 | **Worst-Case Operations** | O(n) | Occurs during hash collision storms when many keys map to the same bucket. |
 
+[Visualize Two Sum](viz:two-sum)
+
 ### Code Implementations: Hash Map
 
 #### Python
@@ -389,6 +403,10 @@ Imagine a high stack of warm, delicious chocolate-chip pancakes!
 * **Removing**: When you want to eat one, you must take the pancake sitting on the very top of the pile (we call this **Pop**).
 * **The Rule**: If you try to pull a pancake out from the middle or the bottom, the whole tower collapses! In computer science, we call this **Last-In, First-Out (LIFO)**. The last pancake made is the very first one you eat!
 
+\`\`\`stack
+["Bottom Pancake", "Middle Pancake", "Top Pancake"]
+\`\`\`
+
 ### 💻 Stack Deep Dive (For Older Coders)
 A **Stack** is a linear structure governed by the **Last-In, First-Out (LIFO)** rule. The last element pushed onto the stack is the first element popped off. Because all operations are restricted to the head of the list, both \`push\` and \`pop\` execute in **\`O(1)\` constant time**.
 
@@ -401,6 +419,8 @@ Stacks are critical in computers. The CPU uses a "Call Stack" to track active fu
 | **Pop (Remove from Top)** | O(1) | Removed from top level. |
 | **Peek (View Top Element)** | O(1) | Inspects top level without removal. |
 | **Access / Search Middle** | O(n) | Requires popping all elements above it. |
+
+[Visualize Valid Parentheses](viz:valid-parentheses)
 
 ### Code Implementations: Stack
 
@@ -541,6 +561,10 @@ Imagine you and your friends are waiting in a line for the giant, awesome water 
 * **Waiting in line**: When a new kid arrives, they have to walk to the very back of the line (we call this **Enqueue**). No cutting in the middle is allowed!
 * **The Rule**: In computer science, we call this **First-In, First-Out (FIFO)**. The first kid who gets in line is the first one who gets to slide!
 
+\`\`\`queue
+["Kid A", "Kid B", "Kid C", "Kid D"]
+\`\`\`
+
 ### 💻 Queue Deep Dive (For Older Coders)
 A **Queue** is a linear structure based on the **First-In, First-Out (FIFO)** principle. The first item inserted is the first item removed. Queues support two main operations: \`enqueue\` (adding to the back) and \`dequeue\` (removing from the front), both taking **\`O(1)\` time**.
 
@@ -553,6 +577,8 @@ Queues are used in asynchronous environments (buffers, print jobs, routing syste
 | **Dequeue (Remove from Front)** | O(1) | Exits the front of the queue. |
 | **Peek Front Element** | O(1) | Inspects the next element to dequeue. |
 | **Access / Search Middle** | O(n) | Requires dequeuing items in front. |
+
+[Visualize BFS Level Order Traversal](viz:bfs-level-order)
 
 ### Code Implementations: Queue
 
@@ -754,6 +780,8 @@ We can peek at the minimum or maximum instantly in **\`O(1)\` time**. However, e
 | **Insert Element** | O(log n) | Element is inserted at end, then sifted up. |
 | **Pop Min / Max** | O(log n) | Swaps root with last element, then sifts down. |
 | **Build Heap (from Array)** | O(n) | Bottom-up heapify runs in linear time. |
+
+[Visualize Kth Largest Element in a Stream](viz:kth-largest-element-in-a-stream)
 
 ### Code Implementations: Heap
 

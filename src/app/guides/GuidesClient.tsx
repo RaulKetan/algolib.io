@@ -41,6 +41,36 @@ const SolutionViewer = dynamic(
   { ssr: false }
 );
 
+const TreeDiagram = dynamic(
+  () => import("@/components/visualizations/TreeDiagram").then((mod) => mod.TreeDiagram),
+  { ssr: false }
+);
+
+const GraphDiagram = dynamic(
+  () => import("@/components/visualizations/GraphDiagram").then((mod) => mod.GraphDiagram),
+  { ssr: false }
+);
+
+const ArrayDiagram = dynamic(
+  () => import("@/components/visualizations/ArrayDiagram").then((mod) => mod.ArrayDiagram),
+  { ssr: false }
+);
+
+const LinkedListDiagram = dynamic(
+  () => import("@/components/visualizations/LinkedListDiagram").then((mod) => mod.LinkedListDiagram),
+  { ssr: false }
+);
+
+const StackDiagram = dynamic(
+  () => import("@/components/visualizations/StackDiagram").then((mod) => mod.StackDiagram),
+  { ssr: false }
+);
+
+const QueueDiagram = dynamic(
+  () => import("@/components/visualizations/QueueDiagram").then((mod) => mod.QueueDiagram),
+  { ssr: false }
+);
+
 import { AlgoLink } from "@/components/AlgoLink";
 
 interface SolutionViewerBlock {
@@ -233,9 +263,13 @@ export default function GuidesClient({ guide }: GuidesClientProps) {
     "arrays-hashing",
     "two-pointers",
     "frequency-counter",
+    "prefix-sum",
     "sliding-window",
     "stack",
     "binary-search",
+    "recursion",
+    "backtracking",
+    "merge-intervals",
   ];
 
   // Helper to compute the correct guide URL based on category
@@ -555,6 +589,9 @@ export default function GuidesClient({ guide }: GuidesClientProps) {
           </blockquote>
         );
       },
+      pre({ children }: any) {
+        return <>{children}</>;
+      },
       code({ node, inline, className, children, ...props }: any) {
         const match = /language-(\w+)/.exec(className || "");
         const codeString = String(children).replace(/\n$/, "");
@@ -569,6 +606,35 @@ export default function GuidesClient({ guide }: GuidesClientProps) {
 
         if (!inline && match) {
           const lang = match[1];
+
+          if (lang === "tree") {
+            return <TreeDiagram data={codeString} height={200} className="my-6" />;
+          }
+
+          if (lang === "graph" || lang === "trie") {
+            return <GraphDiagram data={codeString} height={250} className="my-6" />;
+          }
+
+          if (lang === "array") {
+            return <ArrayDiagram data={codeString} className="my-6" />;
+          }
+
+          if (lang === "linkedlist" || lang === "singly-linkedlist") {
+            return <LinkedListDiagram data={codeString} className="my-6" />;
+          }
+
+          if (lang === "doubly-linkedlist") {
+            return <LinkedListDiagram data={codeString} doubly={true} className="my-6" />;
+          }
+
+          if (lang === "stack") {
+            return <StackDiagram data={codeString} className="my-6" />;
+          }
+
+          if (lang === "queue") {
+            return <QueueDiagram data={codeString} className="my-6" />;
+          }
+
           return (
             <div className="my-6 rounded-lg border border-border/40 overflow-hidden bg-zinc-950">
               <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-zinc-900/60 text-xs text-muted-foreground select-none">
@@ -777,6 +843,7 @@ export default function GuidesClient({ guide }: GuidesClientProps) {
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={markdownComponents}
+                            urlTransform={(value: string) => value}
                           >
                             {block.content}
                           </ReactMarkdown>

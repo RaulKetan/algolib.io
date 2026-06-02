@@ -33,6 +33,10 @@ A **Static Array** is like a row of toy cubbies made of solid wood that can neve
 * **Random Access**: Because the cubbies are glued side-by-side, the computer can instantly jump to any cubby index. If each cubby is 4 inches wide, to look at cubby #3, the computer does a quick math: \`Start Address + (Index * Width)\`. For index 3: \`1000 + (3 * 4) = 1012\`. This calculation takes a tiny fraction of a second: \`O(1)\` time!
 * **Insertion and Deletion**: Adding or removing toys in the middle is slow. If you want to squeeze a new toy into Cubby #1, you must first move the toy in Cubby #1 to Cubby #2, the toy in Cubby #2 to Cubby #3, and so on, to make room! Shifting all those toys takes linear time: \`O(n)\`.
 
+\`\`\`array
+[10, 20, 30, 40, 50]
+\`\`\`
+
 ### 2. Dynamic Arrays (The Stretchy Cubbies)
 Since solid wood cubbies cannot grow, modern programming languages give us **Dynamic Arrays** (like Python lists or JavaScript arrays).
 * **Under the Hood**: A dynamic array starts as a small static array. When you add too many toys and run out of space, the computer magically creates a **brand new set of cubbies that is twice as large**, copies all your old toys into the new cubbies, and throws the old set away!
@@ -107,6 +111,8 @@ When you need to compare two groups of items, count occurrences, or find duplica
 
 #### Valid Anagram
 Given two strings \`S\` and \`T\`, return \`true\` if \`T\` is an anagram of \`S\`, and \`false\` otherwise.
+
+[Visualize Valid Anagram in the Interactive Simulator](viz:valid-anagram)
 
 ##### Python
 \`\`\`python
@@ -245,6 +251,8 @@ function isAnagram(s: string, t: string): boolean {
 When searching for a pair of numbers that satisfy an equation (like \`A + B = Target\`), you can rewrite the equation as \`B = Target - A\`. 
 As you iterate through the array, treat the current element as \`A\`. Calculate the complement \`B\` and check if you have already stored \`B\` in your Hash Map. If yes, you have found the pair. If no, add \`A\` to the Hash Map.
 
+[Visualize Two Sum in the Interactive Simulator](viz:two-sum)
+
 #### Two Sum
 Find the indexes of the two numbers that add up to \`target\`.
 
@@ -367,6 +375,8 @@ Current Sum - Past Sum = K  ==>  Past Sum = Current Sum - K
 \`\`\`
 
 #### Subarray Sum Equals K
+
+[Visualize Prefix Sum in the Interactive Simulator](viz:prefix-sum)
 
 ##### Python
 \`\`\`python

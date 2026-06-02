@@ -18,11 +18,14 @@ export const visualizationMap: Record<string, any> = {
   'merge-intervals': dynamic(() => import('@/components/visualizations/algorithms/MergeIntervalsVisualization').then(m => m.MergeIntervalsVisualization), { ssr: false }),
   'interval-scheduling': dynamic(() => import('@/components/visualizations/algorithms/InsertIntervalVisualization').then(m => m.InsertIntervalVisualization), { ssr: false }),
   'monotonic-stack': dynamic(() => import('@/components/visualizations/algorithms/MonotonicStackVisualization').then(m => m.MonotonicStackVisualization), { ssr: false }),
+  'valid-parentheses': dynamic(() => import('@/components/visualizations/algorithms/ValidParenthesesVisualization').then(m => m.ValidParenthesesVisualization), { ssr: false }),
+  'two-sum': dynamic(() => import('@/components/visualizations/algorithms/TwoSumVisualization').then(m => m.TwoSumVisualization), { ssr: false }),
   'quick-select': dynamic(() => import('@/components/visualizations/algorithms/QuickSelectVisualization').then(m => m.QuickSelectVisualization), { ssr: false }),
   'container-with-most-water': dynamic(() => import('@/components/visualizations/algorithms/ContainerWithMostWaterVisualization').then(m => m.ContainerWithMostWaterVisualization), { ssr: false }),
   'trapping-rain-water': dynamic(() => import('@/components/visualizations/algorithms/TrappingRainWaterVisualization').then(m => m.TrappingRainWaterVisualization), { ssr: false }),
   'rotate-array': dynamic(() => import('@/components/visualizations/algorithms/RotateArrayVisualization').then(m => m.RotateArrayVisualization), { ssr: false }),
   'cyclic-sort': dynamic(() => import('@/components/visualizations/algorithms/CyclicSortVisualization').then(m => m.CyclicSortVisualization), { ssr: false }),
+  'valid-anagram': dynamic(() => import('@/components/visualizations/algorithms/ValidAnagramVisualization').then(m => m.ValidAnagramVisualization), { ssr: false }),
 
   // Tree Algorithms
   'dfs-preorder': dynamic(() => import('@/components/visualizations/algorithms/DFSPreorderVisualization').then(m => m.DFSPreorderVisualization), { ssr: false }),
@@ -34,6 +37,7 @@ export const visualizationMap: Record<string, any> = {
   'lowest-common-ancestor-of-bst': dynamic(() => import('@/components/visualizations/algorithms/LowestCommonAncestorBSTVisualization').then(m => m.LowestCommonAncestorBSTVisualization), { ssr: false }),
   'serialize-tree': dynamic(() => import('@/components/visualizations/algorithms/SerializeTreeVisualization').then(m => m.SerializeTreeVisualization), { ssr: false }),
   'recover-bst': dynamic(() => import('@/components/visualizations/algorithms/RecoverBSTVisualization').then(m => m.RecoverBSTVisualization), { ssr: false }),
+  'invert-binary-tree': dynamic(() => import('@/components/visualizations/algorithms/InvertBinaryTreeVisualization').then(m => m.InvertBinaryTreeVisualization), { ssr: false }),
   'trie': dynamic(() => import('@/components/visualizations/algorithms/TrieVisualization').then(m => m.TrieVisualization), { ssr: false }),
 
   // Linked List Algorithms
@@ -48,8 +52,9 @@ export const visualizationMap: Record<string, any> = {
   'merge-k-sorted-lists': dynamic(() => import('@/components/visualizations/algorithms/MergeKSortedListsVisualization').then(m => m.MergeKSortedListsVisualization), { ssr: false }),
 
   // Graph Algorithms
-  'graph-dfs': dynamic(() => import('@/components/visualizations/algorithms/GraphDFSVisualization').then(m => m.GraphDFSVisualization), { ssr: false }),
-  'graph-bfs': dynamic(() => import('@/components/visualizations/algorithms/GraphBFSVisualization').then(m => m.GraphBFSVisualization), { ssr: false }),
+  'graph-dfs': dynamic(() => import('@/components/visualizations/GraphVisualization').then(m => m.GraphVisualization), { ssr: false }),
+  'graph-bfs': dynamic(() => import('@/components/visualizations/GraphVisualization').then(m => m.GraphVisualization), { ssr: false }),
+  'number-of-islands': dynamic(() => import('@/components/visualizations/algorithms/NumberOfIslandsVisualization').then(m => m.NumberOfIslandsVisualization), { ssr: false }),
   'number-of-connected-components-in-an-undirected-graph': dynamic(() => import('@/components/visualizations/algorithms/NumberOfConnectedComponentsVisualization').then(m => m.NumberOfConnectedComponentsVisualization), { ssr: false }),
   'pacific-atlantic-water-flow': dynamic(() => import('@/components/visualizations/algorithms/PacificAtlanticVisualization').then(m => m.PacificAtlanticVisualization), { ssr: false }),
   'alien-dictionary': dynamic(() => import('@/components/visualizations/algorithms/AlienDictionaryVisualization').then(m => m.AlienDictionaryVisualization), { ssr: false }),
@@ -138,6 +143,7 @@ export const visualizationMap: Record<string, any> = {
   'kth-largest-element-in-a-stream': dynamic(() => import('@/components/visualizations/algorithms/KthLargestElementInAStreamVisualization').then(m => m.KthLargestElementInAStreamVisualization), { ssr: false }),
   'top-k-frequent-elements': dynamic(() => import('@/components/visualizations/algorithms/TopKFrequentElementsVisualization').then(m => m.TopKFrequentElementsVisualization), { ssr: false }),
   'sliding-window-maximum': dynamic(() => import('@/components/visualizations/algorithms/SlidingWindowMaxVisualization').then(m => m.SlidingWindowMaxVisualization), { ssr: false }),
+  'minimum-window-substring': dynamic(() => import('@/components/visualizations/algorithms/MinimumWindowSubstringVisualization').then(m => m.MinimumWindowSubstringVisualization), { ssr: false }),
   'find-median-from-data-stream': dynamic(() => import('@/components/visualizations/algorithms/FindMedianFromDataStreamVisualization').then(m => m.FindMedianFromDataStreamVisualization), { ssr: false }),
   'last-stone-weight': dynamic(() => import('@/components/visualizations/algorithms/LastStoneWeightVisualization').then(m => m.LastStoneWeightVisualization), { ssr: false }),
   'k-closest-points-to-origin': dynamic(() => import('@/components/visualizations/algorithms/KClosestPointsVisualization').then(m => m.KClosestPointsVisualization), { ssr: false }),
@@ -181,6 +187,18 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'monotonic-stack': {
     title: 'Monotonic Stack',
     description: 'Visualize how elements are pushed and popped to maintain a strict increasing/decreasing order, solving next greater element problems in O(n).'
+  },
+  'valid-parentheses': {
+    title: 'Valid Parentheses',
+    description: 'Watch how a stack is used to ensure opening and closing brackets match correctly in a string.'
+  },
+  'two-sum': {
+    title: 'Two Sum',
+    description: 'Visualize using a hash map to find two numbers that add up to a target value in O(n) time.'
+  },
+  'valid-anagram': {
+    title: 'Valid Anagram',
+    description: 'Visualize checking if two strings are anagrams by comparing their character frequencies using Hash Maps.'
   },
   'container-with-most-water': {
     title: 'Container With Most Water',
@@ -250,6 +268,10 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
     title: 'Sliding Window Maximum',
     description: 'See how a double-ended queue (deque) maintains potential maximums to solve the sliding window max problem in O(n) time.'
   },
+  'minimum-window-substring': {
+    title: 'Minimum Window Substring',
+    description: 'Visualize using a dynamic sliding window with hash maps to find the shortest substring containing all required characters.'
+  },
   'knapsack-01': {
     title: '0/1 Knapsack',
     description: 'Visualize the dynamic programming table construction to maximize value within a weight capacity.'
@@ -309,6 +331,14 @@ export const visualizationMetadataMap: Record<string, { title: string; descripti
   'burst-balloons': {
     title: 'Burst Balloons',
     description: 'Visualize a "reverse time" dynamic programming approach where you determine the maximum coins by recursively deciding which balloon pops last.'
+  },
+  'invert-binary-tree': {
+    title: 'Invert Binary Tree',
+    description: 'Watch how every node in a binary tree has its left and right children swapped recursively to create a mirror image.'
+  },
+  'number-of-islands': {
+    title: 'Number of Islands',
+    description: 'Visualize DFS/BFS flood-fill on a 2D grid to count distinct connected land masses surrounded by water.'
   }
 };
 
@@ -368,7 +398,7 @@ export function renderVisualization(algorithmId: string): JSX.Element | null {
 
   return (
     <React.Suspense fallback={<div className="text-center py-12">Loading visualization...</div>}>
-      <VisualizationComponent />
+      <VisualizationComponent algorithmId={algorithmId} />
     </React.Suspense>
   );
 }

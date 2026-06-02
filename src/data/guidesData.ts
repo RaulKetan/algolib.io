@@ -12,6 +12,7 @@ import { content as recursionContent } from "./guides/recursion";
 import { content as backtrackingContent } from "./guides/backtracking";
 import { content as coreDataStructuresContent } from "./guides/core-data-structures";
 import { content as mergeIntervalsContent } from "./guides/merge-intervals";
+import { content as prefixSumContent } from "./guides/prefix-sum";
 
 export interface RelatedQuestion {
   id: string;
@@ -165,7 +166,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
     guides: [
       {
         slug: "core-data-structures",
-        title: "Core Data Structures Overview",
+        title: "Core Data Structures",
         description: "High-level summary of Array, HashMap, Stack, Queue, Heap and when to use them.",
         category: "fundamentals",
         heroImage: "fundamentals-overview",
@@ -174,7 +175,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["reverse-linked-list", "bfs-level-order", "monotonic-stack", "binary-search"],
+        visualizations: ["reverse-linked-list", "bfs-level-order", "monotonic-stack", "binary-search", "kth-largest-element-in-a-stream"],
         content: coreDataStructuresContent,
         questions: [
           { id: "two-sum", name: "Two Sum", difficulty: "Easy" },
@@ -211,7 +212,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["dfs-inorder", "bfs-level-order", "lowest-common-ancestor-of-bst", "bst-insert"],
+        visualizations: ["dfs-inorder", "bfs-level-order", "lowest-common-ancestor-of-bst", "bst-insert", "invert-binary-tree"],
         content: treesContent,
         questions: [
           { id: "invert-binary-tree", name: "Invert Binary Tree", difficulty: "Easy" },
@@ -248,7 +249,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["graph-dfs", "graph-bfs", "topological-sort", "dijkstras"],
+        visualizations: ["graph-dfs", "graph-bfs", "topological-sort", "dijkstras", "number-of-islands"],
         content: graphsContent,
         questions: [
           { id: "number-of-islands", name: "Number of Islands", difficulty: "Medium" },
@@ -273,7 +274,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["prefix-sum", "top-k-frequent-elements"],
+        visualizations: ["prefix-sum", "top-k-frequent-elements", "rotate-array", "maximum-subarray"],
         content: arraysHashingContent,
         questions: [
           { id: "two-sum", name: "Two Sum", difficulty: "Easy" },
@@ -299,7 +300,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["two-pointers", "dutch-national-flag", "container-with-most-water"],
+        visualizations: ["two-pointers", "dutch-national-flag", "container-with-most-water", "trapping-rain-water"],
         content: twoPointersContent,
         questions: [
           { id: "valid-palindrome", name: "Valid Palindrome", difficulty: "Easy" },
@@ -325,12 +326,36 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["top-k-frequent-elements"],
+        visualizations: ["valid-anagram", "top-k-frequent-elements"],
         content: frequencyCounterContent,
         questions: [
           { id: "valid-anagram", name: "Valid Anagram", difficulty: "Easy" },
           { id: "group-anagrams", name: "Group Anagrams", difficulty: "Medium" },
           { id: "top-k-frequent-elements", name: "Top K Frequent Elements", difficulty: "Medium" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "prefix-sum",
+    title: "Prefix Sum",
+    guides: [
+      {
+        slug: "prefix-sum",
+        title: "Prefix Sum",
+        description: "Master the magic diary pattern for instant range queries and subarray sums.",
+        category: "prefix-sum",
+        heroImage: "prefix-sum",
+        author: {
+          name: "Rahul Mahale",
+          role: "Senior SLB Engineer",
+          linkedin: "https://linkedin.com/in/rkmahale"
+        },
+        visualizations: ["prefix-sum"],
+        content: prefixSumContent,
+        questions: [
+          { id: "product-of-array-except-self", name: "Product of Array Except Self", difficulty: "Medium" },
+          { id: "maximum-subarray", name: "Maximum Subarray", difficulty: "Medium" }
         ]
       }
     ]
@@ -375,12 +400,13 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["monotonic-stack", "lru-cache"],
+        visualizations: ["valid-parentheses", "monotonic-stack"],
         content: stackContent,
         questions: [
           { id: "valid-parentheses", name: "Valid Parentheses", difficulty: "Easy" },
           { id: "min-stack", name: "Min Stack", difficulty: "Medium" },
-          { id: "daily-temperatures", name: "Daily Temperatures", difficulty: "Medium" }
+          { id: "daily-temperatures", name: "Daily Temperatures", difficulty: "Medium" },
+          { id: "largest-rectangle-in-histogram", name: "Largest Rectangle in Histogram", difficulty: "Hard" }
         ]
       }
     ]
@@ -400,7 +426,7 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["binary-search", "two-pointers"],
+        visualizations: ["binary-search"],
         content: binarySearchContent,
         questions: [
           { id: "binary-search", name: "Binary Search", difficulty: "Easy" },
@@ -449,13 +475,11 @@ Here is an overview of Space Complexity, followed by the reference table of stan
           role: "Senior SLB Engineer",
           linkedin: "https://linkedin.com/in/rkmahale"
         },
-        visualizations: ["subsets", "permutations", "n-queens", "sudoku-solver"],
+        visualizations: ["subsets", "permutations", "combination-sum"],
         content: backtrackingContent,
         questions: [
-          { id: "subsets", name: "Subsets", difficulty: "Medium" },
-          { id: "permutations", name: "Permutations", difficulty: "Medium" },
           { id: "combination-sum", name: "Combination Sum", difficulty: "Medium" },
-          { id: "n-queens", name: "N-Queens", difficulty: "Hard" }
+          { id: "word-search", name: "Word Search", difficulty: "Medium" }
         ]
       }
     ]
