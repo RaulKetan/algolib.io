@@ -16,18 +16,25 @@ const baseUrl = 'https://rulcode.com';
 const staticRoutes = [
   '/',
   '/about',
-  '/privacy',
-  '/terms',
-  '/content-rights',
-  '/feedback',
   '/blind75',
   '/blog',
+  '/guides',
 ];
 
 
 
+import { guidesData } from './src/data/guidesData';
+
 const blogRoutes = blogPosts.map((post) => `/blog/${post.slug}`);
 
+const guideRoutes = guidesData.flatMap(category => {
+  return category.guides.map(guide => {
+    if (category.id === "time-complexity") return "/guides/time-complexity";
+    if (category.id === "space-complexity") return "/guides/space-complexity";
+    if (category.id === "fundamentals") return `/guides/fundamentals/${guide.slug}`;
+    return `/guides/patterns/${guide.slug}`;
+  });
+});
 async function generateSitemap() {
   console.log('Fetching algorithms from Supabase...');
 
@@ -71,7 +78,7 @@ async function generateSitemap() {
   // All algorithms now use unified /problem/ route
   const problemRoutes = algorithms.map((algo) => `/problem/${algo.id}`);
 
-  const allRoutes = [...staticRoutes, ...problemRoutes, ...blogRoutes];
+  const allRoutes = [...staticRoutes, ...problemRoutes, ...blogRoutes, ...guideRoutes];
 
   // Generate sitemap XML
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -82,12 +89,14 @@ ${allRoutes.map(route => `  <url>
     <changefreq>${route === '/' ? 'daily' :
       route.startsWith('/problem/') ? 'weekly' :
         route.startsWith('/blog/') ? 'weekly' :
-          'monthly'
+          route.startsWith('/guides/') ? 'weekly' :
+            'monthly'
     }</changefreq>
     <priority>${route === '/' ? '1.0' :
       route.startsWith('/problem/') ? '0.8' :
         route.startsWith('/blog/') ? '0.7' :
-          '0.5'
+          route.startsWith('/guides/') ? '0.8' :
+            '0.5'
     }</priority>
   </url>`).join('\n')}
 </urlset>`;
