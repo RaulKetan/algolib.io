@@ -67,6 +67,17 @@ A mapping where each vertex is associated with a list or set of its neighbors. T
 
 ##### Adjacency List Representation
 
+\`\`\`graph
+type = "adjacency-list"
+data = [
+  [1, 2],
+  [2, 3],
+  [3],
+  []
+]
+\`\`\`
+*(Nodes are represented as 0=A, 1=B, 2=C, 3=D for simplicity in the visualizer)*
+
 ##### Python
 \`\`\`python
 # Adjacency List represented as a Dictionary of Lists
@@ -141,37 +152,51 @@ To traverse a graph, we must visit its vertices. Since graphs can have loops, we
 Imagine you are exploring a web of secret hideouts in a giant playground!
 How do you visit every single hideout without getting lost in loops? You bring a bucket of green slime to mark each hideout you visit (we call this a **Visited Set** so we don't walk in circles forever!).
 
-There are two fun ways to explore the web:
-
-#### Breadth-First Search (BFS): The Ripple in a Pond
-Imagine dropping a pebble in a puddle of water—it creates ripples that spread outwards in growing circles.
-* You start at your house.
-* First, you visit all of your *direct* next-door neighbors.
-* Next, you visit all of *their* next-door neighbors.
-* You keep spreading outwards layer-by-layer. This is the **perfect** way to find the absolute shortest path to any hideout!
-
-#### Depth-First Search (DFS): The Deep Maze Explorer
-Imagine exploring a deep, dark maze.
-* You pick a path and walk **as far as you can possibly go** until you hit a dead end.
-* Once you hit a wall, you walk back to the last intersection and try the other path!
-* You explore deep before you explore wide. It is perfect for checking if a path exists or finding your way out of a maze!
+There are two main strategies to explore this web of hideouts: **Breadth-First Search (BFS)** and **Depth-First Search (DFS)**.
 
 ---
 
-### 1. Breadth-First Search (BFS)
-BFS visits vertices level-by-level, radiating outwards from a starting node.
-* **Application**: Finding the **shortest path** on unweighted graphs.
-* **Mechanism**: Uses a **Queue** (First-In, First-Out) and a **Visited Set**.
+### 1. Breadth-First Search (BFS): The Ripple in a Pond
 
-### 2. Depth-First Search (DFS)
-DFS plunges deep into a path, exploring as far as possible down a branch before backtracking.
-* **Application**: Cycle detection, finding connected components, path-finding.
-* **Mechanism**: Uses **Recursion** (the call stack) and a **Visited Set**.
+[Visualize Graph BFS](viz:graph-bfs)
+
+Imagine dropping a pebble in a puddle of water—it creates ripples that spread outwards in growing circles. BFS works exactly like this!
+
+**How it works step-by-step:**
+1. You start at your house (the starting node).
+2. First, you visit all of your *direct* next-door neighbors (Level 1).
+3. Next, you visit all of *their* next-door neighbors (Level 2).
+4. You keep spreading outwards layer-by-layer.
+
+**Why we use it:** Because BFS searches everywhere 1 step away, then 2 steps away, and so on, it is the **perfect way to find the absolute shortest path** to any destination! 
+
+**How we code it:** We use a **Queue** (a First-In-First-Out line, like waiting for a water slide). You get in line, visit a hideout, mark it as visited, and put all its unvisited neighbors at the back of the line!
+
+---
+
+### 2. Depth-First Search (DFS): The Deep Maze Explorer
+
+[Visualize Graph DFS](viz:graph-dfs)
+
+Imagine exploring a deep, dark maze. You don't spread out; you pick a direction and commit to it!
+
+**How it works step-by-step:**
+1. You pick a path and walk **as far as you can possibly go** until you hit a dead end.
+2. Once you hit a wall, you walk back (this is called **backtracking**) to the last intersection.
+3. From that intersection, you try the next unexplored path!
+4. You explore deep before you explore wide.
+
+**Why we use it:** It is perfect for checking if a path exists between two places, solving mazes, or finding cycles (checking if you walked in a circle).
+
+**How we code it:** We use **Recursion** (a function calling itself) or a **Stack** (a Last-In-First-Out tower, like a stack of pancakes). You always explore the most recently discovered path first.
+
+---
 
 ### Side-by-Side Comparison
 
-| Metric | BFS | DFS |
+| Metric | BFS (Breadth-First Search) | DFS (Depth-First Search) |
 | :--- | :--- | :--- |
+| **Exploration Style** | Wide and shallow (Layer-by-layer) | Deep and narrow (Plunges to the bottom) |
 | **Data Structure** | Queue (FIFO) | Stack / Recursion (LIFO) |
 | **Memory Usage** | O(width) (stores all nodes of a level) | O(depth) (stores the recursion path) |
 | **Shortest Path** | Guaranteed to find the shortest path (unweighted) | Not guaranteed to find the shortest path |
@@ -182,6 +207,8 @@ DFS plunges deep into a path, exploring as far as possible down a branch before 
 ## Key Algorithmic Patterns
 
 ### Pattern 1: Grid BFS/DFS (The Island Problem)
+
+[Visualize Number of Islands](viz:number-of-islands)
 Many interview problems represent a graph as a 2D matrix (a grid) where cells are vertices and adjacent cells (Up, Down, Left, Right) are edges. A classic example is **Number of Islands**.
 
 * **The Strategy**:
@@ -364,6 +391,8 @@ function numIslands(grid: string[][]): number {
 ---
 
 ### Pattern 2: Topological Sort (Kahn's Algorithm)
+
+[Visualize Topological Sort](viz:topological-sort)
 A **Directed Acyclic Graph (DAG)** has directed edges and no cycles. **Topological Sort** provides a linear ordering of vertices such that for every directed edge \`U -> V\`, vertex \`U\` comes before \`V\` in the ordering.
 * **Real-world Example**: Course scheduling. If Course A is a prerequisite for Course B, you must take A before B.
 * **Kahn's Algorithm**:
@@ -581,6 +610,8 @@ function canFinishCourses(numCourses: number, prerequisites: number[][]): boolea
 ---
 
 ### Pattern 3: Shortest Path on Weighted Graphs (Dijkstra's Algorithm)
+
+[Visualize Dijkstra's Algorithm](viz:dijkstras)
 
 To find the shortest distance from a starting node to all other nodes in a weighted graph with non-negative weights, we use **Dijkstra's Algorithm**.
 
@@ -1156,6 +1187,14 @@ Suppose we have \`numCourses = 3\` and \`prerequisites = [[1, 0], [2, 1]]\`.
 This means:
 * Course 0 must be taken before Course 1 (\`0 -> 1\`).
 * Course 1 must be taken before Course 2 (\`1 -> 2\`).
+
+\`\`\`graph
+type = "edge-list"
+data = [
+  [0, 1],
+  [1, 2]
+]
+\`\`\`
 
 ##### 1. Initial State
 * In-degrees: \`{0: 0, 1: 1, 2: 1}\`

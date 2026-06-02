@@ -372,6 +372,8 @@ Given the head of a linked list, determine if the linked list has a cycle in it 
 4. If there is a cycle, the fast pointer will eventually wrap around and "lap" the slow pointer, meaning they will meet (\`slow == fast\`).
 5. If there is no cycle, the fast pointer will hit the end of the list (\`null\`).
 
+[Visualize Linked List Cycle Detection in the Interactive Simulator](viz:detect-cycle-in-a-linked-list)
+
 #### Complete Implementations
 
 ##### Python

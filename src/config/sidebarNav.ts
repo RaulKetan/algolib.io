@@ -17,6 +17,7 @@ export const PATTERN_IDS = [
   "arrays-hashing",
   "two-pointers",
   "frequency-counter",
+  "prefix-sum",
   "sliding-window",
   "stack",
   "binary-search",

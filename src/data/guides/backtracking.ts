@@ -376,9 +376,6 @@ Always remember: if you add something to an array before you explore, you MUST \
 ## 🎮 Practice Problems & Website Verifications
 
 Verify your backtracking logic by solving these interactive problems on our platform:
-* [Subsets](/problem/subsets) — The fundamental "Include or Skip" backtracking template.
-* [Permutations](/problem/permutations) — Master the "Loop and Skip Already Used" backtracking template.
 * [Combination Sum](/problem/combination-sum) — Learn to backtrack with an unlimited supply of elements.
-* [N-Queens](/problem/n-queens) — The ultimate test of board-state backtracking and 2D constraint checking.
 * [Word Search](/problem/word-search) — Practice backtracking through a 2D grid of characters.
 `;

@@ -41,8 +41,8 @@ Imagine a playground train where each car holds the hand of the car *behind* it.
 * If you are standing at car C, you cannot see or go back to car B because car C is only holding the hand of car D!
 * If you want to go back, you have to start all the way at the front of the train (**Head**) and walk forward again.
 
-\`\`\`
-[ Head ] -> [ Node A: Val 10 | Next ] -> [ Node B: Val 20 | Next ] -> [ Node C: Val 30 | null ]
+\`\`\`linkedlist
+[10, 20, 30]
 \`\`\`
 
 Here is the standard structural definition of a Singly Linked List Node:
@@ -109,8 +109,8 @@ Imagine a train where every car holds the hands of *both* the car in front of it
 * **The Good Part**: If a car gets broken, you can unhook it and reconnect the other two cars instantly because you can look both ways!
 * **The Hard Part**: The train nodes are bigger (require more memory to store two pointers) and take twice as much work to hook up!
 
-\`\`\`
-[ Head ] <-> [ Node A: prev | Val 10 | next ] <-> [ Node B: prev | Val 20 | next ] <-> [ Tail ]
+\`\`\`doubly-linkedlist
+["Node A", "Node B"]
 \`\`\`
 
 * **Advantage**: If you have a reference to Node B, you can delete it in \`O(1)\` time because you can immediately inspect B's \`prev\` pointer to find Node A and change A's \`next\` pointer.
@@ -146,6 +146,8 @@ Inserting at the front of an Array requires shifting every other element one slo
 Pointer manipulation is notoriously tricky. If you do not assign pointer links in the correct sequence, you will cause a memory leak (freeing nodes in memory while losing their references) or create an infinite loop. Let's walk through the two most common mechanics.
 
 ### 1. In-Place Reversal of a Singly Linked List
+
+[Visualize Reverse Linked List](viz:reverse-linked-list)
 
 This is the holy grail of basic pointer manipulation. The objective is to change the direction of every single pointer arrow in the list so that the tail becomes the new head.
 
@@ -361,6 +363,8 @@ Imagine two animals, a slow Tortoise and a fast Hare, running down our track.
 * **Finding a Cycle (Loop)**: Imagine the track goes in a circle. If the Hare and Tortoise run forever, the fast Hare will eventually catch up and lap the slow Tortoise from behind! If they collide, we know there is a loop in the track. If the Hare reaches a dead end, there is no loop.
 
 #### 1. Finding the Midpoint
+
+[Visualize Finding the Middle Node](viz:middle-node)
 If you have a list of length \`N\`, move the \`slow\` pointer 1 step at a time, and the \`fast\` pointer 2 steps at a time. By the time \`fast\` reaches the end of the list, \`slow\` will be pointing exactly at the midpoint node.
 * **Application**: Used in Merge Sort for Linked Lists, or checking if a list is a palindrome.
 
@@ -368,6 +372,8 @@ If you have a list of length \`N\`, move the \`slow\` pointer 1 step at a time, 
 [Practice Problem: Middle of the Linked List](/problem/middle-node)
 
 #### 2. Cycle Detection
+
+[Visualize Linked List Cycle Detection](viz:detect-cycle-in-a-linked-list)
 If a list has a cycle (meaning the last node points back to an earlier node, forming a loop), a single pointer will traverse it infinitely. If we use a \`slow\` and a \`fast\` pointer, the fast pointer will eventually loop around and collide with the slow pointer. If \`fast\` ever reaches \`null\`, the list has no cycles.
 
 
@@ -488,6 +494,8 @@ When you are creating a new linked list (e.g., merging two sorted lists, adding 
 To avoid this, we instantiate a **Dummy Node** (a node with placeholder data, like \`-1\`) to act as the temporary anchor at the start of our list. We build the list by appending to \`dummy.next\`. Once we are finished, the actual head of our list is simply \`dummy.next\`.
 
 #### Merging Two Sorted Lists Walkthrough
+
+[Visualize Merge Two Sorted Lists](viz:merge-two-sorted-lists)
 Let's see this in action for merging:
 * List 1: \`1 -> 3 -> 5 -> null\`
 * List 2: \`2 -> 4 -> 6 -> null\`

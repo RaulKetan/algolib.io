@@ -39,10 +39,8 @@ The two most common tree structures you will see in technical interviews are **B
 #### Analogy: Nests with Two Branches
 A tree is a **Binary Tree** if each bird nest has **at most two** branches growing under it (a Left nest and a Right nest). There are no rules about what toys go where—you can throw them in any nest you want!
 
-\`\`\`
-       [ Root ]
-       /      \
-  [ Left ]  [ Right ]
+\`\`\`tree
+["Root", "Left", "Right"]
 \`\`\`
 
 Here is the standard structural definition of a Binary Tree Node:
@@ -147,35 +145,47 @@ All operations degrade to \`O(n)\`! This is why production systems use self-bala
 
 ## Tree Traversals: DFS vs. BFS
 
-Because tree structures are non-linear, we have multiple paths to traverse them. We group traversals into **Depth-First Search (DFS)** and **Breadth-First Search (BFS)**.
+Because tree structures are non-linear, we have multiple paths to traverse them. We group traversals into two main strategies: **Depth-First Search (DFS)** and **Breadth-First Search (BFS)**.
+
+---
 
 ### 1. Depth-First Search (DFS)
+
+[Visualize Inorder DFS](viz:dfs-inorder)
 
 #### Analogy: Exploring a Deep Cave
 Imagine you are exploring a deep cave with multiple branches.
 In **Depth-First Search**, you pick one branch and walk **as deep as possible** until you hit a wall at the bottom. Only then do you walk back (backtrack) and try the next branch!
-Depending on when we write down the name of the nest we are in, we have three orders:
-* **Preorder** (Write name -> Left branch -> Right branch)
+
+**How we do it:** We usually use **Recursion** (a function magically calling itself) to remember where we left off. 
+
+Depending on *when* we write down the name of the nest we are in, we have three orders:
+* **Preorder** (Write name -> Left branch -> Right branch) — *Great for copying a tree!*
 * **Inorder** (Left branch -> Write name -> Right branch) — *This reads a BST in perfect sorted order, from smallest to biggest!*
 * **Postorder** (Left branch -> Right branch -> Write name) — *Perfect for deleting a tree because you clean the children nests before the parent!*
 
+---
+
 ### 2. Breadth-First Search (BFS) / Level Order Traversal
+
+[Visualize BFS Level Order Traversal](viz:bfs-level-order)
 
 #### Analogy: Ripples in a Puddle
 Imagine you drop a pebble in a puddle of water, and it creates ripples that spread outwards in circles.
 In **Breadth-First Search**, you visit nests **level-by-level**, starting at the top root nest, then checking all nests on the first level down, then all nests on the second level down, and so on. You spread out wide before going deep!
+
+**How we do it:** We use a **Queue** (a line of people, First-In-First-Out). 
+1. We put the root nest in the line. 
+2. Then, we take it out, write its name, and put its children at the back of the line. 
+3. We keep doing this until the line is empty!
 
 ---
 
 ## Walkthrough of BFS Level Order Traversal
 
 Let's trace a level order traversal of this binary tree:
-\`\`\`
-      [3]
-     /   \
-   [9]   [20]
-        /    \
-      [15]   [7]
+\`\`\`tree
+[3, 9, 20, null, null, 15, 7]
 \`\`\`
 
 1. **Start**: Push \`[3]\` into queue. Queue: \`[[3]]\`.
@@ -448,6 +458,8 @@ function levelOrder(root: TreeNode | null): number[][] {
 ### 1. Invert a Binary Tree
 
 Inverting a binary tree (creating its mirror image) is the classic interview question.
+
+[Visualize Invert Binary Tree](viz:invert-binary-tree)
 * **Intuition**: Swap the left and right children of every node in the tree recursively.
 
 ##### Invert Tree Implementation
@@ -544,6 +556,8 @@ We return root \`[4]\` which now points to \`7\` on the left and \`2\` on the ri
 ---
 
 ### 2. Lowest Common Ancestor (LCA) in a BST
+
+[Visualize Lowest Common Ancestor in BST](viz:lowest-common-ancestor-of-bst)
 
 The **Lowest Common Ancestor** of two nodes \`P\` and \`Q\` is the lowest node in the tree that has both \`P\` and \`Q\` as descendants.
 

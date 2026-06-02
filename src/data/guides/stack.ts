@@ -20,12 +20,8 @@ A stack supports three primary operations, which are super fast and run in **\`O
 2. **Pop**: Take the topmost Lego block off the tower.
 3. **Peek / Top**: Peek at the color of the topmost Lego block without removing it.
 
-\`\`\`
-Push(10)      Push(20)      Pop()
- |    |        | 20 |      |    |
- |    |  --->  | 10 | ---> | 10 |
- | 10 |        | 10 |      | 10 |
- ------        ------      ------
+\`\`\`stack
+[10, 20]
 \`\`\`
 
 ---
@@ -74,6 +70,8 @@ Given a string containing just the characters \`'('\`, \`')'\`, \`'{'\`, \`'}'\`
    * If the stack is empty, there is no matching opening bracket. Return \`false\`.
    * **Pop** the top element from the stack and verify it matches the closing bracket type. If not, return \`false\`.
 4. After the loop, if the stack is empty, return \`true\` (all brackets closed). Otherwise, return \`false\` (some opening brackets remained unclosed).
+
+[Visualize Valid Parentheses in the Interactive Simulator](viz:valid-parentheses)
 
 #### Complete Implementations
 
@@ -482,6 +480,128 @@ function nextGreaterElement(nums: number[]): number[] {
 
 ---
 
+### Pattern 4: Advanced Monotonic Stack (Largest Rectangle in Histogram)
+
+The ultimate test of monotonic stack understanding is calculating the largest rectangular area in a histogram.
+
+#### The Strategy
+Imagine a skyline of buildings (the histogram). For any given building, the maximum rectangle that can be formed using its full height is bounded by the first shorter building to its left, and the first shorter building to its right.
+1. We maintain a stack of indices, ensuring the heights of these indices remain strictly in **increasing order**.
+2. Loop through each bar. If we encounter a bar that is *shorter* than the bar at the top of our stack, we know we have found the **right boundary** for that taller bar!
+3. We **pop** the top index. Its height is \`heights[popped_index]\`. Its **left boundary** is the new top of the stack (the nearest shorter bar to the left). Its **right boundary** is our current index \`i\`.
+4. We calculate the area: \`height * (right_boundary - left_boundary - 1)\`.
+5. We push the current index \`i\` onto the stack and repeat.
+6. A dummy height of \`0\` at the end forces all remaining bars in the stack to pop and calculate their areas.
+
+[Visualize Monotonic Stack in the Interactive Simulator](viz:monotonic-stack)
+
+#### Complete Implementations
+
+##### Python
+\`\`\`python
+def largestRectangleArea(heights: list[int]) -> int:
+    max_area = 0
+    stack = []  # Stores indices
+    
+    # We append a 0 to force all remaining bars in the stack to pop at the end
+    heights.append(0)
+    
+    for i in range(len(heights)):
+        # While stack is not empty and current bar is shorter than the top of stack
+        while stack and heights[i] < heights[stack[-1]]:
+            h = heights[stack.pop()]
+            # If stack is empty, the width extends from the beginning (0) to i
+            w = i if not stack else i - stack[-1] - 1
+            max_area = max(max_area, h * w)
+            
+        stack.append(i)
+        
+    return max_area
+\`\`\`
+
+##### Java
+\`\`\`java
+import java.util.Stack;
+
+public class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int maxArea = 0;
+        Stack<Integer> stack = new Stack<>();
+        
+        for (int i = 0; i <= heights.length; i++) {
+            int currentHeight = (i == heights.length) ? 0 : heights[i];
+            
+            // While stack is not empty and current bar is shorter than the top of stack
+            while (!stack.isEmpty() && currentHeight < heights[stack.peek()]) {
+                int h = heights[stack.pop()];
+                // If stack is empty, the width extends from the beginning (0) to i
+                int w = stack.isEmpty() ? i : i - stack.peek() - 1;
+                maxArea = Math.max(maxArea, h * w);
+            }
+            stack.push(i);
+        }
+        
+        return maxArea;
+    }
+}
+\`\`\`
+
+##### C++
+\`\`\`cpp
+#include <vector>
+#include <stack>
+#include <algorithm>
+
+class Solution {
+public:
+    int largestRectangleArea(std::vector<int>& heights) {
+        int maxArea = 0;
+        std::stack<int> st;
+        
+        for (int i = 0; i <= heights.size(); i++) {
+            int currentHeight = (i == heights.size()) ? 0 : heights[i];
+            
+            // While stack is not empty and current bar is shorter than the top of stack
+            while (!st.empty() && currentHeight < heights[st.top()]) {
+                int h = heights[st.top()];
+                st.pop();
+                // If stack is empty, the width extends from the beginning (0) to i
+                int w = st.empty() ? i : i - st.top() - 1;
+                maxArea = std::max(maxArea, h * w);
+            }
+            st.push(i);
+        }
+        
+        return maxArea;
+    }
+};
+\`\`\`
+
+##### TypeScript
+\`\`\`typescript
+function largestRectangleArea(heights: number[]): number {
+  let maxArea = 0;
+  const stack: number[] = [];
+  
+  for (let i = 0; i <= heights.length; i++) {
+    const currentHeight = i === heights.length ? 0 : heights[i];
+    
+    // While stack is not empty and current bar is shorter than the top of stack
+    while (stack.length > 0 && currentHeight < heights[stack[stack.length - 1]]) {
+      const h = heights[stack.pop()!];
+      // If stack is empty, the width extends from the beginning (0) to i
+      const w = stack.length === 0 ? i : i - stack[stack.length - 1] - 1;
+      maxArea = Math.max(maxArea, h * w);
+    }
+    stack.push(i);
+  }
+  
+  return maxArea;
+}
+\`\`\`
+
+---
+
 ## Common Interview Pitfalls and Debugging Strategies
 
 Stack programming is simple but has several critical runtime traps:
@@ -506,4 +626,5 @@ Deepen your stack optimization skills by practice solving these problems:
 * [Valid Parentheses](/problem/valid-parentheses) — Standard matching brackets using LIFO push/pop.
 * [Min Stack](/problem/min-stack) — Retrieve minimum elements in constant time with dual stack configurations.
 * [Daily Temperatures](/problem/daily-temperatures) — Apply the monotonic index distance template.
+* [Largest Rectangle in Histogram](/problem/largest-rectangle-in-histogram) — Advanced monotonic stack boundary detection.
 `;

@@ -48,15 +48,14 @@ A Trie Node contains:
 
 #### Visualizing a Trie containing "cat", "cab", and "car"
 
-\`\`\`
-          [ Root ]
-             |
-            (c)
-             |
-            (a)
-           / | \
-         (t) (b) (r)
-          *   *   *
+\`\`\`trie
+edges = [
+  ["Root", "c"],
+  ["c", "a"],
+  ["a", "t"],
+  ["a", "b"],
+  ["a", "r"]
+]
 \`\`\`
 *(Asterisk * denotes a node where \`isEndOfWord = true\`)*
 
@@ -149,6 +148,8 @@ This compression dramatically reduces the node count and pointer overhead, speed
 ## Trie Core Operations & Walkthroughs
 
 A standard Trie supports four core operations: \`insert\`, \`search\`, \`startsWith\`, and \`delete\`.
+
+[Visualize Trie Prefix Tree](viz:trie)
 
 ### 1. Inserting a Word (\`insert\`)
 To insert a word of length \`L\`:

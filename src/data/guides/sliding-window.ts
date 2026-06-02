@@ -17,6 +17,8 @@ By only subtracting the one that left and adding the one that entered, you get t
 
 In computer science, **Sliding Window** is a neat optimization where we convert nested loops on arrays or strings into a single linear pass by sliding a frame represented by two pointers (\`left\` and \`right\`).
 
+[Visualize Sliding Window in the Interactive Simulator](viz:sliding-window)
+
 ---
 
 ## Anatomy of a Sliding Window
@@ -340,6 +342,8 @@ Given two strings \`s\` and \`t\`, return the minimum window substring of \`s\` 
 3. Track the number of characters that have met their target frequency: \`have = 0\` and \`need = countT.size()\`.
 4. Expand the window by moving \`right\` forward. If \`s[right]\` is a target character, increment its count in \`window\`. If its count matches \`countT\`, increment \`have\`.
 5. While \`have == need\`, update the minimum window answer, then shrink the window from the left by removing \`s[left]\`, decrementing its count in \`window\`, and updating \`have\` if its count falls below target, then incrementing \`left\`.
+
+[Visualize Minimum Window Substring in the Interactive Simulator](viz:minimum-window-substring)
 
 #### Complete Implementations
 
